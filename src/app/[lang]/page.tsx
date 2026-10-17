@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CircleCheck, ShieldCheck, Sparkles } from "lucide-react";
+import * as motion from "motion/react-client";
 import { Icon } from "@/components/icon";
 import { CourseCard, PostCard, ServiceCard } from "@/components/site/cards";
 import { Reveal } from "@/components/site/reveal";
@@ -9,6 +10,13 @@ import { VerifyForm } from "@/components/site/verify-form";
 import { getCourses, getPosts, getServices, getSite } from "@/lib/content";
 import { getDictionary, localHref, t } from "@/lib/i18n";
 import { currentLocale } from "@/lib/locale";
+
+// Hero entrance, staggered by `delay` seconds.
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] as const },
+});
 
 export default async function HomePage() {
   const locale = await currentLocale();
@@ -22,15 +30,22 @@ export default async function HomePage() {
     <>
       {/* ---------------------------------------------------------------- Hero */}
       <section className="relative isolate overflow-hidden bg-brand-950">
-        <Image
-          src={site.hero.image || "/images/hero-food-plant.jpg"}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          quality={80}
-          className="animate-slow-zoom -z-20 object-cover object-[70%_center]"
-        />
+        <motion.div
+          className="absolute inset-0 -z-20"
+          initial={{ scale: 1.08 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 18, ease: "easeOut" }}
+        >
+          <Image
+            src={site.hero.image || "/images/hero-food-plant.jpg"}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            quality={80}
+            className="object-cover object-[70%_center]"
+          />
+        </motion.div>
         <div
           className="absolute inset-0 -z-10 bg-linear-to-r from-brand-950 via-brand-950/85 to-brand-900/30 rtl:bg-linear-to-l"
           aria-hidden
@@ -40,22 +55,22 @@ export default async function HomePage() {
 
         <div className="container-page grid min-h-[min(100svh,880px)] items-center gap-12 pt-32 pb-36 lg:grid-cols-[1.25fr_1fr] lg:pb-40">
           <div className="max-w-2xl">
-            <p className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
+            <motion.p {...fadeUp()} className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
               <Sparkles className="size-4 text-accent-300" aria-hidden />
               {t(site.hero.badge, locale)}
-            </p>
-            <h1 className="font-display animate-fade-up mt-6 text-4xl leading-tight font-extrabold text-balance text-white [animation-delay:120ms] sm:text-5xl lg:text-6xl">
+            </motion.p>
+            <motion.h1 {...fadeUp(0.12)} className="font-display mt-6 text-4xl leading-tight font-extrabold text-balance text-white sm:text-5xl lg:text-6xl">
               {t(site.hero.title, locale)}
               {t(site.hero.highlight, locale) && (
                 <span className="mt-2 block bg-linear-to-r from-accent-300 via-white to-silver-300 bg-clip-text text-transparent rtl:bg-linear-to-l">
                   {t(site.hero.highlight, locale)}
                 </span>
               )}
-            </h1>
-            <p className="animate-fade-up mt-6 max-w-xl text-lg leading-8 text-pretty text-white/75 [animation-delay:240ms]">
+            </motion.h1>
+            <motion.p {...fadeUp(0.24)} className="mt-6 max-w-xl text-lg leading-8 text-pretty text-white/75">
               {t(site.hero.subtitle, locale)}
-            </p>
-            <div className="animate-fade-up mt-10 flex flex-wrap gap-3 [animation-delay:360ms]">
+            </motion.p>
+            <motion.div {...fadeUp(0.36)} className="mt-10 flex flex-wrap gap-3">
               {site.hero.primaryCta.href && (
                 <Link href={localHref(site.hero.primaryCta.href, locale)} className="btn-light px-7 py-3.5">
                   {t(site.hero.primaryCta.label, locale)}
@@ -67,9 +82,9 @@ export default async function HomePage() {
                   {t(site.hero.secondaryCta.label, locale)}
                 </Link>
               )}
-            </div>
+            </motion.div>
             {site.hero.pillars.length > 0 && (
-              <ul className="animate-fade-up mt-12 flex flex-wrap gap-x-6 gap-y-4 [animation-delay:480ms]">
+              <motion.ul {...fadeUp(0.48)} className="mt-12 flex flex-wrap gap-x-6 gap-y-4">
                 {site.hero.pillars.map((p, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm font-medium text-white/85">
                     <span className="inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur">
@@ -78,12 +93,12 @@ export default async function HomePage() {
                     <span className="max-w-32 leading-5">{t(p.label, locale)}</span>
                   </li>
                 ))}
-              </ul>
+              </motion.ul>
             )}
           </div>
 
           {/* Quick certificate check */}
-          <div className="animate-fade-up hidden [animation-delay:400ms] lg:block">
+          <motion.div {...fadeUp(0.4)} className="hidden lg:block">
             <div className="ms-auto max-w-md rounded-[2rem] border border-white/15 bg-white/10 p-8 text-white shadow-2xl shadow-black/30 backdrop-blur-xl">
               <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-white text-brand-800 shadow-lg">
                 <ShieldCheck className="size-7" strokeWidth={1.6} aria-hidden />
@@ -100,7 +115,7 @@ export default async function HomePage() {
                 />
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 

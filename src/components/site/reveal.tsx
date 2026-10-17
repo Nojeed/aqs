@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { inView, useAnimate } from "motion/react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 /** Fades content up as it scrolls into view. Content stays visible without JS. */
 export function Reveal({
@@ -15,34 +16,28 @@ export function Reveal({
   as?: "div" | "li" | "section" | "article";
 }) {
   const ref = useRef<HTMLElement>(null);
-  const [state, setState] = useState<"idle" | "hidden" | "shown">("idle");
+  const [, animate] = useAnimate(); // scoped animate: follows MotionConfig's reduced-motion setting
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || !("IntersectionObserver" in window)) return;
-    if (el.getBoundingClientRect().top < window.innerHeight) return; // already on screen
-    setState("hidden");
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setState("shown");
-          io.disconnect();
-        }
+    if (!el || el.getBoundingClientRect().top < window.innerHeight) return; // already on screen
+    el.style.opacity = "0";
+    const stop = inView(
+      el,
+      () => {
+        animate(el, { opacity: [0, 1], y: [24, 0] }, { duration: 0.7, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] });
       },
-      { rootMargin: "0px 0px -10% 0px" },
+      { margin: "0px 0px -10% 0px" },
     );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+    // Next hides visited pages instead of unmounting them; leave nothing invisible behind.
+    return () => {
+      stop();
+      el.style.opacity = el.style.transform = "";
+    };
+  }, [animate, delay]);
 
   return (
-    <Tag
-      ref={ref as never}
-      style={{ transitionDelay: state === "shown" ? `${delay}ms` : undefined }}
-      className={`transition duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-        state === "hidden" ? "translate-y-6 opacity-0" : "translate-y-0 opacity-100"
-      } ${className}`}
-    >
+    <Tag ref={ref as never} className={className}>
       {children}
     </Tag>
   );

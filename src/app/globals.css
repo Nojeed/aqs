@@ -28,28 +28,6 @@
   --color-accent-300: #8fd3ff;
   --color-accent-400: #56b8f5;
   --color-accent-500: #2a9be0;
-
-  --animate-fade-up: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-slow-zoom: slow-zoom 18s ease-out both;
-
-  @keyframes fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(18px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  @keyframes slow-zoom {
-    from {
-      transform: scale(1.08);
-    }
-    to {
-      transform: scale(1);
-    }
-  }
 }
 
 @layer base {

@@ -11,8 +11,9 @@ import {
   requireAdmin,
   setSessionCookie,
 } from "@/lib/auth";
+import { CERTIFICATES_FILE, nextCertificateId, readCertificates, type Certificate } from "@/lib/certificates";
 import { CONTENT_TAG, readCollection } from "@/lib/content";
-import { collections, isCollection, sanitizeObject, siteFields, slugify } from "@/lib/schema";
+import { certificateFields, collections, isCollection, sanitizeObject, siteFields, slugify } from "@/lib/schema";
 import { writeJson } from "@/lib/storage";
 
 export type ActionResult = { ok: true; id?: string; message?: string } | { ok: false; error: string };
@@ -102,6 +103,51 @@ export async function deleteItem(collection: string, id: string): Promise<Action
   await writeJson(config.file, next);
   updateTag(CONTENT_TAG);
   return { ok: true, message: "Deleted." };
+}
+
+/* ------------------------------------------------------- certificates */
+
+export async function saveCertificate(id: string | null, data: unknown): Promise<ActionResult> {
+  await requireAdmin();
+  let list: Certificate[];
+  try {
+    list = await readCertificates();
+  } catch (error) {
+    return { ok: false, error: `certificates.json could not be read: ${(error as Error).message}` };
+  }
+  const clean = sanitizeObject(certificateFields, data);
+  if (!String(clean.name).trim()) return { ok: false, error: "Please enter the trainee's name." };
+
+  const index = id ? list.findIndex((c) => c.id === id) : -1;
+  if (id && index === -1) return { ok: false, error: "This certificate no longer exists. It may have been deleted." };
+  const certId = id ?? nextCertificateId(list, String(clean.issueDate));
+  // Keep any extra fields from an uploaded file; drop empty ones so the file stays tidy.
+  const record: Record<string, unknown> = { id: certId, ...(id ? list[index] : {}), ...clean };
+  for (const [key, value] of Object.entries(record)) if (value === "" || value === 0) delete record[key];
+
+  if (index === -1) list.push(record as Certificate);
+  else list[index] = record as Certificate;
+  await writeJson(CERTIFICATES_FILE, list);
+  return { ok: true, id: certId, message: id ? "Saved." : `Created certificate ${certId}.` };
+}
+
+export async function deleteCertificate(id: string): Promise<ActionResult> {
+  await requireAdmin();
+  const list = await readCertificates();
+  const next = list.filter((c) => c.id !== id);
+  if (next.length === list.length) return { ok: false, error: "Certificate not found." };
+  await writeJson(CERTIFICATES_FILE, next);
+  return { ok: true, message: "Deleted." };
+}
+
+export async function toggleCertificateRevoked(id: string): Promise<ActionResult> {
+  await requireAdmin();
+  const list = await readCertificates();
+  const cert = list.find((c) => c.id === id);
+  if (!cert) return { ok: false, error: "Certificate not found." };
+  cert.status = cert.status === "revoked" ? "valid" : "revoked";
+  await writeJson(CERTIFICATES_FILE, list);
+  return { ok: true };
 }
 
 export async function togglePublished(collection: string, id: string): Promise<ActionResult> {

@@ -5,6 +5,7 @@ import "../globals.css";
 import { jakarta, plexArabic } from "../fonts";
 import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
+import { MotionProvider } from "@/components/site/motion-provider";
 import { getSite, getYear } from "@/lib/content";
 import { dir, getDictionary, isLocale, locales, t } from "@/lib/i18n";
 
@@ -66,7 +67,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[lang]">) {
           closeLabel={d.common.close}
         />
         <main id="main" className="flex-1">
-          {children}
+          <MotionProvider>{children}</MotionProvider>
         </main>
         <Footer locale={locale} site={site} year={year} />
       </body>

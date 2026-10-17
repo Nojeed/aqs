@@ -278,6 +278,32 @@ export const postFields: Fields = {
   ...publishFields,
 };
 
+/** One record in certificates.json. The number is generated on create and never edited. */
+export const certificateFields: Fields = {
+  status: {
+    kind: "select",
+    label: "Status",
+    help: "Revoked certificates show as not valid on the verification page.",
+    options: [
+      { value: "valid", label: "Valid" },
+      { value: "revoked", label: "Revoked" },
+    ],
+  },
+  name: { kind: "text", label: "Trainee name (English)" },
+  nameAr: { kind: "text", label: "Trainee name (Arabic)" },
+  course: { kind: "text", label: "Course (English)" },
+  courseAr: { kind: "text", label: "Course (Arabic)" },
+  issueDate: { kind: "date", label: "Issue date" },
+  expiryDate: {
+    kind: "date",
+    label: "Expiry date",
+    help: "Leave empty if it never expires. After this date it shows as expired.",
+  },
+  hours: { kind: "number", label: "Training hours" },
+  grade: { kind: "text", label: "Grade (English)" },
+  gradeAr: { kind: "text", label: "Grade (Arabic)" },
+};
+
 export const collections = {
   services: { label: "Services", singular: "service", file: "services.json", fields: serviceFields },
   courses: { label: "Courses", singular: "course", file: "courses.json", fields: courseFields },

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Form from "next/form";
 import { promises as fs } from "node:fs";
-import { Download, ExternalLink, Search } from "lucide-react";
+import Link from "next/link";
+import { Download, ExternalLink, Pencil, Plus, Search } from "lucide-react";
 import { CertificateUpload } from "@/components/admin/certificate-upload";
+import { RevokeToggle } from "@/components/admin/revoke-toggle";
 import { requireAdmin } from "@/lib/auth";
 import {
   CERTIFICATES_FILE,
@@ -69,7 +71,7 @@ export default async function CertificatesPage({ searchParams }: PageProps<"/adm
       <h1 className="font-display text-2xl font-bold">Certificates</h1>
       <p className="mt-1 max-w-2xl text-slate-500">
         The verification page reads <code className="rounded bg-slate-100 px-1.5 py-0.5 text-sm">certificates.json</code> on
-        every lookup. Edit the file on the server directly or upload a new version here — changes take effect immediately.
+        every lookup. Add or edit certificates one at a time here, or upload a whole new file. Changes take effect immediately.
       </p>
 
       {error && (
@@ -85,6 +87,9 @@ export default async function CertificatesPage({ searchParams }: PageProps<"/adm
       </div>
 
       <div className="mt-6 flex flex-wrap items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5">
+        <Link href="/admin/certificates/new" className="btn-primary rounded-lg px-4 py-2">
+          <Plus className="size-4" aria-hidden /> New certificate
+        </Link>
         <CertificateUpload />
         {/* A plain link so the browser downloads the file instead of client-side navigating. */}
         <a href="/api/admin/certificates" download className="admin-btn py-2">
@@ -135,10 +140,16 @@ export default async function CertificatesPage({ searchParams }: PageProps<"/adm
                     <td className="px-5 py-3">
                       <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${badge[status]}`}>{status}</span>
                     </td>
-                    <td className="px-5 py-3 text-end">
-                      <a href={`/en/verify?id=${encodeURIComponent(c.id)}`} target="_blank" className="text-slate-400 hover:text-brand-700" title="Open public page">
-                        <ExternalLink className="size-4" aria-label="Open public verification page" />
-                      </a>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link href={`/admin/certificates/${encodeURIComponent(c.id)}`} className="admin-btn">
+                          <Pencil className="size-4" aria-hidden /> Edit
+                        </Link>
+                        <RevokeToggle id={c.id} revoked={status === "revoked"} />
+                        <a href={`/en/verify?id=${encodeURIComponent(c.id)}`} target="_blank" className="text-slate-400 hover:text-brand-700" title="Open public page">
+                          <ExternalLink className="size-4" aria-label="Open public verification page" />
+                        </a>
+                      </div>
                     </td>
                   </tr>
                 );

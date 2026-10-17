@@ -45,6 +45,19 @@ export function parseCertificates(raw: unknown): Certificate[] {
   });
 }
 
+export async function readCertificates() {
+  return parseCertificates(await readJson<unknown>(CERTIFICATES_FILE));
+}
+
+/** Next number in the AQS-<year>-0001 series, using the issue date's year. */
+export function nextCertificateId(list: Certificate[], issueDate: string) {
+  const year = /^\d{4}-/.test(issueDate) ? issueDate.slice(0, 4) : String(new Date().getFullYear());
+  const prefix = `AQS-${year}-`;
+  const used = list.map((c) => normalizeId(c.id)).filter((id) => id.startsWith(prefix));
+  const max = used.reduce((m, id) => Math.max(m, Number(id.slice(prefix.length)) || 0), 0);
+  return `${prefix}${String(max + 1).padStart(4, "0")}`;
+}
+
 // Parsed index cached per file modification time, so manual edits are picked up immediately.
 let cache: { mtimeMs: number; index: Map<string, Certificate>; count: number } | null = null;
 
@@ -57,7 +70,7 @@ async function loadIndex() {
     // readJson below creates the file from the seed.
   }
   if (cache && mtimeMs && cache.mtimeMs === mtimeMs) return cache;
-  const list = parseCertificates(await readJson<unknown>(CERTIFICATES_FILE));
+  const list = await readCertificates();
   const index = new Map(list.map((c) => [normalizeId(c.id), c]));
   cache = { mtimeMs, index, count: list.length };
   return cache;
