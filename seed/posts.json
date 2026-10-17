@@ -1,0 +1,74 @@
+[
+  {
+    "id": "post-haccp",
+    "slug": "haccp-seven-principles-explained",
+    "title": {
+      "ar": "ما هو نظام HACCP؟ المبادئ السبعة بشكل مبسّط",
+      "en": "HACCP explained: the seven principles in plain language"
+    },
+    "excerpt": {
+      "ar": "دليل مبسّط لفهم نظام تحليل المخاطر ونقاط التحكم الحرجة ولماذا يُعدّ حجر الأساس لأي نظام لسلامة الغذاء.",
+      "en": "A simple guide to Hazard Analysis and Critical Control Points, and why it is the cornerstone of every food safety system."
+    },
+    "cover": "/images/food-lab-produce.jpg",
+    "category": {
+      "ar": "HACCP",
+      "en": "HACCP"
+    },
+    "author": "AQS Team",
+    "date": "2026-09-20",
+    "body": {
+      "ar": "نظام **HACCP** (تحليل المخاطر ونقاط التحكم الحرجة) هو منهج وقائي يهدف إلى منع المخاطر قبل حدوثها بدلًا من اكتشافها في المنتج النهائي.\n\n## المبادئ السبعة\n1. **إجراء تحليل المخاطر**: تحديد المخاطر البيولوجية والكيميائية والفيزيائية في كل خطوة.\n2. **تحديد نقاط التحكم الحرجة (CCPs)**: الخطوات التي يمكن عندها التحكم في الخطر.\n3. **وضع الحدود الحرجة**: قيم قابلة للقياس مثل درجة الحرارة والزمن.\n4. **إنشاء نظام مراقبة**: من يراقب؟ ماذا؟ متى؟ وكيف؟\n5. **الإجراءات التصحيحية**: ماذا نفعل عند تجاوز الحد الحرج؟\n6. **إجراءات التحقق**: التأكد من أن النظام يعمل كما خُطط له.\n7. **التوثيق وحفظ السجلات**: الدليل على أن النظام مطبّق فعلًا.\n\n## نصيحة عملية\nلا تبدأ بالنماذج والأوراق. ابدأ بفريق يفهم العملية جيدًا، وبمخطط تدفق تم التحقق منه على أرض الواقع.",
+      "en": "**HACCP** (Hazard Analysis and Critical Control Points) is a preventive approach: it aims to stop hazards before they happen rather than catching them in the finished product.\n\n## The seven principles\n1. **Conduct a hazard analysis**: identify biological, chemical and physical hazards at every step.\n2. **Determine the critical control points (CCPs)**: the steps where a hazard can be controlled.\n3. **Establish critical limits**: measurable values such as temperature and time.\n4. **Establish monitoring**: who monitors what, when, and how?\n5. **Corrective actions**: what do we do when a limit is exceeded?\n6. **Verification**: confirm that the system works as planned.\n7. **Documentation and records**: the evidence that the system is really in place.\n\n## Practical tip\nDon't start with forms and paperwork. Start with a team that knows the process well, and a flow diagram verified on the floor."
+    },
+    "published": true
+  },
+  {
+    "id": "post-culture",
+    "slug": "why-food-safety-culture-matters",
+    "title": {
+      "ar": "لماذا ثقافة سلامة الغذاء أهم من الأوراق؟",
+      "en": "Why food safety culture matters more than paperwork"
+    },
+    "excerpt": {
+      "ar": "أفضل الأنظمة الموثّقة قد تفشل إذا لم يؤمن بها العاملون. كيف تبني ثقافة حقيقية لسلامة الغذاء؟",
+      "en": "The best-documented system can still fail if people don't believe in it. How do you build a real food safety culture?"
+    },
+    "cover": "/images/training-room.jpg",
+    "category": {
+      "ar": "ثقافة سلامة الغذاء",
+      "en": "Culture"
+    },
+    "author": "AQS Team",
+    "date": "2026-08-28",
+    "body": {
+      "ar": "تُظهر التجارب أن كثيرًا من حوادث سلامة الغذاء لم تحدث بسبب غياب الإجراءات، بل بسبب عدم الالتزام بها.\n\n## علامات الثقافة القوية\n- الإدارة تتحدث عن سلامة الغذاء في كل اجتماع، وليس فقط قبل التدقيق\n- العاملون يبلّغون عن المشكلات دون خوف\n- التدريب مستمر ومرتبط بالواقع اليومي\n\n## من أين تبدأ؟\nابدأ بقياس الوضع الحالي من خلال استبيانات ومقابلات وملاحظات ميدانية، ثم ضع خطة صغيرة وواضحة وقابلة للقياس.",
+      "en": "Experience shows that many food safety incidents don't happen because procedures are missing, but because people don't follow them.\n\n## Signs of a strong culture\n- Management talks about food safety in every meeting, not only before audits\n- Staff report problems without fear\n- Training is continuous and connected to daily reality\n\n## Where to start\nMeasure where you are today with surveys, interviews and floor observations, then set a small, clear and measurable plan."
+    },
+    "published": true
+  },
+  {
+    "id": "post-audit",
+    "slug": "tips-for-effective-internal-audits",
+    "title": {
+      "ar": "7 نصائح لتدقيق داخلي أكثر فعالية",
+      "en": "7 tips for more effective internal audits"
+    },
+    "excerpt": {
+      "ar": "حوّل التدقيق الداخلي من مهمة روتينية إلى أداة حقيقية للتحسين باتباع هذه النصائح العملية.",
+      "en": "Turn internal audits from a routine task into a real improvement tool with these practical tips."
+    },
+    "cover": "/images/audit-checklist.jpg",
+    "category": {
+      "ar": "التدقيق",
+      "en": "Auditing"
+    },
+    "author": "AQS Team",
+    "date": "2026-07-15",
+    "body": {
+      "ar": "1. **خطط بناءً على المخاطر**: ركّز على العمليات الأعلى خطورة والأكثر تغيرًا.\n2. **اذهب إلى أرض الواقع**: الأدلة الحقيقية في خط الإنتاج وليس في المكتب.\n3. **اسأل أسئلة مفتوحة**: \"كيف تتأكد من…؟\" أفضل من \"هل تقوم بـ…؟\".\n4. **تتبّع المنتج**: اختر دفعة واحدة وتتبّعها من الاستلام حتى الشحن.\n5. **اكتب حالات عدم مطابقة واضحة**: المتطلب، الدليل، والفجوة.\n6. **ناقش النتائج فورًا**: الاجتماع الختامي فرصة للاتفاق لا للجدال.\n7. **تابع الإغلاق**: التدقيق لا ينتهي إلا بعد التحقق من فعالية الإجراءات التصحيحية.",
+      "en": "1. **Plan by risk**: focus on the highest-risk and most frequently changing processes.\n2. **Go to the floor**: the real evidence is on the production line, not in the office.\n3. **Ask open questions**: \"How do you make sure…?\" beats \"Do you…?\".\n4. **Trace a product**: pick one batch and follow it from receiving to dispatch.\n5. **Write clear nonconformities**: requirement, evidence and gap.\n6. **Discuss findings straight away**: the closing meeting is for agreement, not argument.\n7. **Follow up**: an audit isn't finished until corrective actions are verified as effective."
+    },
+    "published": true
+  }
+]

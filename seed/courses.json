@@ -1,0 +1,310 @@
+[
+  {
+    "id": "crs-haccp3",
+    "slug": "haccp-level-3",
+    "title": {
+      "ar": "HACCP – المستوى الثالث",
+      "en": "HACCP Level 3"
+    },
+    "summary": {
+      "ar": "دورة متقدمة لفرق سلامة الغذاء تشرح المبادئ السبعة لنظام HACCP وكيفية تطبيقها عمليًا داخل المنشأة.",
+      "en": "For food safety team members: the seven HACCP principles and how to apply them in practice."
+    },
+    "image": "/images/gloves-production.jpg",
+    "category": {
+      "ar": "HACCP",
+      "en": "HACCP"
+    },
+    "level": "intermediate",
+    "format": "inPerson",
+    "duration": {
+      "ar": "24 ساعة تدريبية",
+      "en": "24 training hours"
+    },
+    "price": "",
+    "startDate": "2026-11-15",
+    "outcomes": [
+      {
+        "ar": "تحليل المخاطر البيولوجية والكيميائية والفيزيائية والمسببة للحساسية",
+        "en": "Analyse biological, chemical, physical and allergen hazards"
+      },
+      {
+        "ar": "تحديد نقاط التحكم الحرجة وحدودها",
+        "en": "Determine CCPs and critical limits"
+      },
+      {
+        "ar": "إعداد إجراءات المراقبة والتصحيح والتحقق",
+        "en": "Set up monitoring, corrective action and verification"
+      },
+      {
+        "ar": "مراجعة خطة HACCP وتحديثها",
+        "en": "Review and update a HACCP plan"
+      }
+    ],
+    "audience": {
+      "ar": "أعضاء فرق سلامة الغذاء، المشرفون، مسؤولو الجودة في مصانع الأغذية والمطابخ المركزية.",
+      "en": "Food safety team members, supervisors and quality officers in food plants and central kitchens."
+    },
+    "body": {
+      "ar": "تقدّم هذه الدورة فهمًا عمليًا لنظام تحليل المخاطر ونقاط التحكم الحرجة (HACCP) وفق مبادئ هيئة الدستور الغذائي.\n\n## محاور الدورة\n- البرامج الأولية ودورها في دعم نظام HACCP\n- الخطوات التمهيدية الخمس\n- المبادئ السبعة بالتفصيل مع أمثلة تطبيقية\n- ورشة عمل لبناء خطة HACCP كاملة\n\n## التقييم والشهادة\nيحصل المتدرب على شهادة حضور واجتياز بعد اجتياز الاختبار النهائي، ويمكن التحقق منها عبر صفحة **التحقق من الشهادات**.",
+      "en": "A practical deep-dive into Hazard Analysis and Critical Control Points (HACCP) based on Codex Alimentarius principles.\n\n## Course outline\n- Prerequisite programs and how they support HACCP\n- The five preliminary steps\n- The seven principles in detail, with worked examples\n- Workshop: building a complete HACCP plan\n\n## Assessment & certificate\nParticipants who pass the final assessment receive a certificate that can be checked on our **certificate verification** page."
+    },
+    "featured": true,
+    "order": 1,
+    "published": true
+  },
+  {
+    "id": "crs-iso-la",
+    "slug": "iso-22000-lead-auditor",
+    "title": {
+      "ar": "مدقق رئيسي ISO 22000:2018",
+      "en": "ISO 22000:2018 Lead Auditor"
+    },
+    "summary": {
+      "ar": "تعلّم تخطيط وتنفيذ وقيادة عمليات تدقيق أنظمة إدارة سلامة الغذاء وفق ISO 22000 و ISO 19011.",
+      "en": "Learn to plan, conduct and lead food safety management system audits against ISO 22000 and ISO 19011."
+    },
+    "image": "/images/audit-clipboard.jpg",
+    "category": {
+      "ar": "ISO 22000",
+      "en": "ISO 22000"
+    },
+    "level": "advanced",
+    "format": "hybrid",
+    "duration": {
+      "ar": "40 ساعة / 5 أيام",
+      "en": "40 hours / 5 days"
+    },
+    "price": "",
+    "startDate": "2026-12-06",
+    "outcomes": [
+      {
+        "ar": "فهم متطلبات ISO 22000:2018 بندًا بندًا",
+        "en": "Understand ISO 22000:2018 clause by clause"
+      },
+      {
+        "ar": "تخطيط برنامج التدقيق وإعداد قوائم الفحص",
+        "en": "Plan an audit program and prepare checklists"
+      },
+      {
+        "ar": "جمع الأدلة وكتابة حالات عدم المطابقة",
+        "en": "Gather evidence and write nonconformities"
+      },
+      {
+        "ar": "قيادة فريق التدقيق وإعداد التقرير النهائي",
+        "en": "Lead an audit team and write the final report"
+      }
+    ],
+    "audience": {
+      "ar": "مسؤولو سلامة الغذاء والجودة، المدققون الداخليون، والاستشاريون الراغبون في التطور المهني.",
+      "en": "Food safety and quality managers, internal auditors and consultants looking to advance their careers."
+    },
+    "body": {
+      "ar": "دورة مكثفة تؤهلك لقيادة عمليات التدقيق على أنظمة إدارة سلامة الغذاء. تجمع الدورة بين الشرح النظري ولعب الأدوار ومحاكاة عمليات تدقيق حقيقية.",
+      "en": "An intensive course that prepares you to lead food safety management system audits, combining theory, role-play and realistic audit simulations."
+    },
+    "featured": true,
+    "order": 2,
+    "published": true
+  },
+  {
+    "id": "crs-basics",
+    "slug": "food-safety-hygiene-fundamentals",
+    "title": {
+      "ar": "أساسيات سلامة الغذاء والنظافة",
+      "en": "Food Safety & Hygiene Fundamentals"
+    },
+    "summary": {
+      "ar": "دورة تأسيسية لجميع العاملين في تداول الأغذية: النظافة الشخصية، التلوث، التحكم بالحرارة، والتخزين الآمن.",
+      "en": "A foundation course for every food handler: personal hygiene, contamination, temperature control and safe storage."
+    },
+    "image": "/images/kitchen-hygiene.jpg",
+    "category": {
+      "ar": "النظافة الصحية",
+      "en": "Hygiene"
+    },
+    "level": "beginner",
+    "format": "online",
+    "duration": {
+      "ar": "8 ساعات",
+      "en": "8 hours"
+    },
+    "price": "",
+    "startDate": "",
+    "outcomes": [
+      {
+        "ar": "التعرف على أنواع المخاطر الغذائية",
+        "en": "Recognise the types of food hazards"
+      },
+      {
+        "ar": "تطبيق ممارسات النظافة الشخصية الصحيحة",
+        "en": "Apply correct personal hygiene practices"
+      },
+      {
+        "ar": "التحكم في درجات الحرارة ومنع التلوث الخلطي",
+        "en": "Control temperatures and prevent cross-contamination"
+      }
+    ],
+    "audience": {
+      "ar": "العاملون الجدد في المطاعم والمصانع والفنادق والمطابخ المركزية.",
+      "en": "New staff in restaurants, plants, hotels and central kitchens."
+    },
+    "body": {
+      "ar": "دورة قصيرة وممتعة تمنح المشاركين الأساسيات التي يحتاجها كل من يتعامل مع الغذاء يوميًا.",
+      "en": "A short, engaging course giving participants the essentials every food handler needs every day."
+    },
+    "featured": true,
+    "order": 3,
+    "published": true
+  },
+  {
+    "id": "crs-fssc-ia",
+    "slug": "fssc-22000-internal-auditor",
+    "title": {
+      "ar": "مدقق داخلي FSSC 22000",
+      "en": "FSSC 22000 Internal Auditor"
+    },
+    "summary": {
+      "ar": "اكتسب المهارات اللازمة لتنفيذ التدقيق الداخلي على نظام FSSC 22000 بما في ذلك المتطلبات الإضافية للمخطط.",
+      "en": "Gain the skills to run internal audits on FSSC 22000, including the scheme's additional requirements."
+    },
+    "image": "/images/production-line.jpg",
+    "category": {
+      "ar": "FSSC 22000",
+      "en": "FSSC 22000"
+    },
+    "level": "intermediate",
+    "format": "inPerson",
+    "duration": {
+      "ar": "16 ساعة / يومان",
+      "en": "16 hours / 2 days"
+    },
+    "price": "",
+    "startDate": "2026-11-29",
+    "outcomes": [
+      {
+        "ar": "فهم بنية مخطط FSSC 22000",
+        "en": "Understand the FSSC 22000 scheme structure"
+      },
+      {
+        "ar": "تخطيط وتنفيذ التدقيق الداخلي",
+        "en": "Plan and run internal audits"
+      },
+      {
+        "ar": "متابعة الإجراءات التصحيحية وإغلاقها",
+        "en": "Follow up and close corrective actions"
+      }
+    ],
+    "audience": {
+      "ar": "أعضاء فرق سلامة الغذاء والمدققون الداخليون في المنشآت الحاصلة على FSSC 22000 أو الساعية إليها.",
+      "en": "Food safety team members and internal auditors in FSSC 22000 certified (or certifying) sites."
+    },
+    "body": {
+      "ar": "تساعدك هذه الدورة على بناء برنامج تدقيق داخلي فعّال يدعم الحفاظ على الشهادة ويقود التحسين المستمر.",
+      "en": "Build an effective internal audit program that keeps your certification healthy and drives continuous improvement."
+    },
+    "featured": true,
+    "order": 4,
+    "published": true
+  },
+  {
+    "id": "crs-culture",
+    "slug": "food-safety-culture-leadership",
+    "title": {
+      "ar": "ثقافة سلامة الغذاء والقيادة",
+      "en": "Food Safety Culture & Leadership"
+    },
+    "summary": {
+      "ar": "كيف تبني ثقافة يلتزم فيها الجميع بسلامة الغذاء حتى عندما لا يراقبهم أحد؟",
+      "en": "How do you build a culture where everyone does the right thing for food safety, even when no one is watching?"
+    },
+    "image": "/images/training-workshop.jpg",
+    "category": {
+      "ar": "القيادة",
+      "en": "Leadership"
+    },
+    "level": "intermediate",
+    "format": "online",
+    "duration": {
+      "ar": "12 ساعة",
+      "en": "12 hours"
+    },
+    "price": "",
+    "startDate": "",
+    "outcomes": [
+      {
+        "ar": "قياس ثقافة سلامة الغذاء في منشأتك",
+        "en": "Measure food safety culture in your site"
+      },
+      {
+        "ar": "دور القيادة في تعزيز السلوكيات الآمنة",
+        "en": "The role of leadership in driving safe behaviour"
+      },
+      {
+        "ar": "بناء خطة عملية لتحسين الثقافة",
+        "en": "Build a practical culture improvement plan"
+      }
+    ],
+    "audience": {
+      "ar": "المديرون والمشرفون وقادة فرق الجودة.",
+      "en": "Managers, supervisors and quality leaders."
+    },
+    "body": {
+      "ar": "أصبحت ثقافة سلامة الغذاء متطلبًا أساسيًا في المعايير الدولية الحديثة. تعرّف على الأدوات العملية لقياسها وتطويرها.",
+      "en": "Food safety culture is now a core requirement of modern international standards. Learn practical tools to measure and strengthen it."
+    },
+    "featured": false,
+    "order": 5,
+    "published": true
+  },
+  {
+    "id": "crs-prp",
+    "slug": "prerequisite-programs-gmp",
+    "title": {
+      "ar": "البرامج الأولية والممارسات التصنيعية الجيدة",
+      "en": "Prerequisite Programs (PRPs) & GMP"
+    },
+    "summary": {
+      "ar": "تعرّف على البرامج الأولية وفق ISO/TS 22002-1 وكيفية تطبيقها والتحقق من فعاليتها.",
+      "en": "Learn the prerequisite programs in ISO/TS 22002-1 and how to implement and verify them."
+    },
+    "image": "/images/dairy-processing.jpg",
+    "category": {
+      "ar": "GMP",
+      "en": "GMP"
+    },
+    "level": "beginner",
+    "format": "inPerson",
+    "duration": {
+      "ar": "12 ساعة",
+      "en": "12 hours"
+    },
+    "price": "",
+    "startDate": "",
+    "outcomes": [
+      {
+        "ar": "فهم متطلبات تصميم المباني والمعدات",
+        "en": "Understand building and equipment design requirements"
+      },
+      {
+        "ar": "برامج التنظيف ومكافحة الآفات وإدارة الموردين",
+        "en": "Cleaning, pest control and supplier management programs"
+      },
+      {
+        "ar": "التحقق من فعالية البرامج الأولية",
+        "en": "Verify the effectiveness of PRPs"
+      }
+    ],
+    "audience": {
+      "ar": "فرق الإنتاج والصيانة والجودة.",
+      "en": "Production, maintenance and quality teams."
+    },
+    "body": {
+      "ar": "البرامج الأولية هي الأرضية التي يُبنى عليها أي نظام لسلامة الغذاء. دورة عملية مليئة بالأمثلة من خطوط الإنتاج.",
+      "en": "PRPs are the ground any food safety system is built on. A practical course full of examples from real production lines."
+    },
+    "featured": false,
+    "order": 6,
+    "published": true
+  }
+]

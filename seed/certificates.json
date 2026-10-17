@@ -1,0 +1,50 @@
+[
+  {
+    "id": "AQS-2026-0001",
+    "name": "Ahmed Mohamed Ali",
+    "nameAr": "أحمد محمد علي",
+    "course": "HACCP Level 3",
+    "courseAr": "HACCP – المستوى الثالث",
+    "issueDate": "2026-03-15",
+    "expiryDate": "2029-03-15",
+    "hours": 24,
+    "grade": "Excellent",
+    "gradeAr": "ممتاز",
+    "status": "valid"
+  },
+  {
+    "id": "AQS-2026-0002",
+    "name": "Sara Ibrahim Hassan",
+    "nameAr": "سارة إبراهيم حسن",
+    "course": "ISO 22000:2018 Lead Auditor",
+    "courseAr": "مدقق رئيسي ISO 22000:2018",
+    "issueDate": "2026-05-02",
+    "expiryDate": "2029-05-02",
+    "hours": 40,
+    "grade": "Very good",
+    "gradeAr": "جيد جدًا",
+    "status": "valid"
+  },
+  {
+    "id": "AQS-2022-0147",
+    "name": "Omar Khaled Youssef",
+    "nameAr": "عمر خالد يوسف",
+    "course": "Food Safety & Hygiene Fundamentals",
+    "courseAr": "أساسيات سلامة الغذاء والنظافة",
+    "issueDate": "2022-06-10",
+    "expiryDate": "2024-06-10",
+    "hours": 8,
+    "status": "valid"
+  },
+  {
+    "id": "AQS-2025-0090",
+    "name": "Mona Adel Saeed",
+    "nameAr": "منى عادل سعيد",
+    "course": "FSSC 22000 Internal Auditor",
+    "courseAr": "مدقق داخلي FSSC 22000",
+    "issueDate": "2025-02-20",
+    "expiryDate": "2028-02-20",
+    "hours": 16,
+    "status": "revoked"
+  }
+]

@@ -1,0 +1,135 @@
+{
+  "brand": {
+    "name": "AQS",
+    "fullName": { "ar": "المهارات المتقدمة للجودة", "en": "Advanced Quality Skills" },
+    "tagline": { "ar": "جودة اليوم، تميّز دائمًا", "en": "Quality Today, Excellence Always" }
+  },
+  "hero": {
+    "badge": { "ar": "متخصصون في سلامة وجودة الغذاء", "en": "Food safety & quality specialists" },
+    "title": { "ar": "تدريب احترافي في سلامة الغذاء", "en": "Professional food safety training" },
+    "highlight": { "ar": "مبني على المعايير الدولية", "en": "built on international standards" },
+    "subtitle": {
+      "ar": "نطوّر ونؤهّل العاملين والمهتمين بقطاع الأغذية من خلال محتوى تدريبي احترافي وبرامج تطبيقية تساعد على بناء أنظمة فعّالة وتحقيق أعلى معايير الجودة وسلامة الغذاء.",
+      "en": "We develop and qualify food-sector professionals through expert-led content and hands-on programs that help build effective systems and reach the highest standards of quality and food safety."
+    },
+    "image": "/images/hero-food-plant.jpg",
+    "primaryCta": { "label": { "ar": "استكشف الدورات", "en": "Explore courses" }, "href": "/courses" },
+    "secondaryCta": { "label": { "ar": "تحقق من شهادة", "en": "Verify a certificate" }, "href": "/verify" },
+    "pillars": [
+      { "icon": "BadgeCheck", "label": { "ar": "أنظمة إدارة الجودة", "en": "Quality Management Systems" } },
+      { "icon": "GraduationCap", "label": { "ar": "التدريب والاستشارات", "en": "Training & Consultation" } },
+      { "icon": "ClipboardCheck", "label": { "ar": "التدقيق والامتثال", "en": "Auditing & Compliance" } }
+    ]
+  },
+  "stats": [
+    { "value": "2,500+", "label": { "ar": "متدرب ومتدربة", "en": "Professionals trained" } },
+    { "value": "120+", "label": { "ar": "منشأة غذائية", "en": "Food facilities served" } },
+    { "value": "35+", "label": { "ar": "برنامجًا تدريبيًا", "en": "Training programs" } },
+    { "value": "98%", "label": { "ar": "نسبة رضا المتدربين", "en": "Trainee satisfaction" } }
+  ],
+  "about": {
+    "eyebrow": { "ar": "من نحن", "en": "About AQS" },
+    "title": {
+      "ar": "نبني كفاءات تصنع الفرق في قطاع الأغذية",
+      "en": "Building the people who make food safe"
+    },
+    "body": {
+      "ar": "متخصصون في مجال سلامة وجودة الغذاء، نهدف إلى تطوير وتأهيل العاملين والمهتمين بقطاع الأغذية من خلال محتوى تدريبي احترافي وبرامج تطبيقية تساعد على بناء أنظمة فعّالة وتحقيق أعلى معايير الجودة وسلامة الغذاء، ونقدّم تدريبًا عمليًا مبنيًا على المعايير الدولية.",
+      "en": "We specialise in food safety and quality. Our goal is to develop and qualify everyone working in, or interested in, the food sector through professional training content and applied programs that help build effective systems and achieve the highest standards of quality and food safety. All of our training is practical and built on international standards."
+    },
+    "points": [
+      { "ar": "مدربون ممارسون بخبرة ميدانية في المصانع والمطابخ المركزية", "en": "Trainers who are active practitioners in plants and central kitchens" },
+      { "ar": "محتوى تطبيقي مبني على ISO 22000 و HACCP و FSSC 22000", "en": "Applied content built on ISO 22000, HACCP and FSSC 22000" },
+      { "ar": "شهادات موثّقة يمكن التحقق منها إلكترونيًا", "en": "Documented certificates that can be verified online" },
+      { "ar": "برامج مخصصة تناسب طبيعة منشأتك", "en": "Tailored programs designed around your facility" }
+    ],
+    "image": "/images/inspector-portrait.jpg",
+    "imageSecondary": "/images/lab-microscope.jpg",
+    "badgeValue": "10+",
+    "badgeLabel": { "ar": "سنوات من الخبرة", "en": "Years of experience" }
+  },
+  "sections": {
+    "servicesTitle": { "ar": "خدمات متكاملة لسلامة وجودة الغذاء", "en": "End-to-end food safety & quality services" },
+    "servicesSubtitle": {
+      "ar": "من التدريب إلى بناء الأنظمة والتدقيق، نرافقك في كل خطوة نحو منشأة أكثر أمانًا وامتثالًا.",
+      "en": "From training to system design and auditing, we support you at every step towards a safer, compliant operation."
+    },
+    "coursesTitle": { "ar": "دورات مختارة", "en": "Featured courses" },
+    "coursesSubtitle": {
+      "ar": "برامج تدريبية عملية تمنحك المعرفة والمهارة والشهادة.",
+      "en": "Practical programs that give you the knowledge, the skills and the certificate."
+    },
+    "whyTitle": { "ar": "لماذا AQS؟", "en": "Why AQS?" },
+    "whySubtitle": {
+      "ar": "نجمع بين الخبرة العملية والمعايير الدولية لنقدّم تدريبًا ينعكس مباشرة على أداء منشأتك.",
+      "en": "We combine field experience with international standards to deliver training that shows up in your facility's performance."
+    },
+    "standardsTitle": { "ar": "برامجنا متوافقة مع المعايير الدولية", "en": "Programs aligned with international standards" },
+    "blogTitle": { "ar": "من المدونة", "en": "From the blog" },
+    "blogSubtitle": {
+      "ar": "مقالات ونصائح عملية في سلامة وجودة الغذاء.",
+      "en": "Articles and practical tips on food safety and quality."
+    }
+  },
+  "why": [
+    {
+      "icon": "Factory",
+      "title": { "ar": "خبرة ميدانية حقيقية", "en": "Real field experience" },
+      "text": { "ar": "مدربونا عملوا داخل المصانع والمطابخ ويعرفون التحديات اليومية.", "en": "Our trainers have worked inside plants and kitchens and know the daily challenges." }
+    },
+    {
+      "icon": "Globe",
+      "title": { "ar": "معايير دولية", "en": "International standards" },
+      "text": { "ar": "محتوى محدّث ومتوافق مع أحدث إصدارات المعايير الدولية.", "en": "Up-to-date content aligned with the latest editions of international standards." }
+    },
+    {
+      "icon": "Target",
+      "title": { "ar": "تدريب تطبيقي", "en": "Hands-on learning" },
+      "text": { "ar": "دراسات حالة وتمارين عملية تُطبّق مباشرة في بيئة العمل.", "en": "Case studies and practical exercises you can apply directly at work." }
+    },
+    {
+      "icon": "BadgeCheck",
+      "title": { "ar": "شهادات موثوقة", "en": "Trusted certificates" },
+      "text": { "ar": "كل شهادة تحمل رقمًا فريدًا يمكن التحقق منه عبر موقعنا.", "en": "Every certificate carries a unique number that can be verified on our website." }
+    }
+  ],
+  "standards": ["ISO 22000", "HACCP", "FSSC 22000", "ISO 9001", "BRCGS", "GMP", "Codex Alimentarius", "ISO 19011"],
+  "verifyCta": {
+    "title": { "ar": "هل لديك شهادة صادرة عن AQS؟", "en": "Have an AQS certificate?" },
+    "text": {
+      "ar": "تحقق من صحة الشهادة وحالتها فورًا باستخدام رقم الشهادة.",
+      "en": "Confirm its authenticity and status instantly using the certificate number."
+    }
+  },
+  "contactCta": {
+    "title": { "ar": "جاهز لرفع مستوى سلامة الغذاء في منشأتك؟", "en": "Ready to raise the food safety bar in your facility?" },
+    "text": {
+      "ar": "تواصل معنا لتصميم برنامج تدريبي أو استشاري يناسب احتياجاتك.",
+      "en": "Talk to us about a training or consulting program designed around your needs."
+    },
+    "button": { "label": { "ar": "تواصل معنا", "en": "Contact us" }, "href": "/contact" }
+  },
+  "contact": {
+    "email": "info@example.com",
+    "phone": "+000 000 000 000",
+    "whatsapp": "",
+    "address": { "ar": "اكتب عنوان المقر هنا", "en": "Your office address here" },
+    "hours": { "ar": "الأحد – الخميس، 9 صباحًا – 5 مساءً", "en": "Sun – Thu, 9:00 AM – 5:00 PM" },
+    "mapUrl": ""
+  },
+  "social": {
+    "facebook": "",
+    "instagram": "",
+    "linkedin": "",
+    "youtube": "",
+    "x": "",
+    "tiktok": ""
+  },
+  "seo": {
+    "title": { "ar": "AQS | المهارات المتقدمة للجودة", "en": "AQS | Advanced Quality Skills" },
+    "description": {
+      "ar": "تدريب واستشارات احترافية في سلامة وجودة الغذاء مبنية على المعايير الدولية: HACCP و ISO 22000 و FSSC 22000.",
+      "en": "Professional food safety and quality training and consulting built on international standards: HACCP, ISO 22000 and FSSC 22000."
+    }
+  }
+}

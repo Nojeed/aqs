@@ -1,0 +1,16 @@
+import type { Metadata } from "next";
+import "../globals.css";
+import { jakarta, plexArabic } from "../fonts";
+
+export const metadata: Metadata = {
+  title: { default: "AQS Admin", template: "%s · AQS Admin" },
+  robots: { index: false, follow: false },
+};
+
+export default function AdminRootLayout({ children }: LayoutProps<"/admin">) {
+  return (
+    <html lang="en" dir="ltr" className={`${plexArabic.variable} ${jakarta.variable}`}>
+      <body className="min-h-dvh bg-slate-50 text-slate-700">{children}</body>
+    </html>
+  );
+}

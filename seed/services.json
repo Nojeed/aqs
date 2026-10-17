@@ -1,0 +1,230 @@
+[
+  {
+    "id": "svc-training",
+    "slug": "food-safety-training",
+    "icon": "GraduationCap",
+    "title": {
+      "ar": "التدريب على سلامة الغذاء",
+      "en": "Food Safety Training"
+    },
+    "summary": {
+      "ar": "برامج تدريبية عامة ومخصصة لجميع المستويات، من العاملين في خطوط الإنتاج إلى فرق الإدارة وسلامة الغذاء.",
+      "en": "Public and in-house programs for every level, from production-line staff to food safety teams and management."
+    },
+    "image": "/images/training-room.jpg",
+    "features": [
+      {
+        "ar": "دورات HACCP و ISO 22000 و FSSC 22000",
+        "en": "HACCP, ISO 22000 and FSSC 22000 courses"
+      },
+      {
+        "ar": "تدريب حضوري أو عن بُعد أو داخل المنشأة",
+        "en": "In person, online or on-site delivery"
+      },
+      {
+        "ar": "تقييم قبلي وبعدي لقياس أثر التدريب",
+        "en": "Pre- and post-assessment to measure impact"
+      },
+      {
+        "ar": "شهادات قابلة للتحقق إلكترونيًا",
+        "en": "Certificates verifiable online"
+      }
+    ],
+    "body": {
+      "ar": "نؤمن بأن سلامة الغذاء تبدأ من الإنسان. لذلك صمّمنا برامج تدريبية تجمع بين الفهم العميق للمعايير الدولية والتطبيق العملي داخل بيئة العمل.\n\n## لمن هذه الخدمة؟\n- العاملون في خطوط الإنتاج والتعبئة والتخزين\n- فرق سلامة الغذاء ومسؤولو الجودة\n- المشرفون ومديرو المصانع والمطابخ المركزية\n\n## كيف نعمل\n1. **تحليل الاحتياج التدريبي** لفهم طبيعة منشأتك ومستوى فريقك.\n2. **تصميم البرنامج** بمحتوى وأمثلة من نفس قطاعك.\n3. **التنفيذ** بأسلوب تفاعلي يعتمد على التمارين ودراسات الحالة.\n4. **قياس الأثر** من خلال اختبارات وتقارير واضحة للإدارة.",
+      "en": "We believe food safety starts with people. Our programs combine a solid understanding of international standards with practical application in your own work environment.\n\n## Who is it for?\n- Production, packing and warehouse staff\n- Food safety teams and quality officers\n- Supervisors and managers of plants and central kitchens\n\n## How we work\n1. **Training needs analysis** to understand your facility and your team.\n2. **Program design** using examples from your own sector.\n3. **Delivery** through interactive exercises and case studies.\n4. **Impact measurement** with assessments and clear reports for management."
+    },
+    "order": 1,
+    "published": true
+  },
+  {
+    "id": "svc-haccp",
+    "slug": "haccp-system-development",
+    "icon": "ShieldCheck",
+    "title": {
+      "ar": "بناء وتطبيق نظام HACCP",
+      "en": "HACCP System Development"
+    },
+    "summary": {
+      "ar": "نساعدك على بناء خطة HACCP متكاملة: من تشكيل الفريق وتحليل المخاطر إلى تحديد نقاط التحكم الحرجة والتحقق.",
+      "en": "We help you build a complete HACCP plan, from forming the team and analysing hazards to defining CCPs and verification."
+    },
+    "image": "/images/gloves-production.jpg",
+    "features": [
+      {
+        "ar": "تحليل المخاطر وتحديد نقاط التحكم الحرجة",
+        "en": "Hazard analysis and CCP determination"
+      },
+      {
+        "ar": "إعداد مخططات التدفق والتحقق منها ميدانيًا",
+        "en": "Process flow diagrams verified on the floor"
+      },
+      {
+        "ar": "إجراءات المراقبة والإجراءات التصحيحية",
+        "en": "Monitoring and corrective action procedures"
+      },
+      {
+        "ar": "تدريب فريق HACCP على التشغيل والمتابعة",
+        "en": "Training your HACCP team to run the system"
+      }
+    ],
+    "body": {
+      "ar": "نظام HACCP هو الأساس لأي نظام فعّال لسلامة الغذاء. نعمل معك خطوة بخطوة لبناء نظام **عملي ومناسب لحجم منشأتك** وليس مجرد ملفات ورقية.\n\n## مخرجات الخدمة\n- خطة HACCP موثّقة ومتوافقة مع مبادئ الدستور الغذائي (Codex)\n- سجلات مراقبة ونماذج جاهزة للاستخدام\n- فريق داخلي مدرّب قادر على إدارة النظام وتحديثه",
+      "en": "HACCP is the foundation of any effective food safety system. We work alongside you to build a system that is **practical and right-sized for your operation**, not just paperwork.\n\n## Deliverables\n- A documented HACCP plan aligned with Codex principles\n- Ready-to-use monitoring records and forms\n- A trained in-house team able to run and update the system"
+    },
+    "order": 2,
+    "published": true
+  },
+  {
+    "id": "svc-iso",
+    "slug": "iso-22000-fssc-consulting",
+    "icon": "Award",
+    "title": {
+      "ar": "استشارات ISO 22000 و FSSC 22000",
+      "en": "ISO 22000 & FSSC 22000 Consulting"
+    },
+    "summary": {
+      "ar": "تأهيل منشأتك للحصول على الشهادات الدولية بخطة واضحة وجدول زمني ومتابعة حتى تدقيق جهة المنح.",
+      "en": "Get your facility certification-ready with a clear plan, a timeline and support right up to the certification audit."
+    },
+    "image": "/images/production-line.jpg",
+    "features": [
+      {
+        "ar": "تقييم الفجوات مقابل متطلبات المعيار",
+        "en": "Gap assessment against the standard"
+      },
+      {
+        "ar": "توثيق نظام الإدارة والإجراءات",
+        "en": "Management system and procedure documentation"
+      },
+      {
+        "ar": "برامج المتطلبات الأولية (PRPs)",
+        "en": "Prerequisite programs (PRPs)"
+      },
+      {
+        "ar": "تدقيق ما قبل الاعتماد والدعم أثناء التدقيق",
+        "en": "Pre-certification audit and audit-day support"
+      }
+    ],
+    "body": {
+      "ar": "نرافقك في رحلة الحصول على شهادة **ISO 22000** أو **FSSC 22000** من البداية حتى النهاية، مع التركيز على بناء نظام يضيف قيمة حقيقية لعملياتك.\n\n## مراحل المشروع\n1. تقييم الفجوات وإعداد خطة العمل\n2. التوثيق والتطبيق\n3. التدريب والتوعية\n4. التدقيق الداخلي ومراجعة الإدارة\n5. الاستعداد لتدقيق جهة منح الشهادة",
+      "en": "We guide you through **ISO 22000** or **FSSC 22000** certification from start to finish, focusing on a system that adds real value to your operations.\n\n## Project stages\n1. Gap assessment and action plan\n2. Documentation and implementation\n3. Training and awareness\n4. Internal audit and management review\n5. Preparation for the certification body audit"
+    },
+    "order": 3,
+    "published": true
+  },
+  {
+    "id": "svc-audit",
+    "slug": "internal-audits",
+    "icon": "ClipboardCheck",
+    "title": {
+      "ar": "التدقيق الداخلي وتقييم الجاهزية",
+      "en": "Internal Audits & Readiness Assessments"
+    },
+    "summary": {
+      "ar": "تدقيق مستقل وموضوعي يكشف نقاط الضعف قبل أن يكتشفها العميل أو الجهة الرقابية.",
+      "en": "Independent, objective audits that uncover weaknesses before a customer or regulator does."
+    },
+    "image": "/images/audit-checklist.jpg",
+    "features": [
+      {
+        "ar": "تدقيق أنظمة سلامة الغذاء والجودة",
+        "en": "Food safety and quality system audits"
+      },
+      {
+        "ar": "تدقيق الموردين والطرف الثاني",
+        "en": "Supplier and second-party audits"
+      },
+      {
+        "ar": "تقييم الجاهزية للتفتيش الرقابي",
+        "en": "Regulatory inspection readiness"
+      },
+      {
+        "ar": "تقارير واضحة بخطة إجراءات تصحيحية",
+        "en": "Clear reports with a corrective action plan"
+      }
+    ],
+    "body": {
+      "ar": "التدقيق الجيد ليس بحثًا عن الأخطاء، بل فرصة للتحسين. ينفّذ مدققونا عمليات التدقيق وفق إرشادات **ISO 19011** ويقدّمون توصيات عملية قابلة للتنفيذ.",
+      "en": "A good audit isn't a hunt for mistakes, it's an opportunity to improve. Our auditors follow **ISO 19011** guidance and deliver practical, actionable recommendations."
+    },
+    "order": 4,
+    "published": true
+  },
+  {
+    "id": "svc-hygiene",
+    "slug": "hygiene-gmp-programs",
+    "icon": "Utensils",
+    "title": {
+      "ar": "برامج النظافة والممارسات التصنيعية الجيدة",
+      "en": "Hygiene & GMP Programs"
+    },
+    "summary": {
+      "ar": "تصميم برامج النظافة الشخصية والتنظيف والتطهير ومكافحة الآفات بما يتوافق مع متطلبات الجهات الرقابية.",
+      "en": "Design of personal hygiene, cleaning & sanitation and pest control programs that meet regulatory requirements."
+    },
+    "image": "/images/kitchen-hygiene.jpg",
+    "features": [
+      {
+        "ar": "برامج التنظيف والتطهير والتحقق منها",
+        "en": "Cleaning & sanitation programs and verification"
+      },
+      {
+        "ar": "النظافة الشخصية وصحة العاملين",
+        "en": "Personal hygiene and staff health"
+      },
+      {
+        "ar": "مكافحة الآفات وإدارة النفايات",
+        "en": "Pest control and waste management"
+      },
+      {
+        "ar": "المطابخ المركزية والمطاعم والفنادق",
+        "en": "Central kitchens, restaurants and hotels"
+      }
+    ],
+    "body": {
+      "ar": "الممارسات الصحية الجيدة هي خط الدفاع الأول. نساعدك على بناء برامج متطلبات أولية واضحة وسهلة التطبيق، مع تدريب الفرق على الالتزام اليومي بها.",
+      "en": "Good hygiene practices are the first line of defence. We help you build clear, easy-to-follow prerequisite programs and train your teams to apply them every day."
+    },
+    "order": 5,
+    "published": true
+  },
+  {
+    "id": "svc-qms",
+    "slug": "quality-management-systems",
+    "icon": "LineChart",
+    "title": {
+      "ar": "أنظمة إدارة الجودة",
+      "en": "Quality Management Systems"
+    },
+    "summary": {
+      "ar": "تطبيق ISO 9001 وأدوات التحسين المستمر لرفع الكفاءة وتقليل الهدر وتحسين رضا العملاء.",
+      "en": "ISO 9001 and continuous-improvement tools to raise efficiency, reduce waste and improve customer satisfaction."
+    },
+    "image": "/images/lab-testing.jpg",
+    "features": [
+      {
+        "ar": "تطبيق متطلبات ISO 9001",
+        "en": "ISO 9001 implementation"
+      },
+      {
+        "ar": "مؤشرات الأداء ولوحات المتابعة",
+        "en": "KPIs and performance dashboards"
+      },
+      {
+        "ar": "تحليل الأسباب الجذرية والإجراءات التصحيحية",
+        "en": "Root cause analysis and CAPA"
+      },
+      {
+        "ar": "إدارة الشكاوى والاسترجاع",
+        "en": "Complaint handling and recall management"
+      }
+    ],
+    "body": {
+      "ar": "الجودة ليست قسمًا، بل طريقة عمل. نساعد منشأتك على بناء نظام إدارة جودة يحوّل البيانات إلى قرارات ويقود إلى تحسين مستمر.",
+      "en": "Quality isn't a department, it's a way of working. We help your organisation build a quality management system that turns data into decisions and drives continuous improvement."
+    },
+    "order": 6,
+    "published": true
+  }
+]
