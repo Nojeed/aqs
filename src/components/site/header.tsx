@@ -148,7 +148,7 @@ function LangLink({ href, label, solid }: { href: string; label: string; solid: 
   return (
     <Link
       href={href}
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold transition ${
+      className={`inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold transition ${
         solid ? "text-brand-900 hover:bg-brand-50" : "text-white hover:bg-white/10"
       }`}
     >

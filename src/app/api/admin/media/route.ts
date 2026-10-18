@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { adminGuard } from "@/lib/api-auth";
-import { UPLOADS_DIR } from "@/lib/storage";
+import { dataPath, UPLOADS_DIR } from "@/lib/storage";
 
 const IMAGE = /\.(jpe?g|png|webp|avif|gif)$/i;
 
@@ -27,4 +27,36 @@ export async function GET(request: Request) {
       ...stock.map((name) => ({ url: `/images/${name}`, name, source: "stock" })),
     ],
   });
+}
+
+// Content files that can reference an uploaded image.
+const CONTENT = { "site.json": "Site content", "services.json": "Services", "courses.json": "Courses", "posts.json": "Blog posts" };
+
+/**
+ * Delete an uploaded image. If any page still uses it, answers 409 with where it is used,
+ * unless `force=1` is passed (the admin confirmed). Stock images can't be deleted.
+ */
+export async function DELETE(request: Request) {
+  const denied = await adminGuard(request);
+  if (denied) return denied;
+  const url = new URL(request.url);
+  const name = url.searchParams.get("name") ?? "";
+  // Plain file names only: no folders, no "..".
+  if (!IMAGE.test(name) || name !== path.basename(name)) return Response.json({ error: "Invalid file name." }, { status: 400 });
+
+  const ref = `/uploads/${name}`;
+  const usedIn: string[] = [];
+  for (const [file, label] of Object.entries(CONTENT)) {
+    const text = await fs.readFile(dataPath(file), "utf8").catch(() => "");
+    if (text.includes(ref)) usedIn.push(label);
+  }
+  if (usedIn.length && url.searchParams.get("force") !== "1") {
+    return Response.json({ error: "in-use", usedIn }, { status: 409 });
+  }
+  try {
+    await fs.rm(path.join(UPLOADS_DIR, name));
+  } catch {
+    return Response.json({ error: "Image not found." }, { status: 404 });
+  }
+  return Response.json({ ok: true, usedIn });
 }

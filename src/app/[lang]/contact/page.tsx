@@ -1,22 +1,26 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Clock, GraduationCap, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { ContactForm, ContactFormFromUrl } from "@/components/site/contact-form";
 import { PageHero } from "@/components/site/page-hero";
+import { RegistrationForm } from "@/components/site/registration-form";
 import { SocialIcon, socialNames } from "@/components/social-icons";
-import { getSite } from "@/lib/content";
-import { getDictionary, t } from "@/lib/i18n";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getCourses, getSite } from "@/lib/content";
+import { dir, getDictionary, t } from "@/lib/i18n";
 import { currentLocale } from "@/lib/locale";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const d = getDictionary(await currentLocale());
-  return { title: d.contact.title, description: d.contact.subtitle };
+  const locale = await currentLocale();
+  const d = getDictionary(locale);
+  return pageMetadata({ locale, path: "/contact", title: d.contact.title, description: d.contact.subtitle });
 }
 
 export default async function ContactPage() {
   const locale = await currentLocale();
   const d = getDictionary(locale);
-  const site = await getSite();
+  const [site, courses] = await Promise.all([getSite(), getCourses()]);
   const c = site.contact;
   const wa = c.whatsapp.replace(/\D/g, "");
 
@@ -28,13 +32,6 @@ export default async function ContactPage() {
     t(c.hours, locale) && { icon: Clock, label: d.contact.hours, value: t(c.hours, locale) },
   ].filter(Boolean) as { icon: typeof Mail; label: string; value: string; href?: string; ltr?: boolean }[];
   const socials = socialNames.filter((n) => site.social[n]);
-  const labels = {
-    name: d.contact.name,
-    yourEmail: d.contact.yourEmail,
-    message: d.contact.message,
-    sendWhatsapp: d.contact.sendWhatsapp,
-    sendEmail: d.contact.sendEmail,
-  };
 
   return (
     <>
@@ -92,13 +89,28 @@ export default async function ContactPage() {
           )}
         </div>
 
-        <div className="card p-8 sm:p-10">
+        <div className="card p-6 sm:p-10">
           <h2 className="font-display text-2xl font-bold">{d.contact.formTitle}</h2>
-          <div className="mt-8">
-            <Suspense fallback={<ContactForm email={c.email} whatsapp={wa} labels={labels} />}>
-              <ContactFormFromUrl email={c.email} whatsapp={wa} labels={labels} />
-            </Suspense>
-          </div>
+          <Tabs defaultValue="message" dir={dir(locale)} className="mt-6">
+            <TabsList>
+              <TabsTrigger value="message">
+                <Mail className="size-4" aria-hidden />
+                {d.contact.tabMessage}
+              </TabsTrigger>
+              <TabsTrigger value="register">
+                <GraduationCap className="size-4" aria-hidden />
+                {d.contact.tabRegister}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="message">
+              <Suspense fallback={<ContactForm locale={locale} whatsapp={wa} />}>
+                <ContactFormFromUrl locale={locale} whatsapp={wa} />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="register">
+              <RegistrationForm locale={locale} courses={courses.map((co) => ({ id: co.id, title: t(co.title, locale) }))} />
+            </TabsContent>
+          </Tabs>
         </div>
       </section>
     </>

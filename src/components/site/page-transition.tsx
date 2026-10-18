@@ -1,6 +1,7 @@
 "use client";
 
 import { stagger, useAnimate } from "motion/react";
+import { duration, ease } from "@/lib/motion";
 import { useEffect, useLayoutEffect, type ReactNode } from "react";
 
 let hydrated = false;
@@ -38,7 +39,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
     const controls = animate(
       targets,
       { opacity: [0, 1], y: [32, 0] },
-      { duration: 0.6, delay: stagger(0.08), ease: [0.22, 1, 0.36, 1] },
+      { duration: duration.page, delay: stagger(0.08), ease },
     );
     // Hidden mid-animation (or Strict Mode's dev re-run): never leave content stuck invisible.
     return () => {

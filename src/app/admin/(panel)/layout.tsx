@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { LoaderCircle } from "lucide-react";
+import { AdminShortcuts } from "@/components/admin/shortcuts";
 import { Sidebar } from "@/components/admin/sidebar";
 import { requireAdmin } from "@/lib/auth";
 
@@ -12,6 +13,7 @@ export default function PanelLayout({ children }: LayoutProps<"/admin">) {
           <Gate>{children}</Gate>
         </Suspense>
       </div>
+      <AdminShortcuts />
     </div>
   );
 }

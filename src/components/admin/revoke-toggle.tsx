@@ -18,7 +18,7 @@ export function RevokeToggle({ id, revoked }: { id: string; revoked: boolean }) 
           router.refresh();
         });
       }}
-      className={`admin-btn ${revoked ? "" : "hover:border-red-300 hover:bg-red-50 hover:text-red-700"}`}
+      className={`admin-btn ${revoked ? "" : "hover:border-danger-300 hover:bg-danger-50 hover:text-danger-700"}`}
     >
       {revoked ? "Restore" : "Revoke"}
     </button>

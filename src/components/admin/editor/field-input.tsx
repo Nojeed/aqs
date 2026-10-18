@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import type { L10n } from "@/lib/i18n";
-import { emptyValue, type Field } from "@/lib/schema";
+import { controlClass } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Icon } from "@/components/icon";
+import { isLevel, LevelIcon } from "@/components/level-icon";
+import { emptyValue, ICONS, type Field } from "@/lib/schema";
+import { cn } from "@/lib/utils";
 import { ImageInput } from "./image-input";
 import { MarkdownInput } from "./markdown-input";
 
@@ -11,8 +16,8 @@ type Props = { field: Field; value: unknown; onChange: (value: unknown) => void;
 
 const labelClass = "mb-1.5 block text-sm font-semibold text-slate-800";
 const helpClass = "mt-1.5 text-xs text-slate-500";
-const inputClass =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-600 focus:ring-4 focus:ring-brand-100 focus:outline-none";
+// Compact version of the shared control style (src/components/ui/input.tsx).
+const inputClass = cn(controlClass, "rounded-lg px-3 py-2 md:text-sm");
 
 export function FieldInput({ field, value, onChange, id }: Props) {
   switch (field.kind) {
@@ -142,17 +147,32 @@ function Scalar({ field, value, onChange, id }: Props) {
       );
     case "select":
       return (
-        <select id={id} className={`${inputClass} max-w-72`} value={String(value ?? "")} onChange={(e) => onChange(e.target.value)}>
-          {field.options.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
+        <Select value={String(value ?? "") || undefined} onValueChange={onChange}>
+          <SelectTrigger id={id} className="h-10 max-w-72 rounded-lg px-3 md:text-sm">
+            <SelectValue placeholder="Choose…" />
+          </SelectTrigger>
+          <SelectContent>
+            {field.options.map((o) => (
+              <SelectItem key={o.value} value={o.value}>
+                <span className="inline-flex items-center gap-2.5">
+                  {optionGlyph(o.value)}
+                  {o.label}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       );
     default:
       return null;
   }
+}
+
+/** Icon options show the icon itself; level options show their signal bars. */
+function optionGlyph(value: string) {
+  if ((ICONS as readonly string[]).includes(value)) return <Icon name={value} className="size-4 shrink-0 text-brand-600" />;
+  if (isLevel(value)) return <LevelIcon level={value} className="size-4 shrink-0 text-brand-600" />;
+  return null;
 }
 
 function ObjectInput({ field, value, onChange, id }: Props & { field: Extract<Field, { kind: "object" }> }) {
@@ -269,7 +289,7 @@ function IconButton({
       onClick={onClick}
       disabled={disabled}
       className={`inline-flex size-8 items-center justify-center rounded-lg text-slate-500 transition disabled:opacity-30 ${
-        danger ? "hover:bg-red-50 hover:text-red-600" : "hover:bg-slate-200 hover:text-slate-800"
+        danger ? "hover:bg-danger-50 hover:text-danger-600" : "hover:bg-slate-200 hover:text-slate-800"
       }`}
     >
       {children}

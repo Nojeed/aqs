@@ -36,7 +36,7 @@ export function MarkdownInput({
                 className={`rounded-md px-3 py-1 text-xs font-bold ${lang === l ? "bg-white text-brand-800 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-800"}`}
               >
                 {l === "ar" ? "العربية" : "English"}
-                {!v[l]?.trim() && <span className="ms-1 text-amber-500" title="Empty">•</span>}
+                {!v[l]?.trim() && <span className="ms-1 text-warning-500" title="Empty">•</span>}
               </button>
             ))}
         </div>

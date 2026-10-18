@@ -19,7 +19,8 @@ export type Certificate = {
   hours?: number | string;
   grade?: string;
   gradeAr?: string;
-  status?: "valid" | "revoked" | string;
+  /** "lifetime" = valid and never expires, whatever expiryDate says. */
+  status?: "valid" | "lifetime" | "revoked" | string;
 };
 
 export type CertificateStatus = "valid" | "expired" | "revoked";
@@ -77,11 +78,18 @@ async function loadIndex() {
 }
 
 export function certificateStatus(cert: Certificate, today = new Date()): CertificateStatus {
-  if (String(cert.status ?? "").toLowerCase() === "revoked") return "revoked";
+  const status = String(cert.status ?? "").toLowerCase();
+  if (status === "revoked") return "revoked";
+  if (status === "lifetime") return "valid";
   if (cert.expiryDate && /^\d{4}-\d{2}-\d{2}$/.test(cert.expiryDate)) {
     if (cert.expiryDate < today.toISOString().slice(0, 10)) return "expired";
   }
   return "valid";
+}
+
+/** True when the certificate has no end date (explicit "never expires", or no expiry date at all). */
+export function neverExpires(cert: Certificate) {
+  return String(cert.status ?? "").toLowerCase() === "lifetime" || !cert.expiryDate;
 }
 
 export async function findCertificate(id: string) {

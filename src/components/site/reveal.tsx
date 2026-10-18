@@ -1,6 +1,7 @@
 "use client";
 
 import { inView, useAnimate } from "motion/react";
+import { duration, ease } from "@/lib/motion";
 import { useEffect, useRef, type ReactNode } from "react";
 
 /** Fades content up as it scrolls into view. Content stays visible without JS. */
@@ -25,7 +26,7 @@ export function Reveal({
     const stop = inView(
       el,
       () => {
-        animate(el, { opacity: [0, 1], y: [24, 0] }, { duration: 0.7, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] });
+        animate(el, { opacity: [0, 1], y: [24, 0] }, { duration: duration.reveal, delay: delay / 1000, ease });
       },
       { margin: "0px 0px -10% 0px" },
     );

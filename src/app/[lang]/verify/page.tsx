@@ -3,13 +3,16 @@ import { Suspense } from "react";
 import { CircleAlert, CircleCheck, CircleX, FileQuestion, QrCode } from "lucide-react";
 import { PageHero } from "@/components/site/page-hero";
 import { VerifyForm } from "@/components/site/verify-form";
-import { certificateStatus, findCertificate, type CertificateStatus } from "@/lib/certificates";
+import { CopyButton } from "@/components/copy-button";
+import { certificateStatus, findCertificate, neverExpires, type CertificateStatus } from "@/lib/certificates";
 import { formatDate, getDictionary, type Dictionary, type Locale } from "@/lib/i18n";
 import { currentLocale } from "@/lib/locale";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const d = getDictionary(await currentLocale());
-  return { title: d.verify.title, description: d.verify.subtitle };
+  const locale = await currentLocale();
+  const d = getDictionary(locale);
+  return pageMetadata({ locale, path: "/verify", title: d.verify.title, description: d.verify.subtitle });
 }
 
 type Search = PageProps<"/[lang]/verify">["searchParams"];
@@ -55,9 +58,9 @@ export default async function VerifyPage({ searchParams }: PageProps<"/[lang]/ve
 }
 
 const statusStyle: Record<CertificateStatus, { ring: string; badge: string; icon: typeof CircleCheck }> = {
-  valid: { ring: "ring-emerald-200 bg-emerald-50/60", badge: "bg-emerald-600 text-white", icon: CircleCheck },
-  expired: { ring: "ring-amber-200 bg-amber-50/60", badge: "bg-amber-500 text-white", icon: CircleAlert },
-  revoked: { ring: "ring-red-200 bg-red-50/60", badge: "bg-red-600 text-white", icon: CircleX },
+  valid: { ring: "ring-success-200 bg-success-50/60", badge: "bg-success-600 text-white", icon: CircleCheck },
+  expired: { ring: "ring-warning-200 bg-warning-50/60", badge: "bg-warning-500 text-white", icon: CircleAlert },
+  revoked: { ring: "ring-danger-200 bg-danger-50/60", badge: "bg-danger-600 text-white", icon: CircleX },
 };
 
 async function Result({ searchParams, locale, d }: { searchParams: Search; locale: Locale; d: Dictionary }) {
@@ -92,7 +95,7 @@ async function Result({ searchParams, locale, d }: { searchParams: Search; local
     { label: d.verify.course, value: (ar && cert.courseAr) || cert.course },
     { label: d.verify.certificateNo, value: cert.id, mono: true },
     { label: d.verify.issued, value: cert.issueDate ? formatDate(cert.issueDate, locale) : "" },
-    { label: d.verify.expires, value: cert.expiryDate ? formatDate(cert.expiryDate, locale) : "" },
+    { label: d.verify.expires, value: neverExpires(cert) ? d.verify.noExpiry : formatDate(cert.expiryDate!, locale) },
     { label: d.verify.hours, value: cert.hours ? String(cert.hours) : "" },
     { label: d.verify.grade, value: (ar && cert.gradeAr) || cert.grade },
   ].filter((r) => r.value);
@@ -112,8 +115,9 @@ async function Result({ searchParams, locale, d }: { searchParams: Search; local
         {rows.map((r) => (
           <div key={r.label} className="bg-white p-5 sm:last:odd:col-span-2">
             <dt className="text-xs font-semibold tracking-wide text-slate-500 uppercase">{r.label}</dt>
-            <dd className={`mt-1.5 font-semibold text-brand-950 ${r.mono ? "font-mono" : ""}`} dir={r.mono ? "ltr" : undefined}>
+            <dd className={`mt-1.5 flex items-center gap-1 font-semibold text-brand-950 ${r.mono ? "font-mono" : ""}`} dir={r.mono ? "ltr" : undefined}>
               {r.value}
+              {r.mono && <CopyButton text={r.value} label={d.common.copy} copiedLabel={d.common.copied} className="-my-1.5" />}
             </dd>
           </div>
         ))}

@@ -9,6 +9,8 @@ import { DetailSkeleton } from "@/components/site/skeleton";
 import { getPost, getPosts } from "@/lib/content";
 import { formatDate, getDictionary, t } from "@/lib/i18n";
 import { currentLocale } from "@/lib/locale";
+import { pageMetadata } from "@/lib/seo";
+import { ViewBeacon } from "@/components/site/view-beacon";
 
 export async function generateStaticParams() {
   return (await getPosts()).map((p) => ({ slug: p.slug }));
@@ -18,11 +20,15 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/blog/[slug
   const [{ slug }, locale] = await Promise.all([params, currentLocale()]);
   const post = await getPost(slug);
   if (!post) return {};
-  return {
+  return pageMetadata({
+    locale,
+    path: `/blog/${post.slug}`,
     title: t(post.title, locale),
     description: t(post.excerpt, locale),
-    openGraph: { type: "article", publishedTime: post.date, images: post.cover ? [post.cover] : undefined },
-  };
+    image: post.cover || undefined,
+    type: "article",
+    publishedTime: post.date || undefined,
+  });
 }
 
 export default function PostPage({ params }: PageProps<"/[lang]/blog/[slug]">) {
@@ -43,10 +49,14 @@ async function PostDetail({ params }: Pick<PageProps<"/[lang]/blog/[slug]">, "pa
   if (!post) notFound();
   const d = getDictionary(locale);
   const body = t(post.body, locale);
-  const more = all.filter((p) => p.id !== post.id).slice(0, 3);
+  // Same category first, then the most recent of the rest.
+  const sameCategory = (p: typeof post) => p.category.en === post.category.en && p.category.en !== "";
+  const others = all.filter((p) => p.id !== post.id);
+  const more = [...others.filter(sameCategory), ...others.filter((p) => !sameCategory(p))].slice(0, 3);
 
   return (
     <>
+      <ViewBeacon type="posts" slug={post.slug} />
       <section className="relative isolate overflow-hidden bg-brand-950 pt-36 pb-16 sm:pb-24">
         {post.cover && (
           <Image src={post.cover} alt="" fill priority sizes="100vw" quality={70} className="-z-20 object-cover opacity-30" />

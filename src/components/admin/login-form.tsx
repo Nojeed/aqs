@@ -3,21 +3,21 @@
 import { useActionState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { login } from "@/app/admin/actions";
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 export function LoginForm() {
   const [state, action, pending] = useActionState(login, null);
   return (
     <form action={action} className="mt-8 space-y-4">
-      <label className="block">
-        <span className="mb-1.5 block text-sm font-semibold text-slate-700">Username</span>
-        <input name="username" className="input" autoComplete="username" defaultValue="admin" required />
-      </label>
-      <label className="block">
-        <span className="mb-1.5 block text-sm font-semibold text-slate-700">Password</span>
-        <input name="password" type="password" className="input" autoComplete="current-password" required autoFocus />
-      </label>
+      <Field id="login-username" label="Username">
+        <Input id="login-username" name="username" autoComplete="username" defaultValue="admin" required />
+      </Field>
+      <Field id="login-password" label="Password">
+        <Input id="login-password" name="password" type="password" autoComplete="current-password" required autoFocus />
+      </Field>
       {state && !state.ok && (
-        <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200">
+        <p role="alert" className="rounded-xl bg-danger-50 px-4 py-3 text-sm text-danger-700 ring-1 ring-danger-200">
           {state.error}
         </p>
       )}

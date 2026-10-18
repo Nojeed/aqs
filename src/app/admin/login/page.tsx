@@ -24,7 +24,7 @@ export default function LoginPage() {
           <h1 className="font-display mt-8 text-2xl font-bold">Sign in to the admin panel</h1>
           <p className="mt-2 text-sm text-slate-500">Use the credentials set in your server environment.</p>
           {configError && (
-            <p className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-800 ring-1 ring-amber-200">
+            <p className="mt-6 rounded-xl bg-warning-50 p-4 text-sm text-warning-800 ring-1 ring-warning-200">
               {configError} Add it to your environment (see README) and restart the server.
             </p>
           )}

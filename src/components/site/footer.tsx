@@ -33,7 +33,7 @@ export function Footer({ locale, site, year }: { locale: Locale; site: Site; yea
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={name}
-                  className="inline-flex size-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-white/40 hover:bg-white/10 hover:text-white"
+                  className="inline-flex size-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-white/40 hover:bg-white/10 hover:text-white"
                 >
                   <SocialIcon name={name} className="size-[18px]" />
                 </a>
@@ -44,10 +44,10 @@ export function Footer({ locale, site, year }: { locale: Locale; site: Site; yea
 
         <div>
           <h2 className="text-sm font-bold tracking-wider text-white uppercase">{d.footer.quickLinks}</h2>
-          <ul className="mt-5 space-y-3 text-sm">
+          <ul className="mt-5 space-y-1 text-sm">
             {links.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="transition hover:text-white">
+                <Link href={l.href} className="inline-flex min-h-11 items-center transition hover:text-white">
                   {l.label}
                 </Link>
               </li>
@@ -61,7 +61,7 @@ export function Footer({ locale, site, year }: { locale: Locale; site: Site; yea
             {site.contact.email && (
               <li className="flex items-start gap-3">
                 <Mail className="mt-0.5 size-4 shrink-0 text-accent-400" aria-hidden />
-                <a href={`mailto:${site.contact.email}`} className="hover:text-white" dir="ltr">
+                <a href={`mailto:${site.contact.email}`} className="inline-flex min-h-11 items-center hover:text-white pointer-fine:min-h-0" dir="ltr">
                   {site.contact.email}
                 </a>
               </li>
@@ -69,7 +69,7 @@ export function Footer({ locale, site, year }: { locale: Locale; site: Site; yea
             {site.contact.phone && (
               <li className="flex items-start gap-3">
                 <Phone className="mt-0.5 size-4 shrink-0 text-accent-400" aria-hidden />
-                <a href={`tel:${site.contact.phone.replace(/[^\d+]/g, "")}`} className="hover:text-white" dir="ltr">
+                <a href={`tel:${site.contact.phone.replace(/[^\d+]/g, "")}`} className="inline-flex min-h-11 items-center hover:text-white pointer-fine:min-h-0" dir="ltr">
                   {site.contact.phone}
                 </a>
               </li>

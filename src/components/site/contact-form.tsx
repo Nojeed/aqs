@@ -1,80 +1,116 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { Mail, MessageCircle } from "lucide-react";
+import { useActionState, useState } from "react";
+import { CircleCheck, LoaderCircle, MessageCircle } from "lucide-react";
+import { sendMessage, type MessageResult } from "@/app/[lang]/actions";
+import { Field, fieldAria } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { getDictionary, type Locale } from "@/lib/i18n";
 
-/** No backend needed: composes the message and hands it to WhatsApp or the visitor's mail app. */
-type Props = {
-  email: string;
-  whatsapp: string;
-  labels: { name: string; yourEmail: string; message: string; sendWhatsapp: string; sendEmail: string };
-  initialMessage?: string;
-};
+type Props = { locale: Locale; whatsapp: string; initialMessage?: string };
 
-/** Prefills the message from ?subject= (used by the "Enroll" and "Request a consultation" buttons). */
+/** Prefills the message from ?subject= (used by the "Request a consultation" buttons). */
 export function ContactFormFromUrl(props: Omit<Props, "initialMessage">) {
   const subject = useSearchParams().get("subject") ?? "";
   return <ContactForm key={subject} {...props} initialMessage={subject ? `${subject}\n\n` : ""} />;
 }
 
-export function ContactForm({ email, whatsapp, labels, initialMessage = "" }: Props) {
-  const [name, setName] = useState("");
-  const [from, setFrom] = useState("");
-  const [message, setMessage] = useState(initialMessage);
-  const body = `${message}\n\n— ${name}${from ? ` (${from})` : ""}`;
-  const ready = name.trim() && message.trim();
-  const wa = whatsapp.replace(/\D/g, "");
+/** Stores the message for the admin (Messages page). WhatsApp stays as a direct alternative. */
+export function ContactForm(props: Props) {
+  // "Send another" needs a fresh action state, so it remounts the form.
+  const [round, setRound] = useState(0);
+  return <Form key={round} {...props} onAnother={() => setRound((n) => n + 1)} />;
+}
+
+function Form({ locale, whatsapp, initialMessage = "", onAnother }: Props & { onAnother: () => void }) {
+  const d = getDictionary(locale);
+  const c = d.contact;
+  const [values, setValues] = useState({ name: "", email: "", phone: "", message: initialMessage });
+  const [result, action, pending] = useActionState<MessageResult | null, FormData>(sendMessage, null);
+  const set = (key: keyof typeof values) => (e: { target: { value: string } }) => setValues((v) => ({ ...v, [key]: e.target.value }));
+  const errors = result && !result.ok ? result.fields : undefined;
+  const err = (key: "name" | "email" | "message") => (errors?.[key] ? d.register.errors[errors[key]] : undefined);
+
+  if (result?.ok) {
+    return (
+      <div role="status" className="flex flex-col items-start gap-4 rounded-2xl bg-success-50 p-8 ring-1 ring-success-200">
+        <CircleCheck className="size-10 text-success-600" strokeWidth={1.6} aria-hidden />
+        <div>
+          <p className="font-display text-xl font-bold text-success-900">{c.sent}</p>
+          <p className="mt-1 text-success-800">{c.sentText}</p>
+        </div>
+        <button type="button" className="btn-outline" onClick={onAnother}>
+          {c.another}
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-semibold text-slate-700">{labels.name}</span>
-          <input className="input" value={name} onChange={(e) => setName(e.target.value)} required />
-        </label>
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-semibold text-slate-700">{labels.yourEmail}</span>
-          <input className="input" type="email" value={from} onChange={(e) => setFrom(e.target.value)} dir="ltr" />
-        </label>
+    <form action={action} className="space-y-5">
+      <input type="hidden" name="locale" value={locale} />
+      {/* Honeypot: hidden from people and assistive tech, filled in by bots. */}
+      <div className="absolute -start-[9999px] size-px overflow-hidden" aria-hidden>
+        <input name="website" tabIndex={-1} autoComplete="off" />
       </div>
-      <label className="block">
-        <span className="mb-1.5 block text-sm font-semibold text-slate-700">{labels.message}</span>
-        <textarea
-          className="input min-h-40"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field id="msg-name" label={c.name} error={err("name")}>
+          <Input name="name" value={values.name} onChange={set("name")} required autoComplete="name" {...fieldAria("msg-name", { error: err("name") })} />
+        </Field>
+        <Field id="msg-email" label={c.yourEmail} error={err("email")}>
+          <Input
+            name="email"
+            type="email"
+            value={values.email}
+            onChange={set("email")}
+            required
+            autoComplete="email"
+            dir="ltr"
+            {...fieldAria("msg-email", { error: err("email") })}
+          />
+        </Field>
+      </div>
+      <Field id="msg-phone" label={c.phoneOptional}>
+        <Input id="msg-phone" name="phone" type="tel" value={values.phone} onChange={set("phone")} autoComplete="tel" inputMode="tel" dir="ltr" />
+      </Field>
+      <Field id="msg-message" label={c.message} error={err("message")}>
+        <Textarea
+          name="message"
+          value={values.message}
+          onChange={set("message")}
           required
+          rows={6}
+          maxLength={4000}
+          {...fieldAria("msg-message", { error: err("message") })}
         />
-      </label>
-      <div className="flex flex-wrap gap-3 pt-2">
-        {wa && (
+      </Field>
+
+      {result && !result.ok && result.error && (
+        <p role="alert" className="rounded-xl bg-danger-50 p-3 text-sm font-medium text-danger-700 ring-1 ring-danger-200">
+          {d.register.errors[result.error]}
+        </p>
+      )}
+
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <button type="submit" disabled={pending} className="btn-primary">
+          {pending && <LoaderCircle className="size-4 animate-spin" aria-hidden />}
+          {pending ? c.sending : c.send}
+        </button>
+        {whatsapp && (
           <a
-            aria-disabled={!ready}
-            href={ready ? `https://wa.me/${wa}?text=${encodeURIComponent(body)}` : undefined}
+            href={`https://wa.me/${whatsapp}${values.message.trim() ? `?text=${encodeURIComponent(values.message)}` : ""}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={`btn bg-[#1f9d55] text-white hover:bg-[#178246] ${ready ? "" : "pointer-events-none opacity-50"}`}
+            className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-whatsapp-dark transition hover:text-whatsapp hover:underline"
           >
             <MessageCircle className="size-4" aria-hidden />
-            {labels.sendWhatsapp}
-          </a>
-        )}
-        {email && (
-          <a
-            aria-disabled={!ready}
-            href={
-              ready
-                ? `mailto:${email}?subject=${encodeURIComponent(`AQS – ${name}`)}&body=${encodeURIComponent(body)}`
-                : undefined
-            }
-            className={`btn-primary ${ready ? "" : "pointer-events-none opacity-50"}`}
-          >
-            <Mail className="size-4" aria-hidden />
-            {labels.sendEmail}
+            {c.orWhatsapp}
           </a>
         )}
       </div>
+      <p className="text-xs text-slate-500">{d.register.privacy}</p>
     </form>
   );
 }

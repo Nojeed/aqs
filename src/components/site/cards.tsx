@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Calendar, Clock, Monitor, Signal } from "lucide-react";
+import { ArrowUpRight, Calendar, Clock, Monitor, Tag } from "lucide-react";
 import { Icon } from "@/components/icon";
+import { LevelIcon } from "@/components/level-icon";
+import { StartsSoon } from "@/components/site/starts-soon";
 import { formatDate, getDictionary, t, type Locale } from "@/lib/i18n";
 import type { Course, Post, Service } from "@/lib/schema";
 
@@ -53,8 +55,9 @@ export function CourseCard({ course, locale }: { course: Course; locale: Locale 
             {t(course.category, locale)}
           </span>
         )}
+        {course.startDate && <StartsSoon date={course.startDate} label={d.courses.startsSoon} />}
         <span className="absolute start-4 bottom-4 inline-flex items-center gap-1.5 text-xs font-semibold text-white">
-          <Signal className="size-3.5" aria-hidden />
+          <LevelIcon level={course.level} className="size-4" />
           {d.courses.levels[course.level]}
         </span>
       </div>
@@ -78,6 +81,10 @@ export function CourseCard({ course, locale }: { course: Course; locale: Locale 
               {formatDate(course.startDate, locale)}
             </span>
           )}
+          <span className="inline-flex items-center gap-1.5 font-semibold text-brand-800">
+            <Tag className="size-3.5 text-brand-500" aria-hidden />
+            {course.price || d.courses.priceOnRequest}
+          </span>
         </div>
       </div>
     </Link>

@@ -71,3 +71,31 @@ export async function writeJson(file: string, data: unknown) {
   }
   await writeFileAtomic(target, `${JSON.stringify(data, null, 2)}\n`);
 }
+
+// Backup names look like "courses.2026-10-17T15-55-32-341Z.json" (see writeJson).
+const BACKUP_NAME = /^([a-z][a-z-]*)\.(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z)\.json$/;
+
+export type Backup = { name: string; file: string; savedAt: string; bytes: number };
+
+/** Backups for the given data files, newest first. */
+export async function listBackups(files: string[]): Promise<Backup[]> {
+  const names = await fs.readdir(BACKUP_DIR).catch(() => [] as string[]);
+  const list = await Promise.all(
+    names.map(async (name) => {
+      const m = BACKUP_NAME.exec(name);
+      if (!m || !files.includes(`${m[1]}.json`)) return null;
+      const [date, time] = m[2].split("T");
+      const savedAt = `${date}T${time.replace(/^(\d{2})-(\d{2})-(\d{2})-(\d{3})Z$/, "$1:$2:$3.$4Z")}`;
+      const { size } = await fs.stat(path.join(BACKUP_DIR, name));
+      return { name, file: `${m[1]}.json`, savedAt, bytes: size };
+    }),
+  );
+  return list.filter((b): b is Backup => b !== null).sort((a, b) => b.savedAt.localeCompare(a.savedAt));
+}
+
+/** Read a backup by name. Only names matching the backup pattern are accepted, so no path tricks. */
+export async function readBackup(name: string, files: string[]) {
+  const m = BACKUP_NAME.exec(name);
+  if (!m || !files.includes(`${m[1]}.json`)) return null;
+  return { file: `${m[1]}.json`, text: await fs.readFile(path.join(BACKUP_DIR, name), "utf8") };
+}

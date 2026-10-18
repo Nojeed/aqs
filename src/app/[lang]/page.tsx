@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CircleCheck, ShieldCheck, Sparkles } from "lucide-react";
 import * as motion from "motion/react-client";
+import { duration, ease } from "@/lib/motion";
 import { Icon } from "@/components/icon";
 import { CourseCard, PostCard, ServiceCard } from "@/components/site/cards";
 import { Reveal } from "@/components/site/reveal";
@@ -15,8 +16,10 @@ import { currentLocale } from "@/lib/locale";
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 18 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] as const },
+  transition: { duration: duration.hero, delay, ease },
 });
+// Headline and subtitle only slide: they stay visible in the server HTML, so they paint before JS loads.
+const slideUp = (delay = 0) => ({ ...fadeUp(delay), initial: { y: 18 }, animate: { y: 0 } });
 
 export default async function HomePage() {
   const locale = await currentLocale();
@@ -59,15 +62,15 @@ export default async function HomePage() {
               <Sparkles className="size-4 text-accent-300" aria-hidden />
               {t(site.hero.badge, locale)}
             </motion.p>
-            <motion.h1 {...fadeUp(0.12)} className="font-display mt-6 text-4xl leading-tight font-extrabold text-balance text-white sm:text-5xl lg:text-6xl">
+            <motion.h1 {...slideUp(0.12)} className="font-display mt-6 text-4xl leading-tight font-extrabold text-balance text-white sm:text-5xl lg:text-6xl">
               {t(site.hero.title, locale)}
               {t(site.hero.highlight, locale) && (
-                <span className="mt-2 block bg-linear-to-r from-accent-300 via-white to-silver-300 bg-clip-text text-transparent rtl:bg-linear-to-l">
+                <span className="mt-2 block text-accent-300">
                   {t(site.hero.highlight, locale)}
                 </span>
               )}
             </motion.h1>
-            <motion.p {...fadeUp(0.24)} className="mt-6 max-w-xl text-lg leading-8 text-pretty text-white/75">
+            <motion.p {...slideUp(0.24)} className="mt-6 max-w-xl text-lg leading-8 text-pretty text-white/75">
               {t(site.hero.subtitle, locale)}
             </motion.p>
             <motion.div {...fadeUp(0.36)} className="mt-10 flex flex-wrap gap-3">
@@ -163,7 +166,6 @@ export default async function HomePage() {
           </Reveal>
 
           <Reveal delay={100}>
-            <p className="eyebrow">{t(site.about.eyebrow, locale)}</p>
             <h2 className="font-display mt-3 text-3xl font-bold text-balance sm:text-4xl">{t(site.about.title, locale)}</h2>
             <p className="mt-6 text-lg leading-8 text-slate-600">{t(site.about.body, locale)}</p>
             <ul className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -191,7 +193,7 @@ export default async function HomePage() {
       {services.length > 0 && (
         <section className="relative bg-brand-50/60 py-24 sm:py-32">
           <div className="container-page">
-            <SectionHeading eyebrow={d.nav.services} title={t(s.servicesTitle, locale)} subtitle={t(s.servicesSubtitle, locale)} />
+            <SectionHeading title={t(s.servicesTitle, locale)} subtitle={t(s.servicesSubtitle, locale)} />
             <ul className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {services.slice(0, 6).map((service, i) => (
                 <Reveal as="li" key={service.id} delay={(i % 3) * 80}>
@@ -225,7 +227,7 @@ export default async function HomePage() {
           <div className="container-page">
             <SectionHeading
               align="start"
-              eyebrow={d.nav.courses}
+             
               title={t(s.coursesTitle, locale)}
               subtitle={t(s.coursesSubtitle, locale)}
               action={
@@ -254,7 +256,7 @@ export default async function HomePage() {
           <div className="absolute end-0 top-0 -z-10 hidden h-full w-1/3 bg-brand-800/60 [clip-path:polygon(35%_0,100%_0,100%_100%,0_100%)] lg:block rtl:[clip-path:polygon(0_0,65%_0,100%_100%,0_100%)]" aria-hidden />
           <div className="container-page grid gap-16 lg:grid-cols-[1fr_1.3fr] lg:items-center">
             <Reveal>
-              <SectionHeading align="start" light eyebrow={site.brand.name} title={t(s.whyTitle, locale)} subtitle={t(s.whySubtitle, locale)} />
+              <SectionHeading align="start" light title={t(s.whyTitle, locale)} subtitle={t(s.whySubtitle, locale)} />
               <div className="relative mt-10 hidden aspect-[16/10] overflow-hidden rounded-[2rem] ring-1 ring-white/10 lg:block">
                 <Image src="/images/lab-testing.jpg" alt="" fill sizes="40vw" quality={70} className="object-cover" />
                 <div className="absolute inset-0 bg-linear-to-t from-brand-950/50 to-transparent" aria-hidden />
@@ -304,7 +306,7 @@ export default async function HomePage() {
           <div className="container-page">
             <SectionHeading
               align="start"
-              eyebrow={d.nav.blog}
+             
               title={t(s.blogTitle, locale)}
               subtitle={t(s.blogSubtitle, locale)}
               action={

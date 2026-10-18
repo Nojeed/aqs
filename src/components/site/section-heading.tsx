@@ -1,14 +1,12 @@
 import type { ReactNode } from "react";
 
 export function SectionHeading({
-  eyebrow,
   title,
   subtitle,
   align = "center",
   light = false,
   action,
 }: {
-  eyebrow?: string;
   title: string;
   subtitle?: string;
   align?: "center" | "start";
@@ -21,9 +19,8 @@ export function SectionHeading({
       className={`flex flex-col gap-6 ${centered ? "items-center text-center" : "md:flex-row md:items-end md:justify-between"}`}
     >
       <div className={centered ? "max-w-2xl" : "max-w-2xl"}>
-        {eyebrow && <p className={`eyebrow ${light ? "text-accent-300" : ""}`}>{eyebrow}</p>}
         <h2
-          className={`font-display mt-3 text-3xl font-bold text-balance sm:text-4xl ${light ? "text-white" : "text-brand-950"}`}
+          className={`font-display text-3xl font-bold text-balance sm:text-4xl ${light ? "text-white" : "text-brand-950"}`}
         >
           {title}
         </h2>

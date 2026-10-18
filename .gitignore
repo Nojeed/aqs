@@ -42,3 +42,5 @@ next-env.d.ts
 
 # runtime content written by the admin panel (see README)
 /data/
+
+.impeccable/

@@ -3,7 +3,7 @@
  * The editor renders forms from these definitions and the server uses the same
  * definitions to sanitize whatever the browser sends before writing it to disk.
  */
-import type { L10n } from "./i18n";
+import type { L10n, Locale } from "./i18n";
 
 type Base = { label: string; help?: string };
 
@@ -46,10 +46,16 @@ export const ICONS = [
 ] as const;
 export type IconName = (typeof ICONS)[number];
 
+// "ClipboardCheck" -> "Clipboard check" for the dropdown (the admin also sees the icon itself).
+const iconLabel = (name: string) => {
+  const words = name.replace(/([a-z])([A-Z0-9])/g, "$1 $2").split(" ");
+  return [words[0], ...words.slice(1).map((w) => w.toLowerCase())].join(" ");
+};
+
 const iconField = (label = "Icon"): Field => ({
   kind: "select",
   label,
-  options: ICONS.map((i) => ({ value: i, label: i })),
+  options: ICONS.map((i) => ({ value: i, label: iconLabel(i) })),
 });
 
 const l = (label: string, help?: string): Field => ({ kind: "text", label, localized: true, help });
@@ -114,7 +120,6 @@ export const siteFields: Fields = {
     kind: "object",
     label: "About section",
     fields: {
-      eyebrow: l("Small heading"),
       title: l("Title"),
       body: la("Text", 5),
       points: { kind: "list", label: "Checklist points", itemLabel: "Point", of: l("Point") },
@@ -278,31 +283,59 @@ export const postFields: Fields = {
   ...publishFields,
 };
 
-/** One record in certificates.json. The number is generated on create and never edited. */
-export const certificateFields: Fields = {
-  status: {
-    kind: "select",
-    label: "Status",
-    help: "Revoked certificates show as not valid on the verification page.",
-    options: [
-      { value: "valid", label: "Valid" },
-      { value: "revoked", label: "Revoked" },
-    ],
-  },
-  name: { kind: "text", label: "Trainee name (English)" },
-  nameAr: { kind: "text", label: "Trainee name (Arabic)" },
-  course: { kind: "text", label: "Course (English)" },
-  courseAr: { kind: "text", label: "Course (Arabic)" },
-  issueDate: { kind: "date", label: "Issue date" },
-  expiryDate: {
-    kind: "date",
-    label: "Expiry date",
-    help: "Leave empty if it never expires. After this date it shows as expired.",
-  },
-  hours: { kind: "number", label: "Training hours" },
-  grade: { kind: "text", label: "Grade (English)" },
-  gradeAr: { kind: "text", label: "Grade (Arabic)" },
-};
+/** Grades staff can pick; the Arabic text is filled in automatically. */
+export const GRADES = [
+  { en: "Excellent", ar: "ممتاز" },
+  { en: "Very good", ar: "جيد جدًا" },
+  { en: "Good", ar: "جيد" },
+  { en: "Pass", ar: "مقبول" },
+] as const;
+
+/** Select value meaning "leave empty" (Radix select items can't use an empty value). */
+export const NONE = "none";
+
+/**
+ * Form for one record in certificates.json. The number is generated on create and never edited.
+ * Course and grade are dropdowns; the server fills in their Arabic text. A value that isn't in the
+ * list (e.g. from an uploaded file) is kept as an extra option so editing never loses it.
+ */
+export function certificateFields(courseTitles: string[], current: { course?: string; grade?: string } = {}): Fields {
+  const options = (list: readonly string[], value?: string) =>
+    [...list, ...(value && !list.includes(value) ? [value] : [])].map((v) => ({ value: v, label: v }));
+  return {
+    status: {
+      kind: "select",
+      label: "Status",
+      help: "Revoked certificates show as not valid on the verification page.",
+      options: [
+        { value: "valid", label: "Valid until the expiry date" },
+        { value: "lifetime", label: "Valid – never expires" },
+        { value: "revoked", label: "Revoked" },
+      ],
+    },
+    name: { kind: "text", label: "Trainee name (English)" },
+    nameAr: { kind: "text", label: "Trainee name (Arabic)", help: "Optional. If empty, the English name is shown on the Arabic page." },
+    course: {
+      kind: "select",
+      label: "Course",
+      help: "The Arabic course name is filled in from the course page.",
+      options: [{ value: NONE, label: "Not set" }, ...options(courseTitles, current.course)],
+    },
+    issueDate: { kind: "date", label: "Issue date" },
+    expiryDate: {
+      kind: "date",
+      label: "Expiry date",
+      help: "Not used when the status is “Valid – never expires”. After this date the certificate shows as expired.",
+    },
+    hours: { kind: "number", label: "Training hours" },
+    grade: {
+      kind: "select",
+      label: "Grade",
+      help: "The Arabic grade is filled in automatically.",
+      options: [{ value: NONE, label: "No grade" }, ...options(GRADES.map((g) => g.en), current.grade)],
+    },
+  };
+}
 
 export const collections = {
   services: { label: "Services", singular: "service", file: "services.json", fields: serviceFields },
@@ -334,7 +367,6 @@ export type Site = {
   };
   stats: { value: string; label: L10n }[];
   about: {
-    eyebrow: L10n;
     title: L10n;
     body: L10n;
     points: L10n[];
@@ -398,6 +430,71 @@ export type Post = ItemBase & {
 };
 
 export type CollectionItem = { services: Service; courses: Course; posts: Post };
+
+/** Every data file the admin can restore from a backup, with a readable name. */
+export const DATA_FILES = {
+  "site.json": "Site content",
+  "services.json": "Services",
+  "courses.json": "Courses",
+  "posts.json": "Blog posts",
+  "certificates.json": "Certificates",
+  "registrations.json": "Registrations",
+  "messages.json": "Messages",
+} as const;
+
+/** Staff notes and status changes on a registration or message, oldest first. */
+export type HistoryEntry = { at: string; text: string };
+
+/** Course registrations submitted from the website, stored in registrations.json. */
+export const REGISTRATIONS_FILE = "registrations.json";
+
+export const registrationStatuses = [
+  { value: "new", label: "New" },
+  { value: "contacted", label: "Contacted" },
+  { value: "enrolled", label: "Enrolled" },
+  { value: "cancelled", label: "Cancelled" },
+] as const;
+
+export type RegistrationStatus = (typeof registrationStatuses)[number]["value"];
+
+export type Registration = {
+  id: string;
+  createdAt: string;
+  status: RegistrationStatus;
+  type: "individual" | "company";
+  name: string;
+  email: string;
+  phone: string;
+  company?: string;
+  trainees?: number;
+  courseId: string;
+  /** Snapshot, so the row still reads correctly if the course is renamed or deleted. */
+  courseTitle: string;
+  notes?: string;
+  locale: Locale;
+  history?: HistoryEntry[];
+};
+
+/** Messages sent from the contact page, stored in messages.json. */
+export const MESSAGES_FILE = "messages.json";
+
+export const messageStatuses = [
+  { value: "new", label: "New" },
+  { value: "replied", label: "Replied" },
+  { value: "archived", label: "Archived" },
+] as const;
+
+export type Message = {
+  id: string;
+  createdAt: string;
+  status: (typeof messageStatuses)[number]["value"];
+  name: string;
+  email: string;
+  phone?: string;
+  message: string;
+  locale: Locale;
+  history?: HistoryEntry[];
+};
 
 /* ------------------------------------------------------------ helpers */
 

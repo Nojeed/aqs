@@ -12,6 +12,8 @@ import { DetailSkeleton } from "@/components/site/skeleton";
 import { getService, getServices } from "@/lib/content";
 import { getDictionary, t } from "@/lib/i18n";
 import { currentLocale } from "@/lib/locale";
+import { pageMetadata } from "@/lib/seo";
+import { ViewBeacon } from "@/components/site/view-beacon";
 
 export async function generateStaticParams() {
   return (await getServices()).map((s) => ({ slug: s.slug }));
@@ -21,7 +23,13 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/services/[
   const [{ slug }, locale] = await Promise.all([params, currentLocale()]);
   const service = await getService(slug);
   if (!service) return {};
-  return { title: t(service.title, locale), description: t(service.summary, locale) };
+  return pageMetadata({
+    locale,
+    path: `/services/${service.slug}`,
+    title: t(service.title, locale),
+    description: t(service.summary, locale),
+    image: service.image || undefined,
+  });
 }
 
 export default function ServicePage({ params }: PageProps<"/[lang]/services/[slug]">) {
@@ -41,6 +49,7 @@ async function ServiceDetail({ params }: Pick<PageProps<"/[lang]/services/[slug]
 
   return (
     <>
+      <ViewBeacon type="services" slug={service.slug} />
       <PageHero
         title={t(service.title, locale)}
         subtitle={t(service.summary, locale)}

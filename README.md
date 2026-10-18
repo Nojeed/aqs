@@ -24,6 +24,30 @@ npm start                    # PORT=3000 by default
 Requires Node.js 20.9+ and a host with a persistent disk (a VPS or Node.js hosting such as Hostinger). Serverless hosts
 like Vercel can't store the admin's changes, because their file system is read-only.
 
+`npm test` runs the unit tests (CSV import and export).
+
+## Deploying on Hostinger
+
+Use a plan that runs Node.js apps (Business / Cloud web hosting with Node.js, or a VPS).
+
+**Web hosting with Node.js (hPanel)**
+1. hPanel → **Websites → Add website → Node.js app**, connect the GitHub repository (or upload the code).
+2. Build settings: Node **20 or newer**, install `npm ci`, build `npm run build`, start `npm start`.
+3. **Environment variables**: `ADMIN_PASSWORD` (strong), `SESSION_SECRET` (`openssl rand -hex 32`), `SITE_URL`
+   (e.g. `https://aqs-training.com`), and `DATA_DIR` set to a folder **outside** the app folder, e.g.
+   `/home/<user>/aqs-data`. Create that folder first.
+4. Deploy, then open `/admin` and sign in. The data files are created from `seed/` on first use.
+5. Point the domain at the app and enable SSL in hPanel.
+
+**VPS**
+1. Install Node 20+ and a process manager: `npm i -g pm2`.
+2. `git clone …`, `npm ci`, `npm run build`.
+3. Create `.env.production.local` with the variables above (`DATA_DIR=/var/lib/aqs-data`).
+4. `pm2 start npm --name aqs -- start` and `pm2 save`; put Nginx in front for the domain and SSL (Let's Encrypt).
+
+Either way: back up `DATA_DIR` regularly (it holds every edit, certificate, registration and message). After deploying,
+check the link previews with a social preview tool (e.g. opengraph.xyz) for the home page and one course.
+
 ## Environment variables
 
 | Variable          | Required | Purpose                                                                 |
@@ -32,7 +56,7 @@ like Vercel can't store the admin's changes, because their file system is read-o
 | `SESSION_SECRET`  | yes      | 32+ random characters used to sign the login cookie (`openssl rand -hex 32`) |
 | `ADMIN_USERNAME`  | no       | Defaults to `admin`                                                     |
 | `DATA_DIR`        | no       | Content folder, defaults to `./data`. **Set it outside the app folder in production.** |
-| `SITE_URL`        | no       | Public URL, used for link previews on social media                      |
+| `SITE_URL`        | no       | Public URL for link previews, the sitemap and robots.txt. **Set it before `npm run build`**: pages are pre-rendered with it. |
 
 Changing `SESSION_SECRET` signs everyone out.
 
@@ -46,6 +70,8 @@ DATA_DIR/
   courses.json
   posts.json
   certificates.json  read by the verification page
+  registrations.json course registrations from the course pages and the contact page
+  messages.json      messages from the contact page form
   uploads/           images uploaded through the admin panel (served at /uploads/…)
   backups/           the previous 15 versions of every file, saved automatically on each change
 ```

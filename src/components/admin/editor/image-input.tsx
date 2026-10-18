@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ImageIcon, Images, LoaderCircle, Upload, X } from "lucide-react";
+import { controlClass } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { ImageIcon, Images, LoaderCircle, Trash2, Upload, X } from "lucide-react";
 
 type MediaItem = { url: string; name: string; source: "stock" | "upload" };
 
@@ -51,7 +53,7 @@ export function ImageInput({ id, value, onChange }: { id: string; value: string;
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="/images/… or https://…"
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:ring-4 focus:ring-brand-100 focus:outline-none"
+          className={cn(controlClass, "rounded-lg px-3 py-2 md:text-sm")}
         />
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={() => fileRef.current?.click()} className="admin-btn" disabled={uploading}>
@@ -61,13 +63,13 @@ export function ImageInput({ id, value, onChange }: { id: string; value: string;
             <Images className="size-4" aria-hidden /> Library
           </button>
           {value && (
-            <button type="button" onClick={() => onChange("")} className="admin-btn text-red-600">
+            <button type="button" onClick={() => onChange("")} className="admin-btn text-danger-600">
               <X className="size-4" aria-hidden /> Remove
             </button>
           )}
         </div>
         <p className="text-xs text-slate-500">JPG, PNG, WebP or AVIF, up to 8 MB. Wide images (1600px+) look best.</p>
-        {error && <p className="text-xs font-semibold text-red-600">{error}</p>}
+        {error && <p className="text-xs font-semibold text-danger-600">{error}</p>}
         <input
           ref={fileRef}
           type="file"
@@ -92,6 +94,24 @@ export function ImageInput({ id, value, onChange }: { id: string; value: string;
 function MediaPicker({ onClose, onPick }: { onClose: () => void; onPick: (url: string) => void }) {
   const [items, setItems] = useState<MediaItem[] | null>(null);
   const [error, setError] = useState("");
+
+  async function remove(item: MediaItem) {
+    if (!confirm(`Delete ${item.name}? This can't be undone.`)) return;
+    const del = (force: boolean) =>
+      fetch(`/api/admin/media?name=${encodeURIComponent(item.name)}${force ? "&force=1" : ""}`, { method: "DELETE" });
+    let res = await del(false);
+    if (res.status === 409) {
+      const { usedIn } = (await res.json()) as { usedIn: string[] };
+      if (!confirm(`This image is still used in: ${usedIn.join(", ")}.
+Those pages will show no image. Delete anyway?`)) return;
+      res = await del(true);
+    }
+    if (!res.ok) {
+      setError(((await res.json().catch(() => ({}))) as { error?: string }).error ?? "Could not delete the image.");
+      return;
+    }
+    setItems((list) => list?.filter((i) => i.url !== item.url) ?? null);
+  }
 
   useEffect(() => {
     fetch("/api/admin/media")
@@ -119,12 +139,23 @@ function MediaPicker({ onClose, onPick }: { onClose: () => void; onPick: (url: s
           </button>
         </div>
         <div className="overflow-y-auto p-5">
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-danger-600">{error}</p>}
           {!items && !error && <LoaderCircle className="mx-auto size-6 animate-spin text-slate-400" />}
           {items && (
             <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
               {items.map((item) => (
-                <li key={item.url}>
+                <li key={item.url} className="group/item relative">
+                  {item.source === "upload" && (
+                    <button
+                      type="button"
+                      onClick={() => remove(item)}
+                      className="absolute end-2 top-2 z-10 inline-flex size-9 items-center justify-center rounded-lg bg-white/95 text-slate-500 opacity-0 shadow transition group-hover/item:opacity-100 hover:bg-danger-50 hover:text-danger-600 focus-visible:opacity-100 pointer-coarse:opacity-100"
+                      aria-label={`Delete ${item.name}`}
+                      title="Delete image"
+                    >
+                      <Trash2 className="size-4" aria-hidden />
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => onPick(item.url)}

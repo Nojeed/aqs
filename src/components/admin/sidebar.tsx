@@ -7,6 +7,9 @@ import { Suspense, useState } from "react";
 import {
   BadgeCheck,
   BookOpen,
+  ClipboardList,
+  History,
+  Inbox,
   ExternalLink,
   LayoutDashboard,
   LogOut,
@@ -21,11 +24,14 @@ import mark from "../../../public/brand/logo-mark-light.png";
 
 const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/registrations", label: "Registrations", icon: ClipboardList },
+  { href: "/admin/messages", label: "Messages", icon: Inbox },
   { href: "/admin/site", label: "Site content", icon: Settings2 },
   { href: "/admin/services", label: "Services", icon: Wrench },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
   { href: "/admin/posts", label: "Blog posts", icon: Newspaper },
   { href: "/admin/certificates", label: "Certificates", icon: BadgeCheck },
+  { href: "/admin/backups", label: "Backups", icon: History },
 ];
 
 export function Sidebar() {
@@ -76,6 +82,9 @@ export function Sidebar() {
                 <LogOut className="size-4" aria-hidden /> Sign out
               </button>
             </form>
+            <p className="hidden px-3 pt-2 text-xs text-white/40 pointer-fine:block">
+              Press <kbd className="rounded border border-white/20 px-1 font-sans">?</kbd> for keyboard shortcuts
+            </p>
           </div>
         </aside>
       </div>

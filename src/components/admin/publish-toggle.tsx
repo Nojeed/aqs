@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { togglePublished } from "@/app/admin/actions";
+import { badgeClass } from "@/components/ui/status-badge";
+import { cn } from "@/lib/utils";
 
 export function PublishToggle({ collection, id, published }: { collection: string; id: string; published: boolean }) {
   const router = useRouter();
@@ -18,9 +20,7 @@ export function PublishToggle({ collection, id, published }: { collection: strin
         })
       }
       title={published ? "Click to hide from the website" : "Click to publish"}
-      className={`rounded-full px-3 py-1 text-xs font-bold transition disabled:opacity-50 ${
-        published ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100" : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-      }`}
+      className={cn(badgeClass(published ? "success" : "neutral"), "cursor-pointer transition hover:brightness-95 disabled:opacity-50")}
     >
       {published ? "Published" : "Draft"}
     </button>

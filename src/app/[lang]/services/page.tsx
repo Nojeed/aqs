@@ -5,9 +5,16 @@ import { Reveal } from "@/components/site/reveal";
 import { getServices, getSite } from "@/lib/content";
 import { getDictionary, t } from "@/lib/i18n";
 import { currentLocale } from "@/lib/locale";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: getDictionary(await currentLocale()).nav.services };
+  const [locale, site] = await Promise.all([currentLocale(), getSite()]);
+  return pageMetadata({
+    locale,
+    path: "/services",
+    title: getDictionary(locale).nav.services,
+    description: t(site.sections.servicesSubtitle, locale),
+  });
 }
 
 export default async function ServicesPage() {
@@ -19,7 +26,7 @@ export default async function ServicesPage() {
       <PageHero
         title={t(site.sections.servicesTitle, locale)}
         subtitle={t(site.sections.servicesSubtitle, locale)}
-        eyebrow={d.nav.services}
+       
         image="/images/production-line.jpg"
       />
       <section className="container-page py-20">

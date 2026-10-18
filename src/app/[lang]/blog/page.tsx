@@ -7,9 +7,16 @@ import { Reveal } from "@/components/site/reveal";
 import { getPosts, getSite } from "@/lib/content";
 import { formatDate, getDictionary, t } from "@/lib/i18n";
 import { currentLocale } from "@/lib/locale";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: getDictionary(await currentLocale()).nav.blog };
+  const [locale, site] = await Promise.all([currentLocale(), getSite()]);
+  return pageMetadata({
+    locale,
+    path: "/blog",
+    title: getDictionary(locale).nav.blog,
+    description: t(site.sections.blogSubtitle, locale),
+  });
 }
 
 export default async function BlogPage() {
@@ -23,7 +30,7 @@ export default async function BlogPage() {
       <PageHero
         title={t(site.sections.blogTitle, locale)}
         subtitle={t(site.sections.blogSubtitle, locale)}
-        eyebrow={d.nav.blog}
+       
         image="/images/food-lab-produce.jpg"
       />
       <section className="container-page py-20">

@@ -8,6 +8,7 @@ import { Header } from "@/components/site/header";
 import { MotionProvider } from "@/components/site/motion-provider";
 import { getSite, getYear } from "@/lib/content";
 import { dir, getDictionary, isLocale, locales, t } from "@/lib/i18n";
+import { pageMetadata, siteUrl } from "@/lib/seo";
 
 export async function generateStaticParams() {
   return locales.map((l) => ({ lang: l }));
@@ -17,20 +18,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await lang();
   if (!isLocale(locale)) return {};
   const site = await getSite();
-  const title = t(site.seo.title, locale);
   return {
-    metadataBase: new URL(process.env.SITE_URL || "http://localhost:3000"),
-    title: { default: title, template: `%s | ${site.brand.name}` },
-    description: t(site.seo.description, locale),
-    alternates: { languages: { ar: "/ar", en: "/en" } },
-    openGraph: {
-      title,
-      description: t(site.seo.description, locale),
-      siteName: t(site.brand.fullName, locale),
-      locale: locale === "ar" ? "ar_AR" : "en_US",
-      type: "website",
-      images: [{ url: "/brand/banner.png", width: 960, height: 400 }],
-    },
+    ...(await pageMetadata({ locale, path: "" })),
+    metadataBase: new URL(siteUrl),
+    title: { default: t(site.seo.title, locale), template: `%s | ${site.brand.name}` },
   };
 }
 
@@ -48,7 +39,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[lang]">) {
   ];
 
   return (
-    <html lang={locale} dir={dir(locale)} className={`${plexArabic.variable} ${jakarta.variable}`}>
+    <html lang={locale} dir={dir(locale)} data-scroll-behavior="smooth" className={`${plexArabic.variable} ${jakarta.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <a
           href="#main"

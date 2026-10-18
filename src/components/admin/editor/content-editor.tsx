@@ -122,13 +122,13 @@ export function ContentEditor({
           {status && (
             <span
               role="status"
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ${status.kind === "ok" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ${status.kind === "ok" ? "bg-success-50 text-success-700" : "bg-danger-50 text-danger-700"}`}
             >
               {status.kind === "ok" && <CircleCheck className="size-4" aria-hidden />}
               {status.text}
             </span>
           )}
-          {dirty && !status && <span className="text-sm text-amber-600">Unsaved changes</span>}
+          {dirty && !status && <span className="text-sm text-warning-600">Unsaved changes</span>}
           {viewUrl && (
             <a href={viewUrl} target="_blank" className="admin-btn">
               <ExternalLink className="size-4" aria-hidden />
@@ -136,7 +136,7 @@ export function ContentEditor({
             </a>
           )}
           {remove && (
-            <button type="button" onClick={onDelete} className="admin-btn text-red-600 hover:bg-red-50" disabled={pending}>
+            <button type="button" onClick={onDelete} className="admin-btn text-danger-600 hover:bg-danger-50" disabled={pending}>
               <Trash2 className="size-4" aria-hidden />
               <span className="hidden sm:inline">Delete</span>
             </button>

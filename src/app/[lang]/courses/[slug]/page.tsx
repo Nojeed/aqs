@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { Calendar, CircleCheck, Clock, Monitor, Signal, Tag, Users } from "lucide-react";
+import { Calendar, CircleCheck, Clock, Monitor, Tag, Users, type LucideProps } from "lucide-react";
+import { LevelIcon } from "@/components/level-icon";
 import { Breadcrumbs } from "@/components/site/breadcrumbs";
 import { CourseCard } from "@/components/site/cards";
 import { Markdown } from "@/components/site/markdown";
 import { PageHero } from "@/components/site/page-hero";
+import { ViewBeacon } from "@/components/site/view-beacon";
+import { RegistrationForm } from "@/components/site/registration-form";
 import { DetailSkeleton } from "@/components/site/skeleton";
 import { getCourse, getCourses } from "@/lib/content";
 import { formatDate, getDictionary, t } from "@/lib/i18n";
 import { currentLocale } from "@/lib/locale";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateStaticParams() {
   return (await getCourses()).map((c) => ({ slug: c.slug }));
@@ -21,11 +24,13 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/courses/[s
   const [{ slug }, locale] = await Promise.all([params, currentLocale()]);
   const course = await getCourse(slug);
   if (!course) return {};
-  return {
+  return pageMetadata({
+    locale,
+    path: `/courses/${course.slug}`,
     title: t(course.title, locale),
     description: t(course.summary, locale),
-    openGraph: course.image ? { images: [course.image] } : undefined,
-  };
+    image: course.image || undefined,
+  });
 }
 
 export default function CoursePage({ params }: PageProps<"/[lang]/courses/[slug]">) {
@@ -44,7 +49,7 @@ async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[slug]">
   const related = all.filter((c) => c.id !== course.id).slice(0, 3);
 
   const facts = [
-    { icon: Signal, label: d.courses.level, value: d.courses.levels[course.level] },
+    { icon: (p: LucideProps) => <LevelIcon level={course.level} {...p} />, label: d.courses.level, value: d.courses.levels[course.level] },
     { icon: Monitor, label: d.courses.format, value: d.courses.formats[course.format] },
     { icon: Clock, label: d.courses.duration, value: t(course.duration, locale) },
     { icon: Calendar, label: d.courses.startDate, value: course.startDate ? formatDate(course.startDate, locale) : "" },
@@ -53,6 +58,7 @@ async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[slug]">
 
   return (
     <>
+      <ViewBeacon type="courses" slug={course.slug} />
       <PageHero
         title={t(course.title, locale)}
         subtitle={t(course.summary, locale)}
@@ -139,16 +145,26 @@ async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[slug]">
             <div className="bg-brand-900 p-7 text-white">
               <h2 className="font-display text-lg font-bold text-white">{d.courses.enrollCta}</h2>
               <p className="mt-2 text-sm leading-6 text-white/70">{d.courses.enrollText}</p>
-              <Link
-                href={`/${locale}/contact?subject=${encodeURIComponent(t(course.title, locale))}`}
-                className="btn-light mt-6 w-full"
-              >
+              <a href="#register" className="btn-light mt-6 w-full">
                 {d.common.enroll}
-              </Link>
+              </a>
             </div>
           </div>
         </aside>
       </div>
+
+      <section id="register" className="scroll-mt-28 border-t border-slate-200/70 py-20">
+        <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+          <div>
+            <h2 className="font-display text-3xl font-bold text-balance">{d.register.title}</h2>
+            <p className="mt-3 max-w-md text-lg leading-8 text-slate-600">{d.register.text}</p>
+            <p className="mt-6 font-semibold text-brand-800">{t(course.title, locale)}</p>
+          </div>
+          <div className="card p-6 sm:p-8">
+            <RegistrationForm locale={locale} courseId={course.id} />
+          </div>
+        </div>
+      </section>
 
       {related.length > 0 && (
         <section className="bg-brand-50/60 py-20">
