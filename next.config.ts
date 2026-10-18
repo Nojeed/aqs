@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   experimental: {
     globalNotFound: true,
+    // Hostinger's build sandbox blocks Turbopack's loader child processes,
+    // which breaks the Tailwind loader. Worker threads run in-process.
+    turbopackPluginRuntimeStrategy: "workerThreads",
     serverActions: {
       // Blog posts with long markdown bodies are saved through server actions.
       bodySizeLimit: "4mb",
