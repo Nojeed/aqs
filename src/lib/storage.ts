@@ -4,7 +4,9 @@ import path from "node:path";
 import { randomBytes } from "node:crypto";
 import seedCertificates from "../../seed/certificates.json";
 import seedCourses from "../../seed/courses.json";
+import seedMessages from "../../seed/messages.json";
 import seedPosts from "../../seed/posts.json";
+import seedRegistrations from "../../seed/registrations.json";
 import seedServices from "../../seed/services.json";
 import seedSite from "../../seed/site.json";
 
@@ -18,10 +20,13 @@ export const DATA_DIR = path.resolve(
 );
 export const UPLOADS_DIR = path.join(DATA_DIR, "uploads");
 // Bundled into the build, because hosts like Hostinger deploy only part of the repo.
+// Every new file in ./seed must be imported and listed here, or reading it crashes in production.
 const SEEDS: Record<string, unknown> = {
   "certificates.json": seedCertificates,
   "courses.json": seedCourses,
+  "messages.json": seedMessages,
   "posts.json": seedPosts,
+  "registrations.json": seedRegistrations,
   "services.json": seedServices,
   "site.json": seedSite,
 };
@@ -46,7 +51,7 @@ export async function readJson<T>(file: string): Promise<T> {
     return JSON.parse(await fs.readFile(target, "utf8")) as T;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-    if (!(file in SEEDS)) throw error;
+    if (!(file in SEEDS)) throw new Error(`No seed for ${file}: add seed/${file} to SEEDS in storage.ts`);
     const seed = `${JSON.stringify(SEEDS[file], null, 2)}\n`;
     await writeFileAtomic(target, seed);
     // Parse a fresh copy so callers can't mutate the bundled default.
