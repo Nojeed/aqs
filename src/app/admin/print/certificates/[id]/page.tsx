@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
+import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
 import { PrintButton } from "@/components/admin/print-button";
 import { requireAdmin } from "@/lib/auth";
@@ -14,7 +15,16 @@ import logo from "../../../../../../public/brand/logo-full.png";
 export const metadata: Metadata = { title: "Print certificate" };
 
 /** A4 landscape certificate with a QR code to its verification page. Outside the admin layout so only the certificate prints. */
-export default async function PrintCertificatePage({ params }: PageProps<"/admin/print/certificates/[id]">) {
+export default function PrintCertificatePage({ params }: PageProps<"/admin/print/certificates/[id]">) {
+  // Reading the session is request-time work, so it streams inside a boundary (this page sits outside the admin layout).
+  return (
+    <Suspense fallback={<p className="p-10 text-center text-slate-400">Loading certificate…</p>}>
+      <PrintCertificate params={params} />
+    </Suspense>
+  );
+}
+
+async function PrintCertificate({ params }: Pick<PageProps<"/admin/print/certificates/[id]">, "params">) {
   await requireAdmin();
   const { id } = await params;
   const cert = (await readCertificates()).find((c) => c.id === id);

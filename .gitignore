@@ -44,3 +44,9 @@ next-env.d.ts
 /data/
 
 .impeccable/
+
+# end-to-end tests (playwright)
+/.e2e-data/
+/.next-e2e/
+/test-results/
+/playwright-report/

@@ -11,6 +11,8 @@ import { dir, formatDate, getDictionary, t, type L10n, type Locale } from "@/lib
 
 const empty = { type: "individual", courseId: "", session: "", name: "", company: "", trainees: "5", email: "", phone: "", notes: "" };
 
+// Note for the dropdowns below: React resets the form after every submit, and Radix Select answers a form
+// reset by reporting an empty value. Ignoring "" keeps the visitor's choice when the server sends back an error.
 type Availability = { key: string; date: string; location: L10n; left: number | null };
 
 /** Pass `courseId` on a course page, or `courses` to let the visitor pick one (or custom training). */
@@ -86,7 +88,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
     <form ref={formRef} action={action} noValidate className="space-y-5">
       {courses ? (
         <Field id="reg-course" label={r.course}>
-          <Select name="courseId" value={values.courseId} onValueChange={(v) => setValues((s) => ({ ...s, courseId: v, session: "" }))} dir={dir(locale)}>
+          <Select name="courseId" value={values.courseId} onValueChange={(v) => v && setValues((s) => ({ ...s, courseId: v, session: "" }))} dir={dir(locale)}>
             <SelectTrigger id="reg-course">
               <SelectValue />
             </SelectTrigger>
@@ -112,7 +114,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
           </p>
         ) : (
           <Field id="reg-session" label={r.session} error={fieldError?.session && r.errors[fieldError.session]}>
-            <Select value={session || undefined} onValueChange={(v) => setValues((x) => ({ ...x, session: v }))} dir={dir(locale)}>
+            <Select value={session || undefined} onValueChange={(v) => v && setValues((x) => ({ ...x, session: v }))} dir={dir(locale)}>
               <SelectTrigger {...fieldAria("reg-session", { error: fieldError?.session })}>
                 <SelectValue placeholder={r.chooseSession} />
               </SelectTrigger>

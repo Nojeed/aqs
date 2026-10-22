@@ -28,6 +28,10 @@ export async function getServices() {
 }
 
 export async function getCourses() {
+  // Cached because it reads today's date (for the next session); refreshed hourly and on every admin save.
+  "use cache";
+  cacheTag(CONTENT_TAG);
+  cacheLife("hours");
   return (await getAll("courses"))
     .filter((c) => c.published)
     .sort(byOrder)
