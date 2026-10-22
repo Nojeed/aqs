@@ -24,14 +24,23 @@ How things should look and behave lives in `DESIGN.md`.
 
 ## Bugs
 
-Found by behaviour checks. Every bug gets a line here: open ones at the top, fixed ones move to "Fixed" with the date.
+Found by behaviour checks and the end-to-end tests. Every bug gets a line here: open ones at the top, fixed ones move to "Fixed" with the date.
 
 ### Open
-- [ ] **(P3)** Admin "not found" pages (a deleted registration, a wrong certificate number in the URL) answer with HTTP 200 instead of 404. They show the right message and are hidden from search engines (`noindex`); the 200 comes from the admin's streamed rendering.
-- [ ] **(P3)** Page views also count the admin's own visits to the public pages.
-- [ ] **(P3)** A remembered table filter can point to a course that no longer exists, which shows an empty table until you press Clear.
-- [ ] **(P3)** Renaming a course doesn't update certificates already issued for it: their course name (English and Arabic) keeps the old title, shown as an extra option in the certificate's course dropdown.
-- [ ] **(P3)** New-registration alerts arrive within 30 seconds (polling), and only while an admin tab is open.
+- [ ] **(P2, performance)** Mobile Lighthouse Performance is 72–78 (Accessibility 100, Best practices 100, SEO 100). On a simulated slow phone the main content is drawn about 5.5 s after load, although the HTML arrives in 0.5 s. Trimming fonts didn't move it, so the likely cause is the JavaScript every page loads (Motion page transitions, Radix components). Next: load the animations lazily, then measure on the real Hostinger server.
+- [ ] **(P3)** Admin "not found" pages answer with HTTP 200 instead of 404. They show the right message and are hidden from search engines (`noindex`); the 200 comes from the admin's streamed rendering.
+- [ ] **(P3)** New-registration alerts arrive within 30 seconds (polling), and only while an admin tab is open. Email alerts (when SMTP is set) don't have this limit.
+- [ ] **(P3)** Two people booking the last seat of a course date at the same moment can both get in.
+
+### Fixed 2026-10-22 (second batch, mostly found by the new end-to-end tests)
+- [x] **Fresh installs crashed** on the registration form, the contact form and admin sign-in: `registrations.json`, `messages.json` and `users.json` had no seed, so an empty `DATA_DIR` threw errors. A new Hostinger install would have been affected.
+- [x] **Production build failed** on course pages (today's date read during pre-rendering) and on the certificate print page (session read without a loading boundary).
+- [x] Contact form **lost what visitors typed** before the page finished loading (the form was swapped out after load).
+- [x] After a failed submit (e.g. "not enough seats"), the chosen **date and course dropdowns cleared**, so the retry failed too.
+- [x] Page views counted the admin's own visits.
+- [x] A remembered table filter could point to a course that no longer exists and show an empty table.
+- [x] Renaming a course left its certificates under the old course name.
+- [x] Home page: the row of standard names had too little contrast (2.5:1, now 3.9:1). Course list: card titles skipped a heading level.
 
 ### Fixed 2026-10-22
 - [x] Several admin buttons failed silently: publish/draft, revoke/restore, reorder, inbox status and delete showed nothing when the save failed. Every admin action now confirms with a toast or shows the error.
@@ -48,6 +57,16 @@ Found by behaviour checks. Every bug gets a line here: open ones at the top, fix
 ---
 
 ## Done
+
+### 2026-10-22 (second batch)
+- [x] **Email alerts** (optional, SMTP / Hostinger email): staff get each registration and message; visitors get a confirmation in their language
+- [x] **Backups off the server:** "Download full backup" (.tar.gz of all data and images) and `scripts/backup.mjs` for a nightly copy
+- [x] **Printable certificate** (A4, bilingual) with a QR code to its verification page
+- [x] **Course dates with seats:** several dates per course, live "X seats left", full dates closed, overbooking refused
+- [x] **Staff accounts:** owner + staff logins, change password, Users and Activity pages, every change logged
+- [x] **Analytics hooks:** Search Console verification and Google Analytics 4, switched on by environment variables
+- [x] **End-to-end tests** (`npm run test:e2e`, 14 tests) on the main paths; **Lighthouse audit** run (see Bugs → Open for performance)
+- [x] Fewer font files (unused weights removed)
 
 ### 2026-10-22
 - [x] **Notifications:** one toast system for the whole admin (sonner); live inbox badges, arrival toasts, desktop alerts, tab-title count
