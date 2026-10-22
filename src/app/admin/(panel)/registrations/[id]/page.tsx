@@ -31,6 +31,7 @@ export default async function RegistrationPage({ params }: PageProps<"/admin/reg
       history={r.history ?? []}
       facts={[
         ["Course", r.courseTitle],
+        ...(r.session ? ([["Date", r.session]] as [string, string][]) : []),
         ["Registering as", r.type === "company" ? "Company" : "Individual"],
         ...(r.type === "company"
           ? ([

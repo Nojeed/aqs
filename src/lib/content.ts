@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { readJson } from "./storage";
-import { collections, type CollectionItem, type CollectionName, type Site } from "./schema";
+import { collections, upcomingSessions, type CollectionItem, type CollectionName, type Site } from "./schema";
 
 /** Every public read is tagged with this so admin saves can refresh the site instantly. */
 export const CONTENT_TAG = "content";
@@ -28,7 +28,11 @@ export async function getServices() {
 }
 
 export async function getCourses() {
-  return (await getAll("courses")).filter((c) => c.published).sort(byOrder);
+  return (await getAll("courses"))
+    .filter((c) => c.published)
+    .sort(byOrder)
+    // With dates listed, the card's start date is the next upcoming one.
+    .map((c) => ({ ...c, startDate: upcomingSessions(c.sessions)[0]?.date ?? c.startDate }));
 }
 
 export async function getPosts() {

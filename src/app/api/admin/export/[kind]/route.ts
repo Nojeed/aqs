@@ -9,8 +9,8 @@ const exporters = {
   registrations: async () => {
     const rows = await readJson<Registration[]>(REGISTRATIONS_FILE);
     return [
-      ["Received (UTC)", "Status", "Type", "Name", "Company", "Trainees", "Email", "Phone", "Course", "Notes", "Language"],
-      ...rows.map((r) => [date(r.createdAt), r.status, r.type, r.name, r.company, r.trainees, r.email, r.phone, r.courseTitle, r.notes, r.locale]),
+      ["Received (UTC)", "Status", "Type", "Name", "Company", "Trainees", "Email", "Phone", "Course", "Date", "Notes", "Language"],
+      ...rows.map((r) => [date(r.createdAt), r.status, r.type, r.name, r.company, r.trainees, r.email, r.phone, r.courseTitle, r.session, r.notes, r.locale]),
     ];
   },
   messages: async () => {

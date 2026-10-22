@@ -7,9 +7,11 @@ import { Field, fieldAria } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { dir, getDictionary, type Locale } from "@/lib/i18n";
+import { dir, formatDate, getDictionary, t, type L10n, type Locale } from "@/lib/i18n";
 
-const empty = { type: "individual", courseId: "", name: "", company: "", trainees: "5", email: "", phone: "", notes: "" };
+const empty = { type: "individual", courseId: "", session: "", name: "", company: "", trainees: "5", email: "", phone: "", notes: "" };
+
+type Availability = { key: string; date: string; location: L10n; left: number | null };
 
 /** Pass `courseId` on a course page, or `courses` to let the visitor pick one (or custom training). */
 type Props = { locale: Locale; courseId?: string; courses?: { id: string; title: string }[] };
@@ -24,6 +26,23 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
   const r = getDictionary(locale).register;
   const [values, setValues] = useState({ ...empty, courseId: courses?.[0]?.id ?? "custom" });
   const [result, action, pending] = useActionState<RegisterResult | null, FormData>(register, null);
+  // Dates and seats for the chosen course, fetched live (course pages are pre-rendered, seats change).
+  const activeCourse = courses ? values.courseId : courseId;
+  const [availability, setAvailability] = useState<{ course: string; sessions: Availability[] } | null>(null);
+  useEffect(() => {
+    if (!activeCourse || activeCourse === "custom") return;
+    let live = true;
+    fetch(`/api/sessions?course=${encodeURIComponent(activeCourse)}`)
+      .then((res) => (res.ok ? res.json() : { sessions: [] }))
+      .then((data: { sessions: Availability[] }) => live && setAvailability({ course: activeCourse, sessions: data.sessions }))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [activeCourse, result]);
+  const sessions = availability && availability.course === activeCourse ? availability.sessions : [];
+  const allFull = sessions.length > 0 && sessions.every((x) => x.left === 0);
+  const session = sessions.some((x) => x.key === values.session && x.left !== 0) ? values.session : "";
   const formRef = useRef<HTMLFormElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
   // After a submit: bring the success message into view, or put the cursor in the first field with an error.
@@ -67,7 +86,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
     <form ref={formRef} action={action} noValidate className="space-y-5">
       {courses ? (
         <Field id="reg-course" label={r.course}>
-          <Select name="courseId" value={values.courseId} onValueChange={(v) => setValues((s) => ({ ...s, courseId: v }))} dir={dir(locale)}>
+          <Select name="courseId" value={values.courseId} onValueChange={(v) => setValues((s) => ({ ...s, courseId: v, session: "" }))} dir={dir(locale)}>
             <SelectTrigger id="reg-course">
               <SelectValue />
             </SelectTrigger>
@@ -85,6 +104,38 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
         <input type="hidden" name="courseId" value={courseId} />
       )}
       <input type="hidden" name="locale" value={locale} />
+      <input type="hidden" name="session" value={session} />
+      {sessions.length > 0 &&
+        (allFull ? (
+          <p role="status" className="rounded-xl bg-warning-50 p-4 text-sm font-medium text-warning-800 ring-1 ring-warning-200">
+            {r.allFull}
+          </p>
+        ) : (
+          <Field id="reg-session" label={r.session} error={fieldError?.session && r.errors[fieldError.session]}>
+            <Select value={session || undefined} onValueChange={(v) => setValues((x) => ({ ...x, session: v }))} dir={dir(locale)}>
+              <SelectTrigger {...fieldAria("reg-session", { error: fieldError?.session })}>
+                <SelectValue placeholder={r.chooseSession} />
+              </SelectTrigger>
+              <SelectContent>
+                {sessions.map((x) => (
+                  <SelectItem key={x.key} value={x.key} disabled={x.left === 0}>
+                    <span className="flex items-center gap-3">
+                      <span>
+                        {formatDate(x.date, locale)}
+                        {t(x.location, locale) && ` · ${t(x.location, locale)}`}
+                      </span>
+                      {x.left !== null && (
+                        <span className={`text-xs ${x.left === 0 ? "font-semibold text-danger-600" : x.left <= 5 ? "font-semibold text-warning-700" : "text-slate-500"}`}>
+                          {x.left === 0 ? r.full : `${x.left} ${r.seatsLeft}`}
+                        </span>
+                      )}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        ))}
       {/* Honeypot: hidden from people and assistive tech, filled in by bots. */}
       <div className="absolute -start-[9999px] size-px overflow-hidden" aria-hidden>
         <input name="website" tabIndex={-1} autoComplete="off" />
@@ -154,7 +205,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
       )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
-        <button type="submit" disabled={pending} className="btn-primary shrink-0">
+        <button type="submit" disabled={pending || allFull} className="btn-primary shrink-0">
           {pending && <LoaderCircle className="size-4 animate-spin" aria-hidden />}
           {pending ? r.sending : r.submit}
         </button>

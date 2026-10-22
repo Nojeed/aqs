@@ -44,6 +44,7 @@ export async function sendRegistrationEmails(r: Registration) {
     `New registration: ${r.company || r.name} – ${r.courseTitle}`,
     [
       `Course: ${r.courseTitle}`,
+      r.session ? `Date: ${r.session}` : "",
       `Registering as: ${r.type === "company" ? "Company" : "Individual"}`,
       `Name: ${who}`,
       `Email: ${r.email}`,

@@ -6,13 +6,14 @@ import { after } from "next/server";
 import { getCourses } from "@/lib/content";
 import { isLocale } from "@/lib/i18n";
 import { sendMessageEmails, sendRegistrationEmails } from "@/lib/mail";
+import { sessionAvailability } from "@/lib/sessions";
 import { MESSAGES_FILE, REGISTRATIONS_FILE, type Message, type Registration } from "@/lib/schema";
 import { readJson, writeJson } from "@/lib/storage";
 
-type FieldError = "required" | "email" | "phone";
+type FieldError = "required" | "email" | "phone" | "session" | "full";
 export type RegisterResult =
   | { ok: true }
-  | { ok: false; error?: "rateLimit" | "generic"; fields?: Partial<Record<"name" | "email" | "phone" | "company", FieldError>> };
+  | { ok: false; error?: "rateLimit" | "generic"; fields?: Partial<Record<"name" | "email" | "phone" | "company" | "session", FieldError>> };
 
 // In-memory throttle per IP: 5 submissions per 10 minutes. Resets on restart, which is fine for spam bursts.
 const recent = new Map<string, number[]>();
@@ -52,6 +53,14 @@ export async function register(_prev: RegisterResult | null, formData: FormData)
   const courseId = field("courseId", 80);
   const course = courseId === "custom" ? null : (await getCourses()).find((c) => c.id === courseId);
   if ((courseId !== "custom" && !course) || !isLocale(locale)) return { ok: false, error: "generic" };
+  const trainees = type === "company" ? Math.min(500, Math.max(1, Math.round(Number(formData.get("trainees")) || 1))) : 1;
+
+  // Courses with dates: a date must be picked and have enough seats for everyone being registered.
+  // shortcut: two people taking the last seat at the same moment can both get in; fine at this volume, lock if it ever matters.
+  const sessions = course ? await sessionAvailability(course) : [];
+  const session = sessions.find((s) => s.key === field("session", 200));
+  if (sessions.length && !session) return { ok: false, fields: { session: "session" } };
+  if (session && session.left !== null && session.left < trainees) return { ok: false, fields: { session: "full" } };
   if (await throttled()) return { ok: false, error: "rateLimit" };
 
   const entry: Registration = {
@@ -62,10 +71,8 @@ export async function register(_prev: RegisterResult | null, formData: FormData)
     name,
     email,
     phone,
-    ...(type === "company" && {
-      company,
-      trainees: Math.min(500, Math.max(1, Math.round(Number(formData.get("trainees")) || 1))),
-    }),
+    ...(type === "company" && { company, trainees }),
+    ...(session && { session: session.key }),
     courseId,
     courseTitle: course ? course.title.en || course.title.ar : "Custom / in-house training",
     ...(notes && { notes }),
