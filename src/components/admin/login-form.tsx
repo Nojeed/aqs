@@ -11,10 +11,10 @@ export function LoginForm() {
   return (
     <form action={action} className="mt-8 space-y-4">
       <Field id="login-username" label="Username">
-        <Input id="login-username" name="username" autoComplete="username" defaultValue="admin" required />
+        <Input id="login-username" name="username" autoComplete="username" required autoFocus />
       </Field>
       <Field id="login-password" label="Password">
-        <Input id="login-password" name="password" type="password" autoComplete="current-password" required autoFocus />
+        <Input id="login-password" name="password" type="password" autoComplete="current-password" required />
       </Field>
       {state && !state.ok && (
         <p role="alert" className="rounded-xl bg-danger-50 px-4 py-3 text-sm text-danger-700 ring-1 ring-danger-200">

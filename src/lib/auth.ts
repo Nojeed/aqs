@@ -3,6 +3,7 @@ import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
+import { currentUser, type SessionUser } from "./users";
 
 export const SESSION_COOKIE = "aqs_admin";
 const SESSION_DAYS = 7;
@@ -24,35 +25,30 @@ function safeEqual(a: string, b: string) {
   return timingSafeEqual(ha, hb);
 }
 
-export function checkCredentials(username: string, password: string) {
-  if (authConfigError()) return false;
-  const expectedUser = process.env.ADMIN_USERNAME || "admin";
-  const userOk = safeEqual(username.trim().toLowerCase(), expectedUser.toLowerCase());
-  const passOk = safeEqual(password, process.env.ADMIN_PASSWORD!);
-  return userOk && passOk;
-}
+type Payload = { exp: number; u: string; v: string };
 
-export function createSessionToken() {
+export function createSessionToken(user: SessionUser) {
   const payload = Buffer.from(
-    JSON.stringify({ exp: Date.now() + SESSION_DAYS * 86_400_000 }),
+    JSON.stringify({ exp: Date.now() + SESSION_DAYS * 86_400_000, u: user.username, v: user.v } satisfies Payload),
   ).toString("base64url");
   return `${payload}.${sign(payload)}`;
 }
 
-export function verifySessionToken(token: string | undefined) {
-  if (!token || authConfigError()) return false;
+function readSessionToken(token: string | undefined): Payload | null {
+  if (!token || authConfigError()) return null;
   const [payload, signature] = token.split(".");
-  if (!payload || !signature || !safeEqual(signature, sign(payload))) return false;
+  if (!payload || !signature || !safeEqual(signature, sign(payload))) return null;
   try {
-    const { exp } = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
-    return typeof exp === "number" && exp > Date.now();
+    const data = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as Payload;
+    // Tokens from before staff accounts have no user: treat them as signed out.
+    return typeof data.exp === "number" && data.exp > Date.now() && data.u && data.v ? data : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
-export async function setSessionCookie() {
-  (await cookies()).set(SESSION_COOKIE, createSessionToken(), {
+export async function setSessionCookie(user: SessionUser) {
+  (await cookies()).set(SESSION_COOKIE, createSessionToken(user), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production" && process.env.INSECURE_COOKIES !== "true",
@@ -65,13 +61,28 @@ export async function clearSessionCookie() {
   (await cookies()).delete(SESSION_COOKIE);
 }
 
-export async function isAdmin() {
+/** The signed-in admin, or null. Removed users and changed passwords end their sessions. */
+export async function getSession(): Promise<SessionUser | null> {
   // Session checks compare against the current time, so they must run per request, never in a prerender.
   await connection();
-  return verifySessionToken((await cookies()).get(SESSION_COOKIE)?.value);
+  const data = readSessionToken((await cookies()).get(SESSION_COOKIE)?.value);
+  return data ? currentUser(data.u, data.v) : null;
+}
+
+export async function isAdmin() {
+  return Boolean(await getSession());
 }
 
 /** Call at the top of every admin page and server action. */
 export async function requireAdmin() {
-  if (!(await isAdmin())) redirect("/admin/login");
+  const session = await getSession();
+  if (!session) redirect("/admin/login");
+  return session;
+}
+
+/** Owner-only pages and actions (users, activity log). Staff are sent back to the dashboard. */
+export async function requireOwner() {
+  const session = await requireAdmin();
+  if (session.role !== "owner") redirect("/admin");
+  return session;
 }

@@ -1,5 +1,6 @@
 import { promises as fs } from "node:fs";
 import { adminGuard } from "@/lib/api-auth";
+import { audit } from "@/lib/audit";
 import { CERTIFICATES_FILE, normalizeId, parseCertificates, readCertificates, type Certificate } from "@/lib/certificates";
 import { certificatesFromCsv, certificatesToCsv } from "@/lib/csv";
 import { dataPath, writeJson } from "@/lib/storage";
@@ -66,8 +67,10 @@ export async function POST(request: Request) {
       byId.set(key, { ...byId.get(key), ...c });
     }
     await writeJson(CERTIFICATES_FILE, [...byId.values()]);
+    await audit("Imported certificates (add or update)", `${file.name}: ${added} added, ${list.length - added} updated`);
     return Response.json({ count: byId.size, added, updated: list.length - added });
   }
   await writeJson(CERTIFICATES_FILE, list);
+  await audit("Replaced all certificates", `${file.name}: ${list.length} certificates`);
   return Response.json({ count: list.length });
 }

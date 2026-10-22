@@ -4,13 +4,10 @@ import { randomBytes } from "node:crypto";
 import { headers } from "next/headers";
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-  checkCredentials,
-  clearSessionCookie,
-  authConfigError,
-  requireAdmin,
-  setSessionCookie,
-} from "@/lib/auth";
+import { audit } from "@/lib/audit";
+import { authConfigError, clearSessionCookie, getSession, requireAdmin, requireOwner, setSessionCookie } from "@/lib/auth";
+import { passwordProblem } from "@/lib/password";
+import { authenticate, ownerUsername, readUsers, setPassword, writeUsers, type Role } from "@/lib/users";
 import { CERTIFICATES_FILE, nextCertificateId, parseCertificates, readCertificates, type Certificate } from "@/lib/certificates";
 import { CONTENT_TAG, readCollection } from "@/lib/content";
 import {
@@ -49,7 +46,8 @@ export async function login(_prev: ActionResult | null, formData: FormData): Pro
 
   const username = String(formData.get("username") ?? "");
   const password = String(formData.get("password") ?? "");
-  if (!checkCredentials(username, password)) {
+  const user = await authenticate(username, password);
+  if (!user) {
     const count = (entry?.count ?? 0) + 1;
     attempts.set(ip, { count, until: count >= 5 ? Date.now() + 10 * 60_000 : 0 });
     await new Promise((r) => setTimeout(r, 600));
@@ -57,13 +55,74 @@ export async function login(_prev: ActionResult | null, formData: FormData): Pro
   }
 
   attempts.delete(ip);
-  await setSessionCookie();
+  await setSessionCookie(user);
+  await audit("Signed in", undefined, user.username);
   redirect("/admin");
 }
 
 export async function logout() {
+  const session = await getSession();
+  if (session) await audit("Signed out", undefined, session.username);
   await clearSessionCookie();
   redirect("/admin/login");
+}
+
+/* -------------------------------------------------------------- users */
+
+/** Change your own password. The owner's first change moves the owner into users.json. */
+export async function changeOwnPassword(current: string, next: string): Promise<ActionResult> {
+  const session = await requireAdmin();
+  if (!(await authenticate(session.username, String(current ?? "")))) return { ok: false, error: "Your current password is not correct." };
+  const problem = passwordProblem(String(next ?? ""));
+  if (problem) return { ok: false, error: problem };
+  await setPassword(session.username, next, { name: session.name, role: session.role });
+  // The password version changed, so this browser needs a fresh session too.
+  const users = await readUsers();
+  const me = users.find((u) => u.username === session.username)!;
+  await setSessionCookie({ username: me.username, name: me.name, role: me.role, v: me.changedAt });
+  await audit("Changed own password");
+  return { ok: true, message: "Password changed. Other devices signed in with your account are signed out." };
+}
+
+const USERNAME = /^[a-z0-9._-]{3,32}$/;
+
+export async function createUser(data: { name: string; username: string; role: string; password: string }): Promise<ActionResult> {
+  await requireOwner();
+  const name = String(data.name ?? "").trim().slice(0, 80);
+  const username = String(data.username ?? "").trim().toLowerCase();
+  const role: Role = data.role === "owner" ? "owner" : "staff";
+  if (!name) return { ok: false, error: "Enter the person's name." };
+  if (!USERNAME.test(username)) return { ok: false, error: "Username: 3–32 lowercase letters, numbers, dots, dashes or underscores." };
+  if (username === ownerUsername() || (await readUsers()).some((u) => u.username === username)) {
+    return { ok: false, error: `The username “${username}” is already taken.` };
+  }
+  const problem = passwordProblem(String(data.password ?? ""));
+  if (problem) return { ok: false, error: problem };
+  await setPassword(username, data.password, { name, role });
+  await audit("Added user", `${username} (${role})`);
+  return { ok: true, message: `${name} can now sign in as “${username}”.` };
+}
+
+export async function resetUserPassword(username: string, password: string): Promise<ActionResult> {
+  const session = await requireOwner();
+  if (username === session.username) return { ok: false, error: "Use Account to change your own password." };
+  const problem = passwordProblem(String(password ?? ""));
+  if (problem) return { ok: false, error: problem };
+  if (!(await setPassword(username, password))) return { ok: false, error: "User not found." };
+  await audit("Reset password", username);
+  return { ok: true, message: `New password set for ${username}. They are signed out everywhere.` };
+}
+
+export async function deleteUser(username: string): Promise<ActionResult> {
+  const session = await requireOwner();
+  if (username === session.username) return { ok: false, error: "You can't remove your own account." };
+  if (username === ownerUsername()) return { ok: false, error: "The main owner account can't be removed." };
+  const users = await readUsers();
+  const next = users.filter((u) => u.username !== username);
+  if (next.length === users.length) return { ok: false, error: "User not found." };
+  await writeUsers(next);
+  await audit("Removed user", username);
+  return { ok: true, message: `${username} removed and signed out.` };
 }
 
 /* ------------------------------------------------------------ content */
@@ -72,6 +131,7 @@ export async function saveSite(data: unknown): Promise<ActionResult> {
   await requireAdmin();
   await writeJson("site.json", sanitizeObject(siteFields, data));
   updateTag(CONTENT_TAG);
+  await audit("Saved site content");
   return { ok: true, message: "Site content saved." };
 }
 
@@ -114,9 +174,11 @@ export async function saveItem(collection: string, id: string | null, data: unkn
     if (renamed.length) {
       for (const c of renamed) Object.assign(c, { course: clean.title.en || clean.title.ar, courseAr: clean.title.ar });
       await writeJson(CERTIFICATES_FILE, certificates);
+      await audit(`Saved ${config.singular}`, clean.title.en || clean.title.ar);
       return { ok: true, id: savedId!, message: `Saved. ${renamed.length} certificate${renamed.length === 1 ? "" : "s"} updated to the new course name.` };
     }
   }
+  await audit(`Saved ${config.singular}`, clean.title.en || clean.title.ar);
   return { ok: true, id: savedId!, message: "Saved." };
 }
 
@@ -129,6 +191,7 @@ export async function deleteItem(collection: string, id: string): Promise<Action
   if (next.length === items.length) return { ok: false, error: "Item not found." };
   await writeJson(config.file, next);
   updateTag(CONTENT_TAG);
+  await audit(`Deleted ${config.singular}`, id);
   return { ok: true, message: "Deleted." };
 }
 
@@ -169,6 +232,7 @@ export async function saveCertificate(id: string | null, data: unknown): Promise
   if (index === -1) list.push(record as Certificate);
   else list[index] = record as Certificate;
   await writeJson(CERTIFICATES_FILE, list);
+  await audit(id ? "Saved certificate" : "Created certificate", certId);
   return { ok: true, id: certId, message: id ? "Saved." : `Created certificate ${certId}.` };
 }
 
@@ -178,6 +242,7 @@ export async function deleteCertificate(id: string): Promise<ActionResult> {
   const next = list.filter((c) => c.id !== id);
   if (next.length === list.length) return { ok: false, error: "Certificate not found." };
   await writeJson(CERTIFICATES_FILE, next);
+  await audit("Deleted certificate", id);
   return { ok: true, message: "Deleted." };
 }
 
@@ -196,6 +261,7 @@ export async function toggleCertificateRevoked(id: string): Promise<ActionResult
     c.status = "revoked";
   }
   await writeJson(CERTIFICATES_FILE, list);
+  await audit(c.status === "revoked" ? "Revoked certificate" : "Restored certificate", id);
   return { ok: true };
 }
 
@@ -224,6 +290,7 @@ export async function setInboxStatus(inbox: InboxName, ids: string[], status: st
     r.history = [...(r.history ?? []), { at, text: `Status changed to ${label}` }];
   }
   await writeJson(file, list);
+  await audit(`Marked ${noun}s ${label}`, `${targets.length} item${targets.length === 1 ? "" : "s"}`);
   return { ok: true, message: `${targets.length} ${noun}${targets.length === 1 ? "" : "s"} marked ${label}.` };
 }
 
@@ -235,6 +302,7 @@ export async function deleteInboxRecords(inbox: InboxName, ids: string[]): Promi
   const removed = list.length - next.length;
   if (!removed) return { ok: false, error: `${noun[0].toUpperCase()}${noun.slice(1)} not found.` };
   await writeJson(file, next);
+  await audit(`Deleted ${noun}s`, `${removed} item${removed === 1 ? "" : "s"}`);
   return { ok: true, message: `Deleted ${removed} ${noun}${removed === 1 ? "" : "s"}.` };
 }
 
@@ -249,6 +317,7 @@ export async function addInboxNote(inbox: InboxName, id: string, text: string): 
   if (!entry) return { ok: false, error: `This ${noun} no longer exists.` };
   entry.history = [...(entry.history ?? []), { at: new Date().toISOString(), text: note }];
   await writeJson(file, list);
+  await audit(`Added a note to a ${noun}`, id);
   return { ok: true, message: "Note added." };
 }
 
@@ -268,6 +337,7 @@ export async function restoreBackup(name: string): Promise<ActionResult> {
   // writeJson keeps the current version as a backup too, so a restore can itself be undone.
   await writeJson(backup.file, data);
   updateTag(CONTENT_TAG);
+  await audit("Restored a backup", name);
   return { ok: true, message: `${DATA_FILES[backup.file as keyof typeof DATA_FILES]} restored.` };
 }
 
@@ -286,6 +356,7 @@ export async function moveItem(collection: string, id: string, direction: "up" |
   sorted.forEach((item, i) => (item.order = i + 1));
   await writeJson(config.file, items);
   updateTag(CONTENT_TAG);
+  await audit(`Reordered ${collection}`, id);
   return { ok: true };
 }
 
@@ -299,5 +370,6 @@ export async function togglePublished(collection: string, id: string): Promise<A
   item.published = !item.published;
   await writeJson(config.file, items);
   updateTag(CONTENT_TAG);
+  await audit(item.published ? `Published ${config.singular}` : `Unpublished ${config.singular}`, id);
   return { ok: true };
 }

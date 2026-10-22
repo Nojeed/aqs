@@ -1,6 +1,7 @@
 import path from "node:path";
 import { randomBytes } from "node:crypto";
 import { adminGuard } from "@/lib/api-auth";
+import { audit } from "@/lib/audit";
 import { slugify } from "@/lib/schema";
 import { UPLOADS_DIR, writeFileAtomic } from "@/lib/storage";
 
@@ -39,5 +40,6 @@ export async function POST(request: Request) {
   const base = slugify(path.parse(file.name).name) || "image";
   const name = `${base}-${randomBytes(4).toString("hex")}${EXT[type]}`;
   await writeFileAtomic(path.join(UPLOADS_DIR, name), buf);
+  await audit("Uploaded image", name);
   return Response.json({ url: `/uploads/${name}` });
 }
