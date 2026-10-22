@@ -94,11 +94,15 @@ export function DataTable<T extends RowData & { id: string }>({
     try {
       const saved = JSON.parse(localStorage.getItem(key) ?? "null") as Saved | null;
       if (saved?.sorting) table.setSorting(saved.sorting);
-      if (saved?.columnFilters) table.setColumnFilters(saved.columnFilters);
+      // Drop remembered filters whose option is gone (e.g. a deleted course), or the table would look empty.
+      const valid = saved?.columnFilters?.filter((f) => filters.find((x) => x.column === f.id)?.options.some((o) => o.value === f.value));
+      if (valid?.length) table.setColumnFilters(valid);
       if (saved?.pageSize) table.setPageSize(saved.pageSize);
     } catch {
       // Storage blocked or corrupt: keep the defaults.
     }
+    // Runs once per table: later changes to the filter options must not reapply the saved view.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, table]);
 
   const { globalFilter, columnFilters, sorting, pagination, rowSelection } = table.state;

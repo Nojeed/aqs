@@ -2,8 +2,10 @@
 
 import { randomBytes } from "node:crypto";
 import { headers } from "next/headers";
+import { after } from "next/server";
 import { getCourses } from "@/lib/content";
 import { isLocale } from "@/lib/i18n";
+import { sendMessageEmails, sendRegistrationEmails } from "@/lib/mail";
 import { MESSAGES_FILE, REGISTRATIONS_FILE, type Message, type Registration } from "@/lib/schema";
 import { readJson, writeJson } from "@/lib/storage";
 
@@ -72,6 +74,7 @@ export async function register(_prev: RegisterResult | null, formData: FormData)
   const list = await readJson<Registration[]>(REGISTRATIONS_FILE);
   list.push(entry);
   await writeJson(REGISTRATIONS_FILE, list);
+  after(() => sendRegistrationEmails(entry)); // after the response: email never slows the form down
   return { ok: true };
 }
 
@@ -110,5 +113,6 @@ export async function sendMessage(_prev: MessageResult | null, formData: FormDat
   const list = await readJson<Message[]>(MESSAGES_FILE);
   list.push(entry);
   await writeJson(MESSAGES_FILE, list);
+  after(() => sendMessageEmails(entry));
   return { ok: true };
 }

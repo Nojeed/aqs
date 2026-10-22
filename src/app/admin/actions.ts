@@ -92,6 +92,7 @@ export async function saveItem(collection: string, id: string | null, data: unkn
     return { ok: false, error: `Another ${config.singular} already uses the URL slug “${clean.slug}”.` };
   }
 
+  const before = id ? items.find((item) => item.id === id) : undefined;
   let savedId = id;
   if (id) {
     const index = items.findIndex((item) => item.id === id);
@@ -104,6 +105,18 @@ export async function saveItem(collection: string, id: string | null, data: unkn
 
   await writeJson(config.file, items);
   updateTag(CONTENT_TAG);
+
+  // Renaming a course: certificates issued under the old name follow the new one (English and Arabic).
+  const oldTitle = (before?.title as { en?: string; ar?: string } | undefined)?.en;
+  if (collection === "courses" && oldTitle && oldTitle !== clean.title.en) {
+    const certificates = await readCertificates();
+    const renamed = certificates.filter((c) => c.course === oldTitle);
+    if (renamed.length) {
+      for (const c of renamed) Object.assign(c, { course: clean.title.en || clean.title.ar, courseAr: clean.title.ar });
+      await writeJson(CERTIFICATES_FILE, certificates);
+      return { ok: true, id: savedId!, message: `Saved. ${renamed.length} certificate${renamed.length === 1 ? "" : "s"} updated to the new course name.` };
+    }
+  }
   return { ok: true, id: savedId!, message: "Saved." };
 }
 

@@ -6,6 +6,7 @@ import { BarList, RegistrationCharts } from "@/components/admin/registration-cha
 import { StatusBadge } from "@/components/ui/status-badge";
 import { certificateStatus, readCertificates } from "@/lib/certificates";
 import { readCollection } from "@/lib/content";
+import { mailConfigured } from "@/lib/mail";
 import { topViews, type ViewType } from "@/lib/views";
 import { MESSAGES_FILE, REGISTRATIONS_FILE, type Message, type Registration } from "@/lib/schema";
 import { readJson } from "@/lib/storage";
@@ -68,6 +69,13 @@ export default async function Dashboard() {
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-8">
       <h1 className="font-display text-2xl font-bold">Welcome back</h1>
       <p className="mt-1 text-slate-500">Changes you save here appear on the website immediately.</p>
+
+      {!mailConfigured && (
+        <p className="mt-4 rounded-xl bg-info-50 px-4 py-3 text-sm text-info-800 ring-1 ring-info-200">
+          <strong>Email alerts are off.</strong> New registrations and messages only show here. To also get them by email, set{" "}
+          <code>SMTP_HOST</code>, <code>SMTP_USER</code> and <code>SMTP_PASS</code> on the server (see the README).
+        </p>
+      )}
 
       <div className="mt-8 grid gap-4 md:grid-cols-2">
         {(

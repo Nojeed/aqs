@@ -16,10 +16,18 @@ export default async function BackupsPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-8">
-      <h1 className="font-display text-2xl font-bold">Backups</h1>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <h1 className="font-display text-2xl font-bold">Backups</h1>
+        {/* A plain link so the browser downloads the file instead of client-side navigating. */}
+        <a href="/api/admin/full-backup" download className="btn-primary rounded-lg px-4 py-2">
+          <Download className="size-4" aria-hidden /> Download full backup
+        </a>
+      </div>
       <p className="mt-1 max-w-2xl text-slate-500">
         Every save keeps the previous version of the file (the last 15 per file). The time shown is when that version was replaced.
         Restoring backs up the current version first, so you can undo a restore.
+        <strong className="font-semibold text-slate-700"> These versions live on the server.</strong> Download a full backup
+        (all data and images) regularly and keep it somewhere else.
       </p>
 
       <div className="mt-8 space-y-6">
