@@ -1,19 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { moveItem } from "@/app/admin/actions";
+import { useAdminAction } from "@/components/admin/use-admin-action";
 
 /** Up/down arrows to reorder services and courses without typing order numbers. */
 export function OrderButtons({ collection, id, order, first, last }: { collection: string; id: string; order: number; first: boolean; last: boolean }) {
-  const router = useRouter();
-  const [pending, start] = useTransition();
-  const move = (direction: "up" | "down") =>
-    start(async () => {
-      await moveItem(collection, id, direction);
-      router.refresh();
-    });
+  const { pending, run } = useAdminAction();
+  // The row moving is the confirmation; only errors get a toast.
+  const move = (direction: "up" | "down") => run(() => moveItem(collection, id, direction));
   const btn =
     "inline-flex size-7 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-brand-700 disabled:pointer-events-none disabled:opacity-30 pointer-coarse:size-10";
   return (

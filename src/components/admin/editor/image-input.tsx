@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { controlClass } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ImageIcon, Images, LoaderCircle, Trash2, Upload, X } from "lucide-react";
+import { toast } from "sonner";
 
 type MediaItem = { url: string; name: string; source: "stock" | "upload" };
 
@@ -107,10 +108,11 @@ Those pages will show no image. Delete anyway?`)) return;
       res = await del(true);
     }
     if (!res.ok) {
-      setError(((await res.json().catch(() => ({}))) as { error?: string }).error ?? "Could not delete the image.");
+      toast.error(((await res.json().catch(() => ({}))) as { error?: string }).error ?? "Could not delete the image.");
       return;
     }
     setItems((list) => list?.filter((i) => i.url !== item.url) ?? null);
+    toast.success(`${item.name} deleted.`);
   }
 
   useEffect(() => {

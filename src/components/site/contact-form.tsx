@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { CircleCheck, LoaderCircle, MessageCircle } from "lucide-react";
 import { sendMessage, type MessageResult } from "@/app/[lang]/actions";
 import { Field, fieldAria } from "@/components/ui/field";
@@ -29,13 +29,21 @@ function Form({ locale, whatsapp, initialMessage = "", onAnother }: Props & { on
   const c = d.contact;
   const [values, setValues] = useState({ name: "", email: "", phone: "", message: initialMessage });
   const [result, action, pending] = useActionState<MessageResult | null, FormData>(sendMessage, null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+  // After a submit: bring the success message into view, or put the cursor in the first field with an error.
+  useEffect(() => {
+    if (result?.ok) successRef.current?.focus({ preventScroll: true });
+    if (result?.ok) successRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+    else if (result) formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"], [role="alert"]')?.focus();
+  }, [result]);
   const set = (key: keyof typeof values) => (e: { target: { value: string } }) => setValues((v) => ({ ...v, [key]: e.target.value }));
   const errors = result && !result.ok ? result.fields : undefined;
   const err = (key: "name" | "email" | "message") => (errors?.[key] ? d.register.errors[errors[key]] : undefined);
 
   if (result?.ok) {
     return (
-      <div role="status" className="flex flex-col items-start gap-4 rounded-2xl bg-success-50 p-8 ring-1 ring-success-200">
+      <div ref={successRef} tabIndex={-1} role="status" className="flex scroll-mt-28 flex-col items-start gap-4 rounded-2xl bg-success-50 p-8 ring-1 ring-success-200">
         <CircleCheck className="size-10 text-success-600" strokeWidth={1.6} aria-hidden />
         <div>
           <p className="font-display text-xl font-bold text-success-900">{c.sent}</p>
@@ -49,7 +57,7 @@ function Form({ locale, whatsapp, initialMessage = "", onAnother }: Props & { on
   }
 
   return (
-    <form action={action} className="space-y-5">
+    <form ref={formRef} action={action} noValidate className="space-y-5">
       <input type="hidden" name="locale" value={locale} />
       {/* Honeypot: hidden from people and assistive tech, filled in by bots. */}
       <div className="absolute -start-[9999px] size-px overflow-hidden" aria-hidden>
@@ -88,7 +96,7 @@ function Form({ locale, whatsapp, initialMessage = "", onAnother }: Props & { on
       </Field>
 
       {result && !result.ok && result.error && (
-        <p role="alert" className="rounded-xl bg-danger-50 p-3 text-sm font-medium text-danger-700 ring-1 ring-danger-200">
+        <p role="alert" tabIndex={-1} className="rounded-xl bg-danger-50 p-3 text-sm font-medium text-danger-700 ring-1 ring-danger-200 outline-none">
           {d.register.errors[result.error]}
         </p>
       )}

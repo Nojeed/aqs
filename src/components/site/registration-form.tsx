@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Building2, CircleCheck, LoaderCircle, ShieldCheck, User } from "lucide-react";
 import { register, type RegisterResult } from "@/app/[lang]/actions";
 import { Field, fieldAria } from "@/components/ui/field";
@@ -24,10 +24,18 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
   const r = getDictionary(locale).register;
   const [values, setValues] = useState({ ...empty, courseId: courses?.[0]?.id ?? "custom" });
   const [result, action, pending] = useActionState<RegisterResult | null, FormData>(register, null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+  // After a submit: bring the success message into view, or put the cursor in the first field with an error.
+  useEffect(() => {
+    if (result?.ok) successRef.current?.focus({ preventScroll: true });
+    if (result?.ok) successRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+    else if (result) formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"], [role="alert"]')?.focus();
+  }, [result]);
 
   if (result?.ok) {
     return (
-      <div role="status" className="flex flex-col items-start gap-4 rounded-3xl bg-success-50 p-8 ring-1 ring-success-200">
+      <div ref={successRef} tabIndex={-1} role="status" className="flex scroll-mt-28 flex-col items-start gap-4 rounded-3xl bg-success-50 p-8 ring-1 ring-success-200">
         <CircleCheck className="size-10 text-success-600" strokeWidth={1.6} aria-hidden />
         <div>
           <p className="font-display text-xl font-bold text-success-900">{r.success}</p>
@@ -56,7 +64,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
   };
 
   return (
-    <form action={action} className="space-y-5">
+    <form ref={formRef} action={action} noValidate className="space-y-5">
       {courses ? (
         <Field id="reg-course" label={r.course}>
           <Select name="courseId" value={values.courseId} onValueChange={(v) => setValues((s) => ({ ...s, courseId: v }))} dir={dir(locale)}>
@@ -140,7 +148,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
       </Field>
 
       {result && !result.ok && result.error && (
-        <p role="alert" className="rounded-xl bg-danger-50 p-3 text-sm font-medium text-danger-700 ring-1 ring-danger-200">
+        <p role="alert" tabIndex={-1} className="rounded-xl bg-danger-50 p-3 text-sm font-medium text-danger-700 ring-1 ring-danger-200 outline-none">
           {r.errors[result.error]}
         </p>
       )}

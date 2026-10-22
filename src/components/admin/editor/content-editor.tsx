@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { ArrowLeft, CircleCheck, ExternalLink, LoaderCircle, Save, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { ArrowLeft, ExternalLink, LoaderCircle, Save, Trash2 } from "lucide-react";
 import type { ActionResult } from "@/app/admin/actions";
 import type { Field, Fields } from "@/lib/schema";
 import { FieldInput } from "./field-input";
@@ -50,19 +51,25 @@ export function ContentEditor({
   const router = useRouter();
   const [value, setValue] = useState(initial);
   const [saved, setSaved] = useState(initial);
-  const [status, setStatus] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
   const [pending, startTransition] = useTransition();
   const dirty = value !== saved;
 
   const onSave = useCallback(() => {
     startTransition(async () => {
-      const result = await save(value);
+      let result: Awaited<ReturnType<typeof save>>;
+      try {
+        result = await save(value);
+      } catch (error) {
+        if (String((error as { digest?: string })?.digest ?? "").startsWith("NEXT_")) throw error;
+        toast.error("Couldn't reach the server. Your changes are not saved yet; try again.");
+        return;
+      }
       if (!result.ok) {
-        setStatus({ kind: "error", text: result.error });
+        toast.error(result.error);
         return;
       }
       setSaved(value);
-      setStatus({ kind: "ok", text: result.message ?? "Saved." });
+      toast.success(result.message ?? "Saved.");
       if (createdBasePath && result.id) router.replace(`${createdBasePath}${result.id}`);
       else router.refresh();
     });
@@ -86,18 +93,16 @@ export function ContentEditor({
     return () => window.removeEventListener("keydown", onKey);
   }, [onSave]);
 
-  useEffect(() => {
-    if (status?.kind !== "ok") return;
-    const timer = setTimeout(() => setStatus(null), 3000);
-    return () => clearTimeout(timer);
-  }, [status]);
 
   function onDelete() {
     if (!remove || !confirm("Delete this item permanently? A backup copy is kept in data/backups.")) return;
     startTransition(async () => {
       const result = await remove();
-      if (!result.ok) setStatus({ kind: "error", text: result.error });
-      else if (backHref) router.push(backHref);
+      if (!result.ok) toast.error(result.error);
+      else {
+        toast.success(result.message ?? "Deleted.");
+        if (backHref) router.push(backHref);
+      }
     });
   }
 
@@ -119,16 +124,7 @@ export function ContentEditor({
             </Link>
           )}
           <h1 className="font-display min-w-0 flex-1 truncate text-lg font-bold">{title}</h1>
-          {status && (
-            <span
-              role="status"
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ${status.kind === "ok" ? "bg-success-50 text-success-700" : "bg-danger-50 text-danger-700"}`}
-            >
-              {status.kind === "ok" && <CircleCheck className="size-4" aria-hidden />}
-              {status.text}
-            </span>
-          )}
-          {dirty && !status && <span className="text-sm text-warning-600">Unsaved changes</span>}
+          {dirty && <span className="text-sm font-medium text-warning-700">Unsaved changes</span>}
           {viewUrl && (
             <a href={viewUrl} target="_blank" className="admin-btn">
               <ExternalLink className="size-4" aria-hidden />

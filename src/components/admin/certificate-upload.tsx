@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { LoaderCircle, Upload } from "lucide-react";
+import { toast } from "sonner";
 
 export function CertificateUpload() {
   const router = useRouter();
   const ref = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<"merge" | "replace">("merge");
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
 
   async function upload(file: File) {
     const question =
@@ -21,7 +21,6 @@ export function CertificateUpload() {
       return;
     }
     setBusy(true);
-    setMessage(null);
     try {
       const body = new FormData();
       body.append("file", file);
@@ -29,16 +28,15 @@ export function CertificateUpload() {
       const res = await fetch("/api/admin/certificates", { method: "POST", body });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
-      setMessage({
-        ok: true,
-        text:
-          mode === "merge"
-            ? `Added ${json.added}, updated ${json.updated}. ${json.count} certificates in total.`
-            : `Imported ${json.count} certificates.`,
-      });
+      toast.success(
+        mode === "merge"
+          ? `Added ${json.added}, updated ${json.updated}. ${json.count} certificates in total.`
+          : `Imported ${json.count} certificates.`,
+      );
       router.refresh();
     } catch (e) {
-      setMessage({ ok: false, text: e instanceof Error ? e.message : "Upload failed" });
+      // Long validation errors (e.g. which row is wrong) stay until dismissed.
+      toast.error(e instanceof Error ? e.message : "Upload failed", { duration: Infinity });
     } finally {
       setBusy(false);
       if (ref.current) ref.current.value = "";
@@ -77,11 +75,6 @@ export function CertificateUpload() {
         className="hidden"
         onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
       />
-      {message && (
-        <p role="status" className={`mt-3 text-sm font-semibold ${message.ok ? "text-success-700" : "text-danger-600"}`}>
-          {message.text}
-        </p>
-      )}
     </div>
   );
 }

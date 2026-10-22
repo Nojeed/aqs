@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { LoaderCircle } from "lucide-react";
+import { Toaster } from "sonner";
+import { InboxWatcher } from "@/components/admin/inbox-alerts";
 import { AdminShortcuts } from "@/components/admin/shortcuts";
 import { Sidebar } from "@/components/admin/sidebar";
 import { requireAdmin } from "@/lib/auth";
@@ -14,6 +16,9 @@ export default function PanelLayout({ children }: LayoutProps<"/admin">) {
         </Suspense>
       </div>
       <AdminShortcuts />
+      <InboxWatcher />
+      {/* One place for every admin confirmation and error (see useAdminAction). */}
+      <Toaster position="top-right" richColors closeButton toastOptions={{ className: "font-sans" }} />
     </div>
   );
 }

@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { logout } from "@/app/admin/actions";
+import { DesktopAlertsToggle, InboxBadge } from "@/components/admin/inbox-alerts";
 import mark from "../../../public/brand/logo-mark-light.png";
 
 const links = [
@@ -74,6 +75,7 @@ export function Sidebar() {
             >
               <ExternalLink className="size-4" aria-hidden /> View website
             </a>
+            <DesktopAlertsToggle />
             <form action={logout}>
               <button
                 type="submit"
@@ -109,6 +111,7 @@ function NavItems({ pathname }: { pathname?: string }) {
       >
         <Icon className="size-4" aria-hidden />
         {label}
+        {(href === "/admin/registrations" || href === "/admin/messages") && <InboxBadge kind={href === "/admin/registrations" ? "registrations" : "messages"} />}
       </Link>
     );
   });

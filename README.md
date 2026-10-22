@@ -72,6 +72,7 @@ DATA_DIR/
   certificates.json  read by the verification page
   registrations.json course registrations from the course pages and the contact page
   messages.json      messages from the contact page form
+  views.json         anonymous page-view counts for the dashboard (no backups; counters only)
   uploads/           images uploaded through the admin panel (served at /uploads/…)
   backups/           the previous 15 versions of every file, saved automatically on each change
 ```
