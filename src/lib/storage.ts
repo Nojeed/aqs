@@ -9,6 +9,9 @@ import seedPosts from "../../seed/posts.json";
 import seedRegistrations from "../../seed/registrations.json";
 import seedServices from "../../seed/services.json";
 import seedSite from "../../seed/site.json";
+import seedMessages from "../../seed/messages.json";
+import seedRegistrations from "../../seed/registrations.json";
+import seedUsers from "../../seed/users.json";
 
 /**
  * All editable data lives in DATA_DIR (default ./data), outside the build output,
@@ -29,6 +32,10 @@ const SEEDS: Record<string, unknown> = {
   "registrations.json": seedRegistrations,
   "services.json": seedServices,
   "site.json": seedSite,
+  // Start empty; listed so a fresh DATA_DIR creates them instead of failing on first use.
+  "messages.json": seedMessages,
+  "registrations.json": seedRegistrations,
+  "users.json": seedUsers,
 };
 const BACKUP_DIR = path.join(DATA_DIR, "backups");
 const BACKUPS_PER_FILE = 15;

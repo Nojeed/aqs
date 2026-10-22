@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { lang } from "next/root-params";
 import "../globals.css";
 import { jakarta, plexArabic } from "../fonts";
+import { Analytics } from "@/components/site/analytics";
 import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
 import { MotionProvider } from "@/components/site/motion-provider";
@@ -21,6 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     ...(await pageMetadata({ locale, path: "" })),
     metadataBase: new URL(siteUrl),
+    ...(process.env.GOOGLE_SITE_VERIFICATION && { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }),
     title: { default: t(site.seo.title, locale), template: `%s | ${site.brand.name}` },
   };
 }
@@ -61,6 +63,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/[lang]">) {
           <MotionProvider>{children}</MotionProvider>
         </main>
         <Footer locale={locale} site={site} year={year} />
+        <Analytics />
       </body>
     </html>
   );

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { Clock, GraduationCap, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
-import { ContactForm, ContactFormFromUrl } from "@/components/site/contact-form";
+import { ContactForm } from "@/components/site/contact-form";
 import { PageHero } from "@/components/site/page-hero";
 import { RegistrationForm } from "@/components/site/registration-form";
 import { SocialIcon, socialNames } from "@/components/social-icons";
@@ -103,9 +102,7 @@ export default async function ContactPage() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="message">
-              <Suspense fallback={<ContactForm locale={locale} whatsapp={wa} />}>
-                <ContactFormFromUrl locale={locale} whatsapp={wa} />
-              </Suspense>
+              <ContactForm locale={locale} whatsapp={wa} />
             </TabsContent>
             <TabsContent value="register">
               <RegistrationForm locale={locale} courses={courses.map((co) => ({ id: co.id, title: t(co.title, locale) }))} />

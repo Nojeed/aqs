@@ -69,6 +69,7 @@ const columns: AdminColumn<Registration>[] = [
     cell: ({ row: { original: r } }) => (
       <div className="min-w-44">
         <p className="text-slate-700">{r.courseTitle}</p>
+        {r.session && <p className="text-xs text-slate-500 tabular-nums">{r.session}</p>}
         {(r.notes || r.history?.length) && (
           <Link href={`/admin/registrations/${r.id}`} className="text-xs font-semibold text-brand-700 hover:underline">
             {r.history?.length ? `${r.history.length} update${r.history.length === 1 ? "" : "s"}` : "Has notes"}

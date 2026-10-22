@@ -263,7 +263,22 @@ export const courseFields: Fields = {
   },
   duration: l("Duration", "e.g. 24 hours / 3 days"),
   price: { kind: "text", label: "Fee", help: "Leave empty to show “On request”.", placeholder: "1,500 SAR" },
-  startDate: { kind: "date", label: "Next start date", help: "Optional." },
+  startDate: { kind: "date", label: "Next start date", help: "Optional. Used only when no dates are listed under “Dates and seats”." },
+  sessions: {
+    kind: "list",
+    label: "Dates and seats",
+    help: "Each date visitors can register for. The registration form shows the upcoming ones with seats left; full dates can't be picked.",
+    itemLabel: "Date",
+    of: {
+      kind: "object",
+      label: "Date",
+      fields: {
+        date: { kind: "date", label: "Start date" },
+        location: l("Place / time", "e.g. Cairo · 9:00–15:00, or Online"),
+        seats: { kind: "number", label: "Seats", help: "0 = no limit." },
+      },
+    },
+  },
   outcomes: { kind: "list", label: "Learning outcomes", itemLabel: "Outcome", of: l("Outcome") },
   audience: la("Who should attend", 3),
   body: { kind: "markdown", label: "Full description", localized: true },
@@ -415,6 +430,7 @@ export type Course = ItemBase & {
   duration: L10n;
   price: string;
   startDate: string;
+  sessions?: CourseSession[];
   outcomes: L10n[];
   audience: L10n;
   featured: boolean;
@@ -430,6 +446,16 @@ export type Post = ItemBase & {
 };
 
 export type CollectionItem = { services: Service; courses: Course; posts: Post };
+
+export type CourseSession = { date: string; location: L10n; seats: number };
+
+/** Identifies a session in registrations: the date, plus the place when there is one (two sessions can share a date). */
+export const sessionKey = (s: CourseSession) => (s.location?.en ? `${s.date} · ${s.location.en}` : s.date);
+
+/** Sessions starting today or later, soonest first. */
+export function upcomingSessions(sessions: CourseSession[] | undefined, today = new Date().toISOString().slice(0, 10)) {
+  return (sessions ?? []).filter((s) => s.date && s.date >= today).sort((a, b) => a.date.localeCompare(b.date));
+}
 
 /** Every data file the admin can restore from a backup, with a readable name. */
 export const DATA_FILES = {
@@ -471,6 +497,8 @@ export type Registration = {
   /** Snapshot, so the row still reads correctly if the course is renamed or deleted. */
   courseTitle: string;
   notes?: string;
+  /** sessionKey() of the date they registered for, when the course lists dates. */
+  session?: string;
   locale: Locale;
   history?: HistoryEntry[];
 };

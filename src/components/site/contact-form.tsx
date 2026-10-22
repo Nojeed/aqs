@@ -1,7 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { CircleCheck, LoaderCircle, MessageCircle } from "lucide-react";
 import { sendMessage, type MessageResult } from "@/app/[lang]/actions";
 import { Field, fieldAria } from "@/components/ui/field";
@@ -9,13 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getDictionary, type Locale } from "@/lib/i18n";
 
-type Props = { locale: Locale; whatsapp: string; initialMessage?: string };
+type Props = { locale: Locale; whatsapp: string };
 
-/** Prefills the message from ?subject= (used by the "Request a consultation" buttons). */
-export function ContactFormFromUrl(props: Omit<Props, "initialMessage">) {
-  const subject = useSearchParams().get("subject") ?? "";
-  return <ContactForm key={subject} {...props} initialMessage={subject ? `${subject}\n\n` : ""} />;
-}
+// ?subject= from the "Request a consultation" buttons. Read in the browser after hydration ("" on the server),
+// so the form is never swapped out and nothing a visitor already typed is lost.
+const noSubscribe = () => () => {};
+const subjectFromUrl = () => new URLSearchParams(window.location.search).get("subject") ?? "";
 
 /** Stores the message for the admin (Messages page). WhatsApp stays as a direct alternative. */
 export function ContactForm(props: Props) {
@@ -24,18 +22,31 @@ export function ContactForm(props: Props) {
   return <Form key={round} {...props} onAnother={() => setRound((n) => n + 1)} />;
 }
 
-function Form({ locale, whatsapp, initialMessage = "", onAnother }: Props & { onAnother: () => void }) {
+type Values = { name: string; email: string; phone: string; message: string | null };
+
+function Form({ locale, whatsapp, onAnother }: Props & { onAnother: () => void }) {
   const d = getDictionary(locale);
   const c = d.contact;
-  const [values, setValues] = useState({ name: "", email: "", phone: "", message: initialMessage });
+  const subject = useSyncExternalStore(noSubscribe, subjectFromUrl, () => "");
+  // `message` stays null until the visitor types, so the ?subject= prefill can arrive after hydration.
+  const [values, setValues] = useState<Values>({ name: "", email: "", phone: "", message: null });
+  const message = values.message ?? (subject ? `${subject}\n\n` : "");
   const [result, action, pending] = useActionState<MessageResult | null, FormData>(sendMessage, null);
-  const set = (key: keyof typeof values) => (e: { target: { value: string } }) => setValues((v) => ({ ...v, [key]: e.target.value }));
+  const formRef = useRef<HTMLFormElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+  // After a submit: bring the success message into view, or put the cursor in the first field with an error.
+  useEffect(() => {
+    if (result?.ok) successRef.current?.focus({ preventScroll: true });
+    if (result?.ok) successRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+    else if (result) formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"], [role="alert"]')?.focus();
+  }, [result]);
+  const set = (key: keyof Values) => (e: { target: { value: string } }) => setValues((v) => ({ ...v, [key]: e.target.value }));
   const errors = result && !result.ok ? result.fields : undefined;
   const err = (key: "name" | "email" | "message") => (errors?.[key] ? d.register.errors[errors[key]] : undefined);
 
   if (result?.ok) {
     return (
-      <div role="status" className="flex flex-col items-start gap-4 rounded-2xl bg-success-50 p-8 ring-1 ring-success-200">
+      <div ref={successRef} tabIndex={-1} role="status" className="flex scroll-mt-28 flex-col items-start gap-4 rounded-2xl bg-success-50 p-8 ring-1 ring-success-200">
         <CircleCheck className="size-10 text-success-600" strokeWidth={1.6} aria-hidden />
         <div>
           <p className="font-display text-xl font-bold text-success-900">{c.sent}</p>
@@ -49,7 +60,7 @@ function Form({ locale, whatsapp, initialMessage = "", onAnother }: Props & { on
   }
 
   return (
-    <form action={action} className="space-y-5">
+    <form ref={formRef} action={action} noValidate className="space-y-5">
       <input type="hidden" name="locale" value={locale} />
       {/* Honeypot: hidden from people and assistive tech, filled in by bots. */}
       <div className="absolute -start-[9999px] size-px overflow-hidden" aria-hidden>
@@ -78,7 +89,7 @@ function Form({ locale, whatsapp, initialMessage = "", onAnother }: Props & { on
       <Field id="msg-message" label={c.message} error={err("message")}>
         <Textarea
           name="message"
-          value={values.message}
+          value={message}
           onChange={set("message")}
           required
           rows={6}
@@ -88,7 +99,7 @@ function Form({ locale, whatsapp, initialMessage = "", onAnother }: Props & { on
       </Field>
 
       {result && !result.ok && result.error && (
-        <p role="alert" className="rounded-xl bg-danger-50 p-3 text-sm font-medium text-danger-700 ring-1 ring-danger-200">
+        <p role="alert" tabIndex={-1} className="rounded-xl bg-danger-50 p-3 text-sm font-medium text-danger-700 ring-1 ring-danger-200 outline-none">
           {d.register.errors[result.error]}
         </p>
       )}
@@ -100,7 +111,7 @@ function Form({ locale, whatsapp, initialMessage = "", onAnother }: Props & { on
         </button>
         {whatsapp && (
           <a
-            href={`https://wa.me/${whatsapp}${values.message.trim() ? `?text=${encodeURIComponent(values.message)}` : ""}`}
+            href={`https://wa.me/${whatsapp}${message.trim() ? `?text=${encodeURIComponent(message)}` : ""}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-whatsapp-dark transition hover:text-whatsapp hover:underline"

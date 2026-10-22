@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { adminGuard } from "@/lib/api-auth";
+import { audit } from "@/lib/audit";
 import { dataPath, UPLOADS_DIR } from "@/lib/storage";
 
 const IMAGE = /\.(jpe?g|png|webp|avif|gif)$/i;
@@ -58,5 +59,6 @@ export async function DELETE(request: Request) {
   } catch {
     return Response.json({ error: "Image not found." }, { status: 404 });
   }
+  await audit("Deleted image", name);
   return Response.json({ ok: true, usedIn });
 }

@@ -24,7 +24,29 @@ npm start                    # PORT=3000 by default
 Requires Node.js 20.9+ and a host with a persistent disk (a VPS or Node.js hosting such as Hostinger). Serverless hosts
 like Vercel can't store the admin's changes, because their file system is read-only.
 
-`npm test` runs the unit tests (CSV import and export).
+`npm test` runs the unit tests (CSV, certificate numbers, passwords).
+`npm run test:e2e` builds the site into `.next-e2e` with its own data folder (`.e2e-data`, recreated from `seed/`) and runs
+the end-to-end tests in your installed Google Chrome. Your real data and normal build are never touched.
+
+## Admin accounts
+
+The `ADMIN_USERNAME` / `ADMIN_PASSWORD` account is the **owner**. In the admin, the owner can add **staff** accounts
+(Users), everyone can change their own password (Account), and the owner can see who changed what (Activity).
+Passwords are stored hashed in `DATA_DIR/users.json`.
+
+**Forgot the owner password?** Once the owner has changed it in the admin, the server password no longer works. On the
+server, delete the owner's entry from `DATA_DIR/users.json`; the `ADMIN_PASSWORD` from the environment works again.
+
+## Backups
+
+Every save keeps the previous 15 versions of each file in `DATA_DIR/backups` (restore them in Admin → Backups). Those
+live on the same disk, so also keep copies elsewhere:
+
+- **By hand:** Admin → Backups → **Download full backup** (all data and uploaded images in one `.tar.gz`).
+- **Automatically (VPS):** a nightly cron job, e.g.
+  `0 3 * * * cd /var/www/aqs && DATA_DIR=/var/lib/aqs-data node scripts/backup.mjs /mnt/backups/aqs`
+  (keeps the newest 30; point the target at another disk or a synced folder).
+- **Hostinger web hosting:** turn on Hostinger's daily backups in hPanel, and download a full backup from the admin now and then.
 
 ## Deploying on Hostinger
 
@@ -57,6 +79,11 @@ check the link previews with a social preview tool (e.g. opengraph.xyz) for the 
 | `ADMIN_USERNAME`  | no       | Defaults to `admin`                                                     |
 | `DATA_DIR`        | no       | Content folder, defaults to `./data`. **Set it outside the app folder in production.** |
 | `SITE_URL`        | no       | Public URL for link previews, the sitemap and robots.txt. **Set it before `npm run build`**: pages are pre-rendered with it. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | no | Email alerts for new registrations and messages, and a confirmation email to the visitor. Hostinger email works: `smtp.hostinger.com`, port `465`, your mailbox address and password. Off when not set. |
+| `SMTP_FROM`       | no       | Sender shown on emails, e.g. `AQS <info@your-domain.com>`. Defaults to `SMTP_USER`. |
+| `ALERT_EMAIL`     | no       | Where staff alerts go. Defaults to `SMTP_USER`. |
+| `GOOGLE_SITE_VERIFICATION` | no | The code from Google Search Console's "HTML tag" method. |
+| `NEXT_PUBLIC_GA_ID` | no     | Google Analytics 4 ID (`G-…`). Analytics loads only when set. GA uses cookies: add a consent banner if your visitors need one. Set before building. |
 
 Changing `SESSION_SECRET` signs everyone out.
 
@@ -72,6 +99,9 @@ DATA_DIR/
   certificates.json  read by the verification page
   registrations.json course registrations from the course pages and the contact page
   messages.json      messages from the contact page form
+  users.json         staff accounts (hashed passwords)
+  audit.json         activity log (last 2,000 admin actions; no backups)
+  views.json         anonymous page-view counts for the dashboard (no backups; counters only)
   uploads/           images uploaded through the admin panel (served at /uploads/…)
   backups/           the previous 15 versions of every file, saved automatically on each change
 ```

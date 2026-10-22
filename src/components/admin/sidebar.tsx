@@ -17,9 +17,13 @@ import {
   Newspaper,
   Settings2,
   Wrench,
+  ScrollText,
+  UserRound,
+  Users,
   X,
 } from "lucide-react";
 import { logout } from "@/app/admin/actions";
+import { DesktopAlertsToggle, InboxBadge } from "@/components/admin/inbox-alerts";
 import mark from "../../../public/brand/logo-mark-light.png";
 
 const links = [
@@ -32,9 +36,15 @@ const links = [
   { href: "/admin/posts", label: "Blog posts", icon: Newspaper },
   { href: "/admin/certificates", label: "Certificates", icon: BadgeCheck },
   { href: "/admin/backups", label: "Backups", icon: History },
+  { href: "/admin/users", label: "Users", icon: Users, ownerOnly: true },
+  { href: "/admin/activity", label: "Activity", icon: ScrollText, ownerOnly: true },
+  { href: "/admin/account", label: "Account", icon: UserRound },
 ];
 
-export function Sidebar() {
+type Me = { name: string; role: "owner" | "staff" } | null;
+
+/** `me` is null while the session loads; owner-only links appear once the role is known. */
+export function Sidebar({ me = null }: { me?: Me }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -62,8 +72,8 @@ export function Sidebar() {
             </span>
           </Link>
           <nav className="flex-1 space-y-1 px-3 py-3 lg:py-0" onClick={() => setOpen(false)}>
-            <Suspense fallback={<NavItems />}>
-              <ActiveNavItems />
+            <Suspense fallback={<NavItems owner={me?.role === "owner"} />}>
+              <ActiveNavItems owner={me?.role === "owner"} />
             </Suspense>
           </nav>
           <div className="space-y-1 border-t border-white/10 p-3">
@@ -74,6 +84,12 @@ export function Sidebar() {
             >
               <ExternalLink className="size-4" aria-hidden /> View website
             </a>
+            {me && (
+              <p className="truncate px-3 pb-1 text-xs text-white/50">
+                Signed in as <span className="font-semibold text-white/80">{me.name}</span>
+              </p>
+            )}
+            <DesktopAlertsToggle />
             <form action={logout}>
               <button
                 type="submit"
@@ -92,12 +108,12 @@ export function Sidebar() {
   );
 }
 
-function ActiveNavItems() {
-  return <NavItems pathname={usePathname()} />;
+function ActiveNavItems({ owner }: { owner: boolean }) {
+  return <NavItems pathname={usePathname()} owner={owner} />;
 }
 
-function NavItems({ pathname }: { pathname?: string }) {
-  return links.map(({ href, label, icon: Icon }) => {
+function NavItems({ pathname, owner }: { pathname?: string; owner: boolean }) {
+  return links.filter((l) => owner || !l.ownerOnly).map(({ href, label, icon: Icon }) => {
     const active = pathname ? (href === "/admin" ? pathname === href : pathname.startsWith(href)) : false;
     return (
       <Link
@@ -109,6 +125,7 @@ function NavItems({ pathname }: { pathname?: string }) {
       >
         <Icon className="size-4" aria-hidden />
         {label}
+        {(href === "/admin/registrations" || href === "/admin/messages") && <InboxBadge kind={href === "/admin/registrations" ? "registrations" : "messages"} />}
       </Link>
     );
   });

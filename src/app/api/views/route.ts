@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { isAdmin } from "@/lib/auth";
 import { getCourses, getPosts, getServices } from "@/lib/content";
 import { recordView, VIEW_TYPES, type ViewType } from "@/lib/views";
 
@@ -14,6 +15,7 @@ export async function POST(request: Request) {
   const done = new Response(null, { status: 204 });
   const h = await headers();
   if (BOT.test(h.get("user-agent") ?? "")) return done;
+  if (await isAdmin()) return done; // staff checking the site shouldn't inflate the numbers
 
   const body = (await request.json().catch(() => null)) as { type?: string; slug?: string } | null;
   const type = body?.type as ViewType;

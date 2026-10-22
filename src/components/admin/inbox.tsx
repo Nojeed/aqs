@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { LoaderCircle, Trash2 } from "lucide-react";
 import { addInboxNote, deleteInboxRecords, setInboxStatus } from "@/app/admin/actions";
+import { useAdminAction } from "@/components/admin/use-admin-action";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { badgeClass, type Tone } from "@/components/ui/status-badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,22 +24,8 @@ const tones: Record<string, Tone> = {
   archived: "neutral",
 };
 
-function useAction() {
-  const router = useRouter();
-  const [pending, start] = useTransition();
-  const [error, setError] = useState("");
-  const run = (action: () => Promise<{ ok: boolean; error?: string }>, after?: () => void) =>
-    start(async () => {
-      const result = await action();
-      setError(result.ok ? "" : (result.error ?? "Something went wrong."));
-      if (result.ok) after?.();
-      router.refresh();
-    });
-  return { pending, error, run };
-}
-
 export function StatusSelect({ inbox, id, status, statuses, label }: { inbox: InboxName; id: string; status: string; statuses: readonly Status[]; label: string }) {
-  const { pending, run } = useAction();
+  const { pending, run } = useAdminAction();
   return (
     <Select value={status} disabled={pending} onValueChange={(next) => run(() => setInboxStatus(inbox, [id], next))}>
       <SelectTrigger
@@ -61,14 +48,14 @@ export function StatusSelect({ inbox, id, status, statuses, label }: { inbox: In
 /** `redirectTo` (detail pages) leaves the page after deleting. */
 export function DeleteButton({ inbox, id, name, redirectTo }: { inbox: InboxName; id: string; name: string; redirectTo?: string }) {
   const router = useRouter();
-  const { pending, run } = useAction();
+  const { pending, run } = useAdminAction();
   const withLabel = Boolean(redirectTo);
   return (
     <button
       type="button"
       disabled={pending}
       onClick={() => {
-        if (confirm(`Delete the entry from ${name}? A backup copy is kept (Admin → Backups).`)) run(() => deleteInboxRecords(inbox, [id]), redirectTo ? () => router.push(redirectTo) : undefined);
+        if (confirm(`Delete the entry from ${name}? A backup copy is kept (Admin → Backups).`)) run(() => deleteInboxRecords(inbox, [id]), { after: redirectTo ? () => router.push(redirectTo) : undefined });
       }}
       className={withLabel ? "admin-btn hover:border-danger-300 hover:bg-danger-50 hover:text-danger-700" : "rounded-lg p-2 text-slate-400 transition hover:bg-danger-50 hover:text-danger-600 disabled:opacity-50"}
       aria-label={withLabel ? undefined : `Delete entry from ${name}`}
@@ -81,10 +68,10 @@ export function DeleteButton({ inbox, id, name, redirectTo }: { inbox: InboxName
 
 /** Bulk bar content for DataTable: set status for all selected rows, or delete them. */
 export function BulkActions({ inbox, ids, statuses, clear }: { inbox: InboxName; ids: string[]; statuses: readonly Status[]; clear: () => void }) {
-  const { pending, error, run } = useAction();
+  const { pending, run } = useAdminAction();
   return (
     <>
-      <Select value="" disabled={pending} onValueChange={(status) => run(() => setInboxStatus(inbox, ids, status), clear)}>
+      <Select value="" disabled={pending} onValueChange={(status) => run(() => setInboxStatus(inbox, ids, status), { after: clear })}>
         <SelectTrigger aria-label="Set status for selected" className="h-9 w-auto rounded-lg bg-white px-3 md:text-sm">
           <SelectValue placeholder="Set status…" />
         </SelectTrigger>
@@ -100,21 +87,20 @@ export function BulkActions({ inbox, ids, statuses, clear }: { inbox: InboxName;
         type="button"
         disabled={pending}
         onClick={() => {
-          if (confirm(`Delete ${ids.length} selected? A backup copy is kept (Admin → Backups).`)) run(() => deleteInboxRecords(inbox, ids), clear);
+          if (confirm(`Delete ${ids.length} selected? A backup copy is kept (Admin → Backups).`)) run(() => deleteInboxRecords(inbox, ids), { after: clear });
         }}
         className="admin-btn hover:border-danger-300 hover:bg-danger-50 hover:text-danger-700"
       >
         {pending ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <Trash2 className="size-4" aria-hidden />}
         Delete selected
       </button>
-      {error && <span className="text-danger-600">{error}</span>}
     </>
   );
 }
 
 /** Timeline of status changes and staff notes, plus a box to add a note. */
 export function History({ inbox, id, history }: { inbox: InboxName; id: string; history: HistoryEntry[] }) {
-  const { pending, error, run } = useAction();
+  const { pending, run } = useAdminAction();
   const [note, setNote] = useState("");
   return (
     <div>
@@ -136,7 +122,7 @@ export function History({ inbox, id, history }: { inbox: InboxName; id: string; 
         className="mt-6"
         onSubmit={(e) => {
           e.preventDefault();
-          run(() => addInboxNote(inbox, id, note), () => setNote(""));
+          run(() => addInboxNote(inbox, id, note), { after: () => setNote("") });
         }}
       >
         <label htmlFor="inbox-note" className="mb-1.5 block text-sm font-semibold text-slate-700">
@@ -148,7 +134,6 @@ export function History({ inbox, id, history }: { inbox: InboxName; id: string; 
             {pending && <LoaderCircle className="size-4 animate-spin" aria-hidden />}
             Save note
           </button>
-          {error && <span className="text-sm text-danger-600">{error}</span>}
         </div>
       </form>
     </div>

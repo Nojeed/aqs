@@ -212,7 +212,7 @@ export default async function HomePage() {
             <p className="text-sm font-semibold text-slate-500">{t(s.standardsTitle, locale)}</p>
             <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4" dir="ltr">
               {site.standards.map((name) => (
-                <li key={name} className="font-display text-xl font-bold tracking-tight text-silver-400 sm:text-2xl">
+                <li key={name} className="font-display text-xl font-bold tracking-tight text-silver-500 sm:text-2xl">
                   {name}
                 </li>
               ))}

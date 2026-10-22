@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ExternalLink, Pencil } from "lucide-react";
+import { ExternalLink, Pencil, Printer } from "lucide-react";
 import { DataTable, type AdminColumn } from "@/components/admin/data-table";
 import { RevokeToggle } from "@/components/admin/revoke-toggle";
 import { CopyButton } from "@/components/copy-button";
@@ -91,6 +91,14 @@ const columns: AdminColumn<Row>[] = [
           <Pencil className="size-4" aria-hidden /> Edit
         </Link>
         <RevokeToggle id={c.id} revoked={c.status === "revoked"} />
+        <a
+          href={`/admin/print/certificates/${encodeURIComponent(c.id)}`}
+          target="_blank"
+          className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-700"
+          title="Print certificate"
+        >
+          <Printer className="size-4" aria-label="Print certificate" />
+        </a>
         <a
           href={`/en/verify?id=${encodeURIComponent(c.id)}`}
           target="_blank"

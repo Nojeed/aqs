@@ -1,5 +1,6 @@
 import "server-only";
 import { promises as fs } from "node:fs";
+import { normalizeId } from "./certificate-id";
 import { dataPath, readJson } from "./storage";
 
 export const CERTIFICATES_FILE = "certificates.json";
@@ -25,9 +26,7 @@ export type Certificate = {
 
 export type CertificateStatus = "valid" | "expired" | "revoked";
 
-export function normalizeId(id: string) {
-  return id.toUpperCase().replace(/\s+/g, "").trim();
-}
+export { normalizeId };
 
 /** Accepts either a bare array or `{ "certificates": [...] }`. */
 export function parseCertificates(raw: unknown): Certificate[] {
@@ -54,7 +53,8 @@ export async function readCertificates() {
 export function nextCertificateId(list: Certificate[], issueDate: string) {
   const year = /^\d{4}-/.test(issueDate) ? issueDate.slice(0, 4) : String(new Date().getFullYear());
   const prefix = `AQS-${year}-`;
-  const used = list.map((c) => normalizeId(c.id)).filter((id) => id.startsWith(prefix));
+  // Raw ids here (normalizeId drops the dashes the prefix relies on).
+  const used = list.map((c) => c.id.trim().toUpperCase()).filter((id) => id.startsWith(prefix));
   const max = used.reduce((m, id) => Math.max(m, Number(id.slice(prefix.length)) || 0), 0);
   return `${prefix}${String(max + 1).padStart(4, "0")}`;
 }

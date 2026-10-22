@@ -48,6 +48,8 @@ Built shadcn-style (Radix primitives, `cn()` from `src/lib/utils.ts`), styled wi
 | `Select` | Radix select (keyboard, RTL via `dir`). Items can't have an empty value, so "All" uses the value `all`. |
 | `Tabs` | Radix tabs; used on the contact page (message / register). |
 | `StatusBadge`, `badgeClass(tone)` | The one status pill: `success`, `warning`, `danger`, `info`, `neutral`. Publish toggle, certificate status and inbox status all use it. |
+| Toasts (`sonner`) | Admin feedback. Run admin actions through `useAdminAction()` so every outcome is a toast: success in the action's own words, errors stay readable. Top-right. Public forms use inline messages instead. |
+| `LevelIcon`, `CopyButton` | Level = 1/2/3 signal bars, always next to the level text. Copy shows a check mark for a moment and announces "Copied". |
 
 ### Buttons
 
