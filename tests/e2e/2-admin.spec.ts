@@ -110,4 +110,21 @@ test.describe("admin", () => {
     await page.reload();
     await expect(page.getByText("All dates for this course are full")).toBeVisible();
   });
+
+  test("switching a filter off in Site content hides it on the site", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/admin/site");
+    await page.getByText("Blog: search box").click();
+    await page.getByRole("button", { name: "Save" }).click();
+    await expect(page.getByText("Site content saved.")).toBeVisible();
+    await page.goto("/en/blog");
+    await expect(page.getByLabel("Topic")).toBeVisible();
+    await expect(page.getByLabel("Search articles")).toHaveCount(0);
+
+    // Switch it back on so the setting is left as it was.
+    await page.goto("/admin/site");
+    await page.getByText("Blog: search box").click();
+    await page.getByRole("button", { name: "Save" }).click();
+    await expect(page.getByText("Site content saved.")).toBeVisible();
+  });
 });

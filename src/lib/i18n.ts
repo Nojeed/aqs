@@ -97,6 +97,18 @@ const dictionaries = {
     blog: {
       latest: "أحدث المقالات",
       related: "مقالات أخرى",
+      filters: {
+        search: "ابحث في المقالات",
+        topic: "الموضوع",
+        year: "السنة",
+        any: "الكل",
+        sort: "الترتيب",
+        newest: "الأحدث أولًا",
+        oldest: "الأقدم أولًا",
+        count: "المقالات",
+        clear: "مسح الفلاتر",
+        none: "لا توجد مقالات مطابقة. جرّب تغيير الفلاتر.",
+      },
     },
     verify: {
       title: "التحقق من الشهادات",
@@ -194,6 +206,7 @@ const dictionaries = {
       quickLinks: "روابط سريعة",
       contact: "معلومات التواصل",
       rights: "جميع الحقوق محفوظة.",
+      credit: "تصميم وتطوير",
     },
     notFound: {
       title: "الصفحة غير موجودة",
@@ -265,6 +278,18 @@ const dictionaries = {
     blog: {
       latest: "Latest articles",
       related: "More articles",
+      filters: {
+        search: "Search articles",
+        topic: "Topic",
+        year: "Year",
+        any: "All",
+        sort: "Sort",
+        newest: "Newest first",
+        oldest: "Oldest first",
+        count: "Articles",
+        clear: "Clear filters",
+        none: "No articles match. Try changing the filters.",
+      },
     },
     verify: {
       title: "Certificate Verification",
@@ -361,6 +386,7 @@ const dictionaries = {
       quickLinks: "Quick links",
       contact: "Contact",
       rights: "All rights reserved.",
+      credit: "Designed and developed by",
     },
     notFound: {
       title: "Page not found",

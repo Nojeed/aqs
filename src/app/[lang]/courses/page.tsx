@@ -5,6 +5,7 @@ import { CourseFilters, CourseGrid } from "@/components/site/course-filters";
 import { PageHero } from "@/components/site/page-hero";
 import { getCourses, getSite } from "@/lib/content";
 import { getDictionary, t } from "@/lib/i18n";
+import { filterSettings } from "@/lib/schema";
 import { currentLocale } from "@/lib/locale";
 import { pageMetadata } from "@/lib/seo";
 
@@ -46,7 +47,7 @@ export default async function CoursesPage() {
         </h2>
         {courses.length ? (
           <Suspense fallback={<CourseGrid items={items} />}>
-            <CourseFilters locale={locale} items={items} />
+            <CourseFilters locale={locale} items={items} show={filterSettings(site)} />
           </Suspense>
         ) : (
           <EmptyState text={d.common.empty} />

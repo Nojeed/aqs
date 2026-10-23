@@ -75,6 +75,25 @@ const cta: Field = {
   fields: { label: l("Label"), href: { kind: "url", label: "Link", placeholder: "/courses" } },
 };
 
+/** Filters visitors can use on the Courses and Blog pages; the admin switches each on or off. */
+export const FILTER_FIELDS = {
+  courseSearch: "Courses: search box",
+  courseLevel: "Courses: level",
+  courseFormat: "Courses: format",
+  courseCategory: "Courses: category",
+  courseSort: "Courses: sort (upcoming first)",
+  blogSearch: "Blog: search box",
+  blogTopic: "Blog: topic (HACCP, auditing… from the posts' categories)",
+  blogYear: "Blog: year",
+  blogSort: "Blog: newest / oldest",
+} as const;
+export type FilterKey = keyof typeof FILTER_FIELDS;
+
+/** Every filter setting, with "on" for any the admin never set (sites from before this option keep their filters). */
+export function filterSettings(site: { filters?: Partial<Record<FilterKey, boolean>> }) {
+  return Object.fromEntries(Object.keys(FILTER_FIELDS).map((k) => [k, site.filters?.[k as FilterKey] ?? true])) as Record<FilterKey, boolean>;
+}
+
 export const siteFields: Fields = {
   brand: {
     kind: "object",
@@ -200,6 +219,12 @@ export const siteFields: Fields = {
       x: { kind: "url", label: "X (Twitter)" },
       tiktok: { kind: "url", label: "TikTok" },
     },
+  },
+  filters: {
+    kind: "object",
+    label: "Filters on the website",
+    help: "Choose which filters visitors see on the Courses and Blog pages. Switch all of a page's filters off to hide its filter bar.",
+    fields: Object.fromEntries(Object.entries(FILTER_FIELDS).map(([key, label]) => [key, { kind: "boolean", label }])) as Fields,
   },
   seo: {
     kind: "object",
@@ -409,6 +434,7 @@ export type Site = {
   contact: { email: string; phone: string; whatsapp: string; address: L10n; hours: L10n; mapUrl: string };
   social: Record<"facebook" | "instagram" | "linkedin" | "youtube" | "x" | "tiktok", string>;
   seo: { title: L10n; description: L10n };
+  filters?: Partial<Record<FilterKey, boolean>>;
 };
 
 type ItemBase = { id: string; slug: string; title: L10n; body: L10n; published: boolean };

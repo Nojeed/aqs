@@ -49,7 +49,8 @@ export function Header({
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      // right-scroll-bar-position: open dropdowns hide the page scrollbar; this keeps the bar's width (and links) still.
+      className={`right-scroll-bar-position fixed inset-x-0 top-0 z-50 transition duration-300 ${
         solid
           ? "border-b border-slate-200/70 bg-white/90 shadow-sm backdrop-blur-xl"
           : "border-b border-transparent bg-transparent"

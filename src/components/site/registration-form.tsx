@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { dir, formatDate, getDictionary, t, type L10n, type Locale } from "@/lib/i18n";
+import { motion } from "motion/react";
+import { easeLuxe } from "@/lib/motion";
 
 const empty = { type: "individual", courseId: "", session: "", name: "", company: "", trainees: "5", email: "", phone: "", notes: "" };
 
@@ -56,7 +58,14 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
 
   if (result?.ok) {
     return (
-      <div ref={successRef} tabIndex={-1} role="status" className="flex scroll-mt-28 flex-col items-start gap-4 rounded-3xl bg-success-50 p-8 ring-1 ring-success-200">
+      <motion.div
+        ref={successRef}
+        initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
+        transition={{ duration: 0.8, ease: easeLuxe }}
+        tabIndex={-1}
+        role="status"
+        className="flex scroll-mt-28 flex-col items-start gap-4 rounded-3xl bg-success-50 p-8 ring-1 ring-success-200">
         <CircleCheck className="size-10 text-success-600" strokeWidth={1.6} aria-hidden />
         <div>
           <p className="font-display text-xl font-bold text-success-900">{r.success}</p>
@@ -65,7 +74,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
         <button type="button" className="btn-outline" onClick={onAnother}>
           {r.another}
         </button>
-      </div>
+      </motion.div>
     );
   }
 

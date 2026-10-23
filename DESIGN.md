@@ -63,7 +63,9 @@ Both: visible focus outline (`accent-500`), `disabled` = 50–60% opacity + not-
 ## Motion
 
 - Library: **Motion** (`motion/react`). Tokens in `src/lib/motion.ts` (keep `--ease-smooth` in CSS in sync).
-- Easing: `ease = [0.22, 1, 0.36, 1]` everywhere. Durations: page 0.6s, reveal 0.7s, hero 0.8s; UI transitions 150–250ms.
+- Easing: `ease = [0.22, 1, 0.36, 1]` for UI and the hero; `easeLuxe = [0.16, 1, 0.3, 1]` for entrances. Durations: page 0.8s, reveal 0.8s, hero 0.8s; UI transitions 150–250ms.
+- Entrances "rise into focus": fade, 28–32px rise and a 10px blur that clears (page transitions, scroll reveals, filtered grids, contact tabs, form success panels).
+- Glass rule: `backdrop-filter` stops working while an ancestor fades or has any `filter`, even `blur(0px)`. Content containing glass only rises (`containsGlass` in `src/lib/motion.ts`), and every entrance removes its filter when it ends.
 - Page transitions animate section *contents*, never section backgrounds (avoids white flashes between navy heroes).
 - The hero headline and subtitle only slide (no fade) so they paint before JavaScript loads.
 - Reduced motion: `MotionConfig reducedMotion="user"` drops movement and keeps fades; CSS keeps colour and opacity transitions and drops transforms.

@@ -22,6 +22,18 @@ test.describe("public site", () => {
     await expect(cards).toHaveCount(all);
   });
 
+  test("blog filters narrow the list and are saved in the URL", async ({ page }) => {
+    await page.goto("/en/blog");
+    const counter = page.getByText(/Articles:/);
+    await expect(counter).toBeVisible();
+    const total = Number((await counter.textContent())?.match(/\/\s*(\d+)/)?.[1]);
+    await page.getByLabel("Search articles").fill("haccp");
+    await expect(page).toHaveURL(/q=haccp/);
+    await expect(counter).not.toHaveText(new RegExp(`:\s*${total}\s*/`));
+    await page.getByRole("button", { name: "Clear filters" }).click();
+    await expect(page).not.toHaveURL(/q=/);
+  });
+
   test("certificate verification: valid, typed loosely, and not found", async ({ page }) => {
     await page.goto("/en/verify?id=AQS-2026-0001");
     await expect(page.getByRole("heading", { name: "Valid certificate" })).toBeVisible();

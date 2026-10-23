@@ -5,6 +5,7 @@ import * as motion from "motion/react-client";
 import { duration, ease } from "@/lib/motion";
 import { Icon } from "@/components/icon";
 import { CourseCard, PostCard, ServiceCard } from "@/components/site/cards";
+import { CountUp } from "@/components/site/count-up";
 import { Reveal } from "@/components/site/reveal";
 import { SectionHeading } from "@/components/site/section-heading";
 import { VerifyForm } from "@/components/site/verify-form";
@@ -18,7 +19,8 @@ const fadeUp = (delay = 0) => ({
   animate: { opacity: 1, y: 0 },
   transition: { duration: duration.hero, delay, ease },
 });
-// Headline and subtitle only slide: they stay visible in the server HTML, so they paint before JS loads.
+// Only slide, no fade: the headline and subtitle stay visible in the server HTML (they paint before JS loads),
+// and rows holding glass (backdrop-blur) elements keep their blur during the entrance.
 const slideUp = (delay = 0) => ({ ...fadeUp(delay), initial: { y: 18 }, animate: { y: 0 } });
 
 export default async function HomePage() {
@@ -73,7 +75,7 @@ export default async function HomePage() {
             <motion.p {...slideUp(0.24)} className="mt-6 max-w-xl text-lg leading-8 text-pretty text-white/75">
               {t(site.hero.subtitle, locale)}
             </motion.p>
-            <motion.div {...fadeUp(0.36)} className="mt-10 flex flex-wrap gap-3">
+            <motion.div {...slideUp(0.36)} className="mt-10 flex flex-wrap gap-3">
               {site.hero.primaryCta.href && (
                 <Link href={localHref(site.hero.primaryCta.href, locale)} className="btn-light px-7 py-3.5">
                   {t(site.hero.primaryCta.label, locale)}
@@ -87,7 +89,7 @@ export default async function HomePage() {
               )}
             </motion.div>
             {site.hero.pillars.length > 0 && (
-              <motion.ul {...fadeUp(0.48)} className="mt-12 flex flex-wrap gap-x-6 gap-y-4">
+              <motion.ul {...slideUp(0.48)} className="mt-12 flex flex-wrap gap-x-6 gap-y-4">
                 {site.hero.pillars.map((p, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm font-medium text-white/85">
                     <span className="inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur">
@@ -100,9 +102,13 @@ export default async function HomePage() {
             )}
           </div>
 
-          {/* Quick certificate check */}
-          <motion.div {...fadeUp(0.4)} className="hidden lg:block">
-            <div className="ms-auto max-w-md rounded-[2rem] border border-white/15 bg-white/10 p-8 text-white shadow-2xl shadow-black/30 backdrop-blur-xl">
+          {/* Quick certificate check. The card fades itself in: a fading parent would switch its glass blur off
+              until the fade ends (browsers only blur behind an element whose ancestors are fully opaque). */}
+          <div className="hidden lg:block">
+            <motion.div
+              {...fadeUp(0.4)}
+              className="ms-auto max-w-md rounded-[2rem] border border-white/15 bg-white/10 p-8 text-white shadow-2xl shadow-black/30 backdrop-blur-xl"
+            >
               <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-white text-brand-800 shadow-lg">
                 <ShieldCheck className="size-7" strokeWidth={1.6} aria-hidden />
               </span>
@@ -117,8 +123,8 @@ export default async function HomePage() {
                   size="md"
                 />
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -128,12 +134,13 @@ export default async function HomePage() {
           <div className="container-page">
             <dl className="card grid grid-cols-2 divide-slate-100 overflow-hidden p-2 lg:grid-cols-4 lg:divide-x rtl:lg:divide-x-reverse">
               {site.stats.map((stat, i) => (
-                <div key={i} className="px-6 py-6 text-center sm:py-8">
-                  <dt className="sr-only">{t(stat.label, locale)}</dt>
-                  <dd className="font-display text-3xl font-extrabold text-brand-800 sm:text-4xl" dir="ltr">
-                    {stat.value}
+                // Label first in the markup (read and copied as "label, value"), shown under the number.
+                <div key={i} className="flex flex-col-reverse px-6 py-6 text-center sm:py-8">
+                  <dt className="mt-2 text-sm font-medium text-slate-500">{t(stat.label, locale)}</dt>
+                  <dd className="font-display text-3xl font-extrabold text-brand-800 tabular-nums sm:text-4xl" dir="ltr">
+                    <span className="sr-only">{stat.value}</span>
+                    <CountUp value={stat.value} />
                   </dd>
-                  <dd className="mt-2 text-sm font-medium text-slate-500">{t(stat.label, locale)}</dd>
                 </div>
               ))}
             </dl>
@@ -156,7 +163,8 @@ export default async function HomePage() {
               )}
             </div>
             {site.about.badgeValue && (
-              <div className="absolute end-[38%] top-10 rounded-3xl bg-brand-800 px-6 py-5 text-white shadow-xl shadow-brand-900/30 sm:end-[30%]">
+              // Straddles the main photo's inner edge, in the open space above the second photo.
+              <div className="absolute end-[20%] top-10 translate-x-1/2 rounded-3xl bg-brand-800 px-6 py-5 text-white shadow-xl shadow-brand-900/30 rtl:-translate-x-1/2">
                 <p className="font-display text-4xl font-extrabold" dir="ltr">
                   {site.about.badgeValue}
                 </p>
