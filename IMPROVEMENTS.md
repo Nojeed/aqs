@@ -68,6 +68,14 @@ Found by behaviour checks and the end-to-end tests. Every bug gets a line here: 
 - [x] **End-to-end tests** (`npm run test:e2e`, 14 tests) on the main paths; **Lighthouse audit** run (see Bugs → Open for performance)
 - [x] Fewer font files (unused weights removed)
 
+### 2026-10-23
+- [x] Footer credit for Nojeed (fixed in code, not editable in the admin)
+- [x] Course filters redone: results dissolve out, the rest glide, new ones rise into focus one after another
+- [x] Blog filters (search, topic, year, newest/oldest), saved in the URL; the admin chooses which filters show on the courses and blog pages
+- [x] The same "rise into focus" entrance on page transitions, scroll reveals, contact tabs and form success panels; glass keeps blurring throughout
+- [x] Fixed: the home hero "Verify a certificate" glass card lost its blur while the page loaded
+- [x] Home stats roll up like an odometer (blurred while spinning, sharp when they land); "10+ years" badge moved off the photo's centre
+
 ### 2026-10-22
 - [x] **Notifications:** one toast system for the whole admin (sonner); live inbox badges, arrival toasts, desktop alerts, tab-title count
 - [x] Smooth course filtering: cards fade in and out, the rest glide into place (Motion layout animations)

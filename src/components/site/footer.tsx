@@ -92,7 +92,18 @@ export function Footer({ locale, site, year }: { locale: Locale; site: Site; yea
       <div className="relative border-t border-white/10">
         <div className="container-page flex flex-col items-center justify-between gap-2 py-6 text-xs sm:flex-row">
           <p>
-            © {year} {t(site.brand.fullName, locale)} ({site.brand.name}). {d.footer.rights}
+            © {year} {t(site.brand.fullName, locale)} ({site.brand.name}). {d.footer.rights}{" "}
+            <span className="whitespace-nowrap">
+              {d.footer.credit}{" "}
+              <a
+                href={`https://www.nojeed.me/${locale}`}
+                target="_blank"
+                rel="noopener"
+                className="font-semibold text-white/90 underline-offset-4 transition hover:text-white hover:underline"
+              >
+                Nojeed
+              </a>
+            </span>
           </p>
           <p className="text-white/50">{t(site.brand.tagline, "en")}</p>
         </div>

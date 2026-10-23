@@ -1,7 +1,7 @@
 "use client";
 
-import { stagger, useAnimate } from "motion/react";
-import { duration, ease } from "@/lib/motion";
+import { useAnimate } from "motion/react";
+import { clearRise, clearRiseWhenDone, containsGlass, duration, easeLuxe, hideForRise, riseKeyframes } from "@/lib/motion";
 import { useEffect, useLayoutEffect, type ReactNode } from "react";
 
 let hydrated = false;
@@ -34,18 +34,20 @@ export function PageTransition({ children }: { children: ReactNode }) {
       (el) => el.getBoundingClientRect().top < window.innerHeight,
     );
     const targets = onScreen.length ? onScreen : [scope.current];
-    // Hide before this frame paints; motion applies its first keyframe a frame later.
-    for (const el of targets) el.style.opacity = "0";
-    const controls = animate(
-      targets,
-      { opacity: [0, 1], y: [32, 0] },
-      { duration: duration.page, delay: stagger(0.08), ease },
-    );
+    // Rise into focus, one section after another. Set the start before this frame paints
+    // (motion applies its first keyframe a frame later); sections holding glass only rise.
+    const runs = targets.map((el, i) => {
+      const glass = containsGlass(el);
+      hideForRise(el, glass, 32);
+      const controls = animate(el, riseKeyframes(glass, 32), { duration: duration.page, delay: i * 0.08, ease: easeLuxe });
+      clearRiseWhenDone(controls, el);
+      return controls;
+    });
     // Hidden mid-animation (or Strict Mode's dev re-run): never leave content stuck invisible.
     return () => {
       animatedThisFrame = false;
-      controls.stop();
-      for (const el of targets) el.style.opacity = el.style.transform = "";
+      runs.forEach((c) => c.stop());
+      targets.forEach(clearRise);
     };
   }, [animate, scope]);
   useEffect(() => {

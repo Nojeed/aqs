@@ -3,7 +3,7 @@ import { saveSite } from "@/app/admin/actions";
 import { ContentEditor } from "@/components/admin/editor/content-editor";
 import { requireAdmin } from "@/lib/auth";
 import { readSite } from "@/lib/content";
-import { siteFields } from "@/lib/schema";
+import { filterSettings, siteFields } from "@/lib/schema";
 
 export const metadata: Metadata = { title: "Site content" };
 
@@ -14,7 +14,8 @@ export default async function SiteContentPage() {
     <ContentEditor
       title="Site content"
       fields={siteFields}
-      initial={site as unknown as Record<string, unknown>}
+      // Filters never set before show as on, matching what visitors currently see.
+      initial={{ ...site, filters: filterSettings(site) } as unknown as Record<string, unknown>}
       save={saveSite}
       viewUrl="/ar"
     />

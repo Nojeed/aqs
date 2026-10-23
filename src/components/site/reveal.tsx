@@ -1,10 +1,10 @@
 "use client";
 
 import { inView, useAnimate } from "motion/react";
-import { duration, ease } from "@/lib/motion";
+import { clearRise, clearRiseWhenDone, containsGlass, duration, easeLuxe, hideForRise, riseKeyframes } from "@/lib/motion";
 import { useEffect, useRef, type ReactNode } from "react";
 
-/** Fades content up as it scrolls into view. Content stays visible without JS. */
+/** Content rises into focus as it scrolls into view (glass content only rises). Visible without JS. */
 export function Reveal({
   children,
   delay = 0,
@@ -22,18 +22,19 @@ export function Reveal({
   useEffect(() => {
     const el = ref.current;
     if (!el || el.getBoundingClientRect().top < window.innerHeight) return; // already on screen
-    el.style.opacity = "0";
+    const glass = containsGlass(el);
+    hideForRise(el, glass, 28);
     const stop = inView(
       el,
       () => {
-        animate(el, { opacity: [0, 1], y: [24, 0] }, { duration: duration.reveal, delay: delay / 1000, ease });
+        clearRiseWhenDone(animate(el, riseKeyframes(glass, 28), { duration: duration.reveal, delay: delay / 1000, ease: easeLuxe }), el);
       },
       { margin: "0px 0px -10% 0px" },
     );
     // Next hides visited pages instead of unmounting them; leave nothing invisible behind.
     return () => {
       stop();
-      el.style.opacity = el.style.transform = "";
+      clearRise(el);
     };
   }, [animate, delay]);
 

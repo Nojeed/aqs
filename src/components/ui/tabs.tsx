@@ -1,10 +1,28 @@
 "use client";
 
-import type { ComponentProps } from "react";
+import { createContext, use, useState, type ComponentProps } from "react";
+import { motion } from "motion/react";
 import { Tabs as TabsPrimitive } from "radix-ui";
+import { easeLuxe } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-export const Tabs = TabsPrimitive.Root;
+// True once the visitor has switched tabs: the panel in the server HTML must not start hidden.
+const Switched = createContext(false);
+
+export function Tabs({ onValueChange, ...props }: ComponentProps<typeof TabsPrimitive.Root>) {
+  const [switched, setSwitched] = useState(false);
+  return (
+    <Switched value={switched}>
+      <TabsPrimitive.Root
+        onValueChange={(value) => {
+          setSwitched(true);
+          onValueChange?.(value);
+        }}
+        {...props}
+      />
+    </Switched>
+  );
+}
 
 export function TabsList({ className, ...props }: ComponentProps<typeof TabsPrimitive.List>) {
   return <TabsPrimitive.List data-slot="tabs-list" className={cn("flex w-full gap-1 rounded-xl bg-slate-100 p-1", className)} {...props} />;
@@ -25,6 +43,17 @@ export function TabsTrigger({ className, ...props }: ComponentProps<typeof TabsP
   );
 }
 
-export function TabsContent({ className, ...props }: ComponentProps<typeof TabsPrimitive.Content>) {
-  return <TabsPrimitive.Content data-slot="tabs-content" className={cn("mt-8 outline-none", className)} {...props} />;
+/** Radix mounts a panel when its tab is chosen, so the new panel rises into focus on every switch. */
+export function TabsContent({ className, children, ...props }: ComponentProps<typeof TabsPrimitive.Content>) {
+  return (
+    <TabsPrimitive.Content data-slot="tabs-content" className={cn("mt-8 outline-none", className)} {...props}>
+      <motion.div
+        initial={use(Switched) && { opacity: 0, y: 16, filter: "blur(8px)" }}
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
+        transition={{ duration: 0.6, ease: easeLuxe }}
+      >
+        {children}
+      </motion.div>
+    </TabsPrimitive.Content>
+  );
 }

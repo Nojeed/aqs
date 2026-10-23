@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { EmptyState, PostCard } from "@/components/site/cards";
 import { PageHero } from "@/components/site/page-hero";
-import { Reveal } from "@/components/site/reveal";
+import { BlogFilters, BlogList } from "@/components/site/blog-filters";
 import { getPosts, getSite } from "@/lib/content";
 import { formatDate, getDictionary, t } from "@/lib/i18n";
 import { currentLocale } from "@/lib/locale";
+import { filterSettings } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,19 +25,9 @@ export default async function BlogPage() {
   const locale = await currentLocale();
   const d = getDictionary(locale);
   const [site, posts] = await Promise.all([getSite(), getPosts()]);
-  const [lead, ...rest] = posts;
-
-  return (
-    <>
-      <PageHero
-        title={t(site.sections.blogTitle, locale)}
-        subtitle={t(site.sections.blogSubtitle, locale)}
-       
-        image="/images/food-lab-produce.jpg"
-      />
-      <section className="container-page py-20">
-        {!lead && <EmptyState text={d.common.empty} />}
-        {lead && (
+  const [lead] = posts;
+  // The newest post is featured large while nothing is filtered.
+  const leadCard = lead && (
           <Link href={`/${locale}/blog/${lead.slug}`} className="group card grid overflow-hidden lg:grid-cols-2">
             <div className="relative aspect-[16/10] bg-brand-100 lg:aspect-auto lg:min-h-96">
               {lead.cover && (
@@ -63,15 +55,30 @@ export default async function BlogPage() {
               <span className="mt-8 text-sm font-semibold text-brand-700">{d.common.readMore} {locale === "ar" ? "←" : "→"}</span>
             </div>
           </Link>
-        )}
-        {rest.length > 0 && (
-          <ul className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.map((post, i) => (
-              <Reveal as="li" key={post.id} delay={(i % 3) * 80}>
-                <PostCard post={post} locale={locale} />
-              </Reveal>
-            ))}
-          </ul>
+  );
+  const items = posts.map((post) => ({
+    id: post.id,
+    topic: t(post.category, locale),
+    year: post.date?.slice(0, 4) ?? "",
+    title: t(post.title, locale),
+    excerpt: t(post.excerpt, locale),
+    card: <PostCard post={post} locale={locale} />,
+  }));
+
+  return (
+    <>
+      <PageHero
+        title={t(site.sections.blogTitle, locale)}
+        subtitle={t(site.sections.blogSubtitle, locale)}
+        image="/images/food-lab-produce.jpg"
+      />
+      <section className="container-page py-20">
+        {posts.length === 0 ? (
+          <EmptyState text={d.common.empty} />
+        ) : (
+          <Suspense fallback={<BlogList lead={leadCard} items={items} />}>
+            <BlogFilters locale={locale} lead={leadCard} items={items} show={filterSettings(site)} />
+          </Suspense>
         )}
       </section>
     </>
