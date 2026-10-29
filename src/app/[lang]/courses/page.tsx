@@ -16,6 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     path: "/courses",
     title: getDictionary(locale).nav.courses,
     description: t(site.sections.coursesSubtitle, locale),
+    image: "/images/training-room.jpg",
   });
 }
 

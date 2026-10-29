@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, Lock, User } from "lucide-react";
 import { login } from "@/app/admin/actions";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -11,10 +11,10 @@ export function LoginForm() {
   return (
     <form action={action} className="mt-8 space-y-4">
       <Field id="login-username" label="Username">
-        <Input id="login-username" name="username" autoComplete="username" required autoFocus />
+        <Input id="login-username" icon={User} name="username" autoComplete="username" required autoFocus />
       </Field>
       <Field id="login-password" label="Password">
-        <Input id="login-password" name="password" type="password" autoComplete="current-password" required />
+        <Input id="login-password" icon={Lock} name="password" type="password" autoComplete="current-password" required />
       </Field>
       {state && !state.ok && (
         <p role="alert" className="rounded-xl bg-danger-50 px-4 py-3 text-sm text-danger-700 ring-1 ring-danger-200">

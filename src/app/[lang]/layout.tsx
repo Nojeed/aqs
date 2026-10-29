@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { lang } from "next/root-params";
 import "../globals.css";
-import { jakarta, plexArabic } from "../fonts";
+import { fonts } from "../fonts";
 import { Analytics } from "@/components/site/analytics";
 import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
@@ -15,12 +15,15 @@ export async function generateStaticParams() {
   return locales.map((l) => ({ lang: l }));
 }
 
+// Browser bars on phones, and the stripe beside Discord link previews.
+export const viewport: Viewport = { themeColor: "#012963" };
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await lang();
   if (!isLocale(locale)) return {};
   const site = await getSite();
   return {
-    ...(await pageMetadata({ locale, path: "" })),
+    ...(await pageMetadata({ locale, path: "", image: site.hero.image || undefined })),
     metadataBase: new URL(siteUrl),
     ...(process.env.GOOGLE_SITE_VERIFICATION && { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }),
     title: { default: t(site.seo.title, locale), template: `%s | ${site.brand.name}` },
@@ -41,7 +44,8 @@ export default async function SiteLayout({ children }: LayoutProps<"/[lang]">) {
   ];
 
   return (
-    <html lang={locale} dir={dir(locale)} data-scroll-behavior="smooth" className={`${plexArabic.variable} ${jakarta.variable}`}>
+    // suppressHydrationWarning: extensions like Night Eye add attributes to <html> before React loads.
+    <html suppressHydrationWarning lang={locale} dir={dir(locale)} data-scroll-behavior="smooth" className={fonts.className} style={fonts.style}>
       <body className="flex min-h-dvh flex-col">
         <a
           href="#main"

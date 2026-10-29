@@ -18,6 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     path: "/blog",
     title: getDictionary(locale).nav.blog,
     description: t(site.sections.blogSubtitle, locale),
+    image: "/images/food-lab-produce.jpg",
   });
 }
 

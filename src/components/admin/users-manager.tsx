@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { KeyRound, LoaderCircle, Trash2, UserPlus } from "lucide-react";
+import { AtSign, KeyRound, LoaderCircle, Shield, Trash2, User, UserPlus } from "lucide-react";
 import { createUser, deleteUser, resetUserPassword } from "@/app/admin/actions";
 import { useAdminAction } from "@/components/admin/use-admin-action";
 import { Field } from "@/components/ui/field";
@@ -70,6 +70,7 @@ export function UsersManager({ users, me }: { users: Row[]; me: string }) {
                   <Field id={`reset-${u.username}`} label={`New password for ${u.name}`} className="min-w-56 flex-1">
                     <Input
                       id={`reset-${u.username}`}
+                      icon={KeyRound}
                       type="text"
                       autoComplete="off"
                       value={newPassword}
@@ -99,11 +100,12 @@ export function UsersManager({ users, me }: { users: Row[]; me: string }) {
           }}
         >
           <Field id="nu-name" label="Name">
-            <Input id="nu-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className={compact} />
+            <Input id="nu-name" icon={User} value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className={compact} />
           </Field>
           <Field id="nu-username" label="Username" help="Lowercase letters, numbers, dots or dashes. Used to sign in.">
             <Input
               id="nu-username"
+              icon={AtSign}
               value={form.username}
               onChange={(e) => setForm((f) => ({ ...f, username: e.target.value.toLowerCase() }))}
               autoComplete="off"
@@ -113,7 +115,7 @@ export function UsersManager({ users, me }: { users: Row[]; me: string }) {
           </Field>
           <Field id="nu-role" label="Role" help="Owners also manage users and see the activity log.">
             <Select value={form.role} onValueChange={(role) => setForm((f) => ({ ...f, role }))}>
-              <SelectTrigger id="nu-role" className={compact}>
+              <SelectTrigger id="nu-role" icon={Shield} className={compact}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -125,6 +127,7 @@ export function UsersManager({ users, me }: { users: Row[]; me: string }) {
           <Field id="nu-password" label="First password" help="At least 10 characters. Share it privately; they can change it under Account.">
             <Input
               id="nu-password"
+              icon={KeyRound}
               type="text"
               autoComplete="off"
               value={form.password}

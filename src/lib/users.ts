@@ -1,5 +1,6 @@
 import "server-only";
 import { createHash, timingSafeEqual } from "node:crypto";
+import { lockFile } from "./lock";
 import { hashPassword, verifyPassword } from "./password";
 import { readJson, writeJson } from "./storage";
 
@@ -45,6 +46,7 @@ export async function currentUser(username: string, v: string): Promise<SessionU
 
 /** Set a password (for the owner too: the first change moves the owner into users.json). */
 export async function setPassword(username: string, password: string, defaults?: { name: string; role: Role }) {
+  using _lock = await lockFile(USERS_FILE);
   const users = await readUsers();
   const now = new Date().toISOString();
   const existing = users.find((u) => u.username === username);

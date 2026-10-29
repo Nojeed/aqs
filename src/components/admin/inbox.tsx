@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { LoaderCircle, Trash2 } from "lucide-react";
+import { LoaderCircle, StickyNote, Trash2 } from "lucide-react";
 import { addInboxNote, deleteInboxRecords, setInboxStatus } from "@/app/admin/actions";
 import { useAdminAction } from "@/components/admin/use-admin-action";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -128,7 +128,7 @@ export function History({ inbox, id, history }: { inbox: InboxName; id: string; 
         <label htmlFor="inbox-note" className="mb-1.5 block text-sm font-semibold text-slate-700">
           Add a note
         </label>
-        <Textarea id="inbox-note" value={note} onChange={(e) => setNote(e.target.value)} rows={3} placeholder="Called, left a voicemail…" className="md:text-sm" dir="auto" />
+        <Textarea id="inbox-note" icon={StickyNote} value={note} onChange={(e) => setNote(e.target.value)} rows={3} placeholder="Called, left a voicemail…" className="md:text-sm" dir="auto" />
         <div className="mt-2 flex items-center gap-3">
           <button type="submit" className="btn-primary rounded-lg px-4 py-2" disabled={pending || !note.trim()}>
             {pending && <LoaderCircle className="size-4 animate-spin" aria-hidden />}

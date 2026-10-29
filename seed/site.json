@@ -125,6 +125,7 @@
     "x": "",
     "tiktok": ""
   },
+  "privacy": { "retentionMonths": 0 },
   "seo": {
     "title": { "ar": "AQS | المهارات المتقدمة للجودة", "en": "AQS | Advanced Quality Skills" },
     "description": {

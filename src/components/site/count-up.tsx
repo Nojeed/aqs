@@ -5,9 +5,9 @@ import { useEffect } from "react";
 import { easeLuxe } from "@/lib/motion";
 import { parseStat, wheelTurns } from "@/lib/stat";
 
-// Every wheel holds four rounds of 0–9 (the most any digit turns) plus the final round.
-const WHEEL = Array.from({ length: 50 }, (_, i) => i % 10);
-const at = (turns: number) => `${(-turns / WHEEL.length) * 100}%`;
+// A wheel holds only the digits it rolls past (0 up to its final turn), which keeps the page light.
+const wheel = (turns: number) => Array.from({ length: turns + 1 }, (_, i) => i % 10);
+const at = (turns: number) => `${(-turns / (turns + 1)) * 100}%`;
 
 /**
  * A stat whose digits roll up like an odometer the first time it scrolls into view, blurred while they spin
@@ -69,7 +69,7 @@ export function CountUp({ value }: { value: string }) {
             className="inline-block h-[1.15em] overflow-hidden leading-[1.15em] [mask-image:linear-gradient(transparent,#000_18%,#000_82%,transparent)]"
           >
             <span data-wheel={turns[i]} className="flex flex-col will-change-transform" style={{ transform: `translateY(${at(turns[i]!)})` }}>
-              {WHEEL.map((d, j) => (
+              {wheel(turns[i]!).map((d, j) => (
                 <span key={j}>{d}</span>
               ))}
             </span>

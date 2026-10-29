@@ -2,7 +2,7 @@
 
 import type { ComponentProps } from "react";
 import { Select as SelectPrimitive } from "radix-ui";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { controlClass } from "./input";
 
@@ -10,7 +10,7 @@ export const Select = SelectPrimitive.Root;
 export const SelectValue = SelectPrimitive.Value;
 export const SelectGroup = SelectPrimitive.Group;
 
-export function SelectTrigger({ className, children, ...props }: ComponentProps<typeof SelectPrimitive.Trigger>) {
+export function SelectTrigger({ className, children, icon: Icon, ...props }: ComponentProps<typeof SelectPrimitive.Trigger> & { icon?: LucideIcon }) {
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
@@ -21,7 +21,15 @@ export function SelectTrigger({ className, children, ...props }: ComponentProps<
       )}
       {...props}
     >
-      {children}
+      {/* Same spot and size as the icon in Input, so text lines up across a form. */}
+      {Icon ? (
+        <span className="flex items-center gap-2.5">
+          <Icon className="size-4 shrink-0 text-slate-400" aria-hidden />
+          {children}
+        </span>
+      ) : (
+        children
+      )}
       <SelectPrimitive.Icon asChild>
         <ChevronDown className="size-4 shrink-0 text-slate-400" aria-hidden />
       </SelectPrimitive.Icon>

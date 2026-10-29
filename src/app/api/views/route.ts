@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { isAdmin } from "@/lib/auth";
 import { getCourses, getPosts, getServices } from "@/lib/content";
 import { recordView, VIEW_TYPES, type ViewType } from "@/lib/views";
+import { clientIp } from "@/lib/client-ip";
 
 const BOT = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|curl|wget|python|headless/i;
 const lists = { courses: getCourses, posts: getPosts, services: getServices } satisfies Record<ViewType, () => Promise<{ slug: string }[]>>;
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
   // Only real, published pages: stops junk keys from growing the file.
   if (!(await lists[type]()).some((item) => item.slug === slug)) return done;
 
-  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+  const ip = clientIp(h.get("x-forwarded-for"));
   const key = `${ip}|${type}/${slug}`;
   const now = Date.now();
   if (now - (seen.get(key) ?? 0) < REPEAT) return done;

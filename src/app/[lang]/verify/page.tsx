@@ -12,7 +12,7 @@ import { pageMetadata } from "@/lib/seo";
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await currentLocale();
   const d = getDictionary(locale);
-  return pageMetadata({ locale, path: "/verify", title: d.verify.title, description: d.verify.subtitle });
+  return pageMetadata({ locale, path: "/verify", title: d.verify.title, description: d.verify.subtitle, image: "/images/audit-clipboard.jpg" });
 }
 
 type Search = PageProps<"/[lang]/verify">["searchParams"];

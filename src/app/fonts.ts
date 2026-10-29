@@ -1,17 +1,14 @@
-import { IBM_Plex_Sans_Arabic, Plus_Jakarta_Sans } from "next/font/google";
+import type { CSSProperties } from "react";
+import { Inter, Noto_Sans_Arabic } from "next/font/google";
 
-export const plexArabic = IBM_Plex_Sans_Arabic({
-  subsets: ["arabic", "latin"],
-  // 300 was never used; fewer font files means text paints sooner on slow phones.
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-plex-arabic",
-  display: "swap",
-});
+// Close free stand-ins for Apple's SF Pro and SF Arabic, which may not be embedded on websites.
+// Both are variable fonts: one file covers every weight.
+const inter = Inter({ subsets: ["latin"], display: "swap" });
+const notoArabic = Noto_Sans_Arabic({ subsets: ["arabic"], variable: "--font-noto-arabic", display: "swap" });
 
-export const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  // Only display headings use Jakarta (body Latin text uses Plex Arabic's own Latin letters).
-  weight: ["600", "700", "800"],
-  variable: "--font-jakarta",
-  display: "swap",
-});
+/** Spread on <html>. --font-inter is Inter's own family name only: Next always adds an Arial-based
+ * "Inter Fallback", and Arial has Arabic letters, so it would catch Arabic text before Noto. */
+export const fonts = {
+  className: notoArabic.variable,
+  style: { "--font-inter": inter.style.fontFamily.split(",")[0] } as CSSProperties,
+};

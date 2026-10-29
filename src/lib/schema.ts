@@ -226,6 +226,17 @@ export const siteFields: Fields = {
     help: "Choose which filters visitors see on the Courses and Blog pages. Switch all of a page's filters off to hide its filter bar.",
     fields: Object.fromEntries(Object.entries(FILTER_FIELDS).map(([key, label]) => [key, { kind: "boolean", label }])) as Fields,
   },
+  privacy: {
+    kind: "object",
+    label: "Privacy",
+    fields: {
+      retentionMonths: {
+        kind: "number",
+        label: "Keep registrations and messages (months)",
+        help: "Older ones are deleted automatically, and the forms tell visitors the period. 0 = keep them until staff delete them.",
+      },
+    },
+  },
   seo: {
     kind: "object",
     label: "Search engines (SEO)",
@@ -435,6 +446,7 @@ export type Site = {
   social: Record<"facebook" | "instagram" | "linkedin" | "youtube" | "x" | "tiktok", string>;
   seo: { title: L10n; description: L10n };
   filters?: Partial<Record<FilterKey, boolean>>;
+  privacy?: { retentionMonths?: number };
 };
 
 type ItemBase = { id: string; slug: string; title: L10n; body: L10n; published: boolean };

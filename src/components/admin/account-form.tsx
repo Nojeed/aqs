@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LoaderCircle } from "lucide-react";
+import { KeyRound, LoaderCircle, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { changeOwnPassword } from "@/app/admin/actions";
 import { useAdminAction } from "@/components/admin/use-admin-action";
@@ -25,13 +25,13 @@ export function AccountForm() {
       }}
     >
       <Field id="pw-current" label="Current password">
-        <Input id="pw-current" type="password" autoComplete="current-password" value={v.current} onChange={set("current")} required />
+        <Input id="pw-current" icon={Lock} type="password" autoComplete="current-password" value={v.current} onChange={set("current")} required />
       </Field>
       <Field id="pw-next" label="New password" help="At least 10 characters. A short sentence is easy to remember and hard to guess.">
-        <Input id="pw-next" type="password" autoComplete="new-password" value={v.next} onChange={set("next")} required aria-describedby="pw-next-help" />
+        <Input id="pw-next" icon={KeyRound} type="password" autoComplete="new-password" value={v.next} onChange={set("next")} required aria-describedby="pw-next-help" />
       </Field>
       <Field id="pw-confirm" label="New password again">
-        <Input id="pw-confirm" type="password" autoComplete="new-password" value={v.confirm} onChange={set("confirm")} required />
+        <Input id="pw-confirm" icon={KeyRound} type="password" autoComplete="new-password" value={v.confirm} onChange={set("confirm")} required />
       </Field>
       <button type="submit" className="btn-primary rounded-lg px-4 py-2" disabled={pending || !v.current || !v.next}>
         {pending && <LoaderCircle className="size-4 animate-spin" aria-hidden />}

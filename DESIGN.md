@@ -24,8 +24,9 @@ Text on coloured surfaces uses that surface's tint (`text-white/70` on navy), no
 
 ## Type
 
-- **IBM Plex Sans Arabic** (`--font-plex-arabic`): body, UI and all Arabic text.
-- **Plus Jakarta Sans** (`--font-jakarta`): display headings (`font-display`) and Latin numbers in headings.
+- **Inter** (`--font-inter`): all Latin text, headings and numbers. Stands in for Apple's SF Pro, which may not be embedded on websites.
+- **Noto Sans Arabic** (`--font-noto-arabic`): all Arabic text. Stands in for SF Arabic.
+- Latin display headings use -0.02em tracking (SF style); Arabic headings never get letter spacing.
 - Heading sizes are fluid (`clamp()` tokens in `globals.css`), never breakpoint steps like `text-3xl sm:text-4xl`:
   - `text-display` 36→60px: home hero only.
   - `text-title` 36→48px: page titles (`PageHero`, blog post) and the closing call to action.

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
-import { jakarta, plexArabic } from "./fonts";
+import { fonts } from "./fonts";
 
 export const metadata: Metadata = { title: "404 | AQS" };
 
 export default function GlobalNotFound() {
   return (
-    <html lang="ar" dir="rtl" className={`${plexArabic.variable} ${jakarta.variable}`}>
+    <html lang="ar" dir="rtl" className={fonts.className} style={fonts.style}>
       <body className="flex min-h-dvh items-center justify-center bg-brand-950 p-6 text-center text-white">
         <div>
           <p className="font-display text-7xl font-extrabold text-white/20">404</p>

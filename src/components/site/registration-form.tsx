@@ -1,14 +1,15 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { Building2, CircleCheck, LoaderCircle, ShieldCheck, User } from "lucide-react";
+import { BookOpen, Building2, CalendarDays, CircleCheck, LoaderCircle, Mail, MessageSquareText, Phone, ShieldCheck, User, Users, type LucideIcon } from "lucide-react";
 import { register, type RegisterResult } from "@/app/[lang]/actions";
 import { Field, fieldAria } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { dir, formatDate, getDictionary, t, type L10n, type Locale } from "@/lib/i18n";
-import { motion } from "motion/react";
+import { retentionText } from "@/lib/retention";
+import { m } from "motion/react";
 import { easeLuxe } from "@/lib/motion";
 
 const empty = { type: "individual", courseId: "", session: "", name: "", company: "", trainees: "5", email: "", phone: "", notes: "" };
@@ -18,7 +19,7 @@ const empty = { type: "individual", courseId: "", session: "", name: "", company
 type Availability = { key: string; date: string; location: L10n; left: number | null };
 
 /** Pass `courseId` on a course page, or `courses` to let the visitor pick one (or custom training). */
-type Props = { locale: Locale; courseId?: string; courses?: { id: string; title: string }[] };
+type Props = { locale: Locale; courseId?: string; courses?: { id: string; title: string }[]; keepMonths?: number };
 
 export function RegistrationForm(props: Props) {
   // "Register someone else" needs a fresh action state, so it remounts the form.
@@ -26,7 +27,7 @@ export function RegistrationForm(props: Props) {
   return <Form key={round} {...props} onAnother={() => setRound((n) => n + 1)} />;
 }
 
-function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () => void }) {
+function Form({ locale, courseId, courses, keepMonths, onAnother }: Props & { onAnother: () => void }) {
   const r = getDictionary(locale).register;
   const [values, setValues] = useState({ ...empty, courseId: courses?.[0]?.id ?? "custom" });
   const [result, action, pending] = useActionState<RegisterResult | null, FormData>(register, null);
@@ -58,7 +59,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
 
   if (result?.ok) {
     return (
-      <motion.div
+      <m.div
         ref={successRef}
         initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
         animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
@@ -74,7 +75,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
         <button type="button" className="btn-outline" onClick={onAnother}>
           {r.another}
         </button>
-      </motion.div>
+      </m.div>
     );
   }
 
@@ -83,12 +84,12 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
   const fieldError = result && !result.ok ? result.fields : undefined;
   const isCompany = values.type === "company";
 
-  const input = (key: "name" | "company" | "email" | "phone", label: string, props: React.ComponentProps<"input"> = {}) => {
+  const input = (key: "name" | "company" | "email" | "phone", label: string, icon: LucideIcon, props: React.ComponentProps<"input"> = {}) => {
     const error = fieldError?.[key] && r.errors[fieldError[key]];
     const id = `reg-${key}`;
     return (
       <Field id={id} label={label} error={error}>
-        <Input name={key} value={values[key]} onChange={set(key)} required {...fieldAria(id, { error })} {...props} />
+        <Input name={key} icon={icon} value={values[key]} onChange={set(key)} required {...fieldAria(id, { error })} {...props} />
       </Field>
     );
   };
@@ -98,7 +99,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
       {courses ? (
         <Field id="reg-course" label={r.course}>
           <Select name="courseId" value={values.courseId} onValueChange={(v) => v && setValues((s) => ({ ...s, courseId: v, session: "" }))} dir={dir(locale)}>
-            <SelectTrigger id="reg-course">
+            <SelectTrigger id="reg-course" icon={BookOpen}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -124,7 +125,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
         ) : (
           <Field id="reg-session" label={r.session} error={fieldError?.session && r.errors[fieldError.session]}>
             <Select value={session || undefined} onValueChange={(v) => v && setValues((x) => ({ ...x, session: v }))} dir={dir(locale)}>
-              <SelectTrigger {...fieldAria("reg-session", { error: fieldError?.session })}>
+              <SelectTrigger icon={CalendarDays} {...fieldAria("reg-session", { error: fieldError?.session })}>
                 <SelectValue placeholder={r.chooseSession} />
               </SelectTrigger>
               <SelectContent>
@@ -154,7 +155,8 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
 
       <fieldset>
         <legend className="mb-1.5 text-sm font-semibold text-slate-700">{r.as}</legend>
-        <div className="grid grid-cols-2 gap-3">
+        {/* Same look as the contact page's tab switcher (TabsList). */}
+        <div className="flex w-full gap-1 rounded-xl bg-slate-100 p-1">
           {(
             [
               ["individual", r.individual, User],
@@ -163,7 +165,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
           ).map(([value, label, Icon]) => (
             <label
               key={value}
-              className="flex h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-slate-300 bg-white px-3.5 text-sm font-semibold text-slate-700 shadow-xs transition hover:border-brand-300 hover:bg-brand-50/60 has-checked:border-brand-700 has-checked:bg-brand-50 has-checked:text-brand-900 has-checked:ring-4 has-checked:ring-brand-100 has-focus-visible:outline-2 has-focus-visible:outline-accent-500"
+              className="inline-flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:text-brand-900 has-checked:bg-white has-checked:text-brand-900 has-checked:shadow-sm has-focus-visible:outline-2 has-focus-visible:outline-accent-500"
             >
               <input
                 type="radio"
@@ -173,7 +175,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
                 onChange={set("type")}
                 className="sr-only"
               />
-              <Icon className="size-4 text-brand-600" aria-hidden />
+              <Icon className="size-4" aria-hidden />
               {label}
             </label>
           ))}
@@ -182,10 +184,11 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
 
       {isCompany && (
         <div className="grid gap-5 sm:grid-cols-[1fr_10rem]">
-          {input("company", r.companyName, { autoComplete: "organization" })}
+          {input("company", r.companyName, Building2, { autoComplete: "organization" })}
           <Field id="reg-trainees" label={r.trainees}>
             <Input
               id="reg-trainees"
+              icon={Users}
               name="trainees"
               type="number"
               min={1}
@@ -200,13 +203,13 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
       )}
 
       <div className="grid gap-5 sm:grid-cols-2">
-        {input("name", isCompany ? r.contactName : r.name, { autoComplete: "name" })}
-        {input("phone", r.phone, { type: "tel", autoComplete: "tel", dir: "ltr", inputMode: "tel" })}
+        {input("name", isCompany ? r.contactName : r.name, User, { autoComplete: "name" })}
+        {input("phone", r.phone, Phone, { type: "tel", autoComplete: "tel", dir: "ltr", inputMode: "tel" })}
       </div>
-      {input("email", r.email, { type: "email", autoComplete: "email", dir: "ltr" })}
+      {input("email", r.email, Mail, { type: "email", autoComplete: "email", dir: "ltr" })}
 
       <Field id="reg-notes" label={r.notes}>
-        <Textarea id="reg-notes" name="notes" value={values.notes} onChange={set("notes")} rows={3} maxLength={2000} />
+        <Textarea id="reg-notes" icon={MessageSquareText} name="notes" value={values.notes} onChange={set("notes")} rows={3} maxLength={2000} />
       </Field>
 
       {result && !result.ok && result.error && (
@@ -221,7 +224,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
       </button>
       <p className="flex items-start gap-2 text-xs leading-5 text-slate-500">
         <ShieldCheck className="mt-0.5 size-4 shrink-0 text-slate-400" aria-hidden />
-        {r.privacy}
+        {r.privacy} {retentionText(locale, keepMonths)}
       </p>
     </form>
   );

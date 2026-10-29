@@ -11,14 +11,15 @@ How things should look and behave lives in `DESIGN.md`.
 ## Open
 
 ### Decisions for the client
-- [ ] **How long to keep registrations and messages.** They stay until staff delete them. Pick a period (e.g. 12 months) and add it to the privacy line on the forms.
+- [ ] **How long to keep registrations and messages.** Now a setting: Admin → Site content → Privacy (months). Until the client picks a period it stays 0, which keeps them until staff delete them.
 - [ ] **Dark mode**: skipped for launch (decided 2026-10-18). See `DESIGN.md`.
 - [ ] **Admin in Arabic**: kept English only (decided 2026-10-18).
 
 ### After deploying
 - [ ] Check link previews for the home page and one course with a social preview tool (e.g. opengraph.xyz).
 - [ ] Submit `https://<domain>/sitemap.xml` in Google Search Console.
-- [ ] **(P2, security)** Confirm Hostinger's proxy sets `X-Forwarded-For` itself. The login lockout and form rate limits read the visitor IP from it; if visitors can send their own value, they can dodge the limits.
+- [ ] **(P2, security)** The visitor IP is now read from the end of `X-Forwarded-For`, so a faked value can't dodge the limits. If Cloudflare is put in front of Hostinger, set `TRUSTED_PROXIES=2`.
+- [ ] Share the home page and one course on WhatsApp or paste them into a preview tool (e.g. opengraph.xyz): each should show a 1200×630 photo with the AQS logo.
 
 ---
 
@@ -27,10 +28,14 @@ How things should look and behave lives in `DESIGN.md`.
 Found by behaviour checks and the end-to-end tests. Every bug gets a line here: open ones at the top, fixed ones move to "Fixed" with the date.
 
 ### Open
-- [ ] **(P2, performance)** Mobile Lighthouse Performance is 72–78 (Accessibility 100, Best practices 100, SEO 100). On a simulated slow phone the main content is drawn about 5.5 s after load, although the HTML arrives in 0.5 s. Trimming fonts didn't move it, so the likely cause is the JavaScript every page loads (Motion page transitions, Radix components). Next: load the animations lazily, then measure on the real Hostinger server.
-- [ ] **(P3)** Admin "not found" pages answer with HTTP 200 instead of 404. They show the right message and are hidden from search engines (`noindex`); the 200 comes from the admin's streamed rendering.
-- [ ] **(P3)** New-registration alerts arrive within 30 seconds (polling), and only while an admin tab is open. Email alerts (when SMTP is set) don't have this limit.
-- [ ] **(P3)** Two people booking the last seat of a course date at the same moment can both get in.
+- [ ] **(P2, performance)** Main-thread blocking on a simulated slow phone is still 0.9–1.8 s (was 0.7–2.4 s); measure Lighthouse on the real Hostinger server. What's left is React and Next themselves plus Radix on pages with dropdowns; the next step would be fewer client components, which is a bigger change.
+
+### Fixed 2026-10-29
+- [x] Two saves at the same moment could overwrite each other, and two people could both book the last seat. Every read-change-write now holds its data file (`src/lib/lock.ts`); seats are counted inside the hold.
+- [x] Rate limits and the login lockout trusted the first `X-Forwarded-For` entry, which visitors can fake.
+- [x] Arabic text fell back to Arial: Next's automatic "Inter Fallback" font has Arabic letters. Inter is now referenced without it, plus a size-matched Latin-only fallback so text doesn't jump.
+- [x] English home page scrolled sideways on phones (the "10+ years" badge).
+- [x] Link previews: X couldn't fetch the image (robots.txt blocked `/api`), and images had no size, so Facebook could skip them on first share.
 
 ### Fixed 2026-10-22 (second batch, mostly found by the new end-to-end tests)
 - [x] **Fresh installs crashed** on the registration form, the contact form and admin sign-in: `registrations.json`, `messages.json` and `users.json` had no seed, so an empty `DATA_DIR` threw errors. A new Hostinger install would have been affected.
@@ -57,6 +62,14 @@ Found by behaviour checks and the end-to-end tests. Every bug gets a line here: 
 ---
 
 ## Done
+
+### 2026-10-29
+- [x] Course page registration matches the contact page: same contact cards, same tab-style Individual/Company switch
+- [x] Fluid heading sizes (`clamp()`), one size per heading role; same section spacing on inner pages
+- [x] Fonts: Inter (English) and Noto Sans Arabic, close to Apple's SF Pro / SF Arabic, which can't be embedded on websites
+- [x] Link previews for every platform: a 1200×630 photo with the AQS logo per page (`/api/og`), image size and alt text, X handle from the social links, brand colour for Discord
+- [x] Keep period for registrations and messages (Admin → Site content → Privacy), stated on the forms
+- [x] Lighter pages: odometer digits cut from 550 to about 160 elements, animation engine loads after first paint (home LCP 2.5 s → 1.7 s on a simulated slow phone)
 
 ### 2026-10-22 (second batch)
 - [x] **Email alerts** (optional, SMTP / Hostinger email): staff get each registration and message; visitors get a confirmation in their language
@@ -147,6 +160,8 @@ Found by behaviour checks and the end-to-end tests. Every bug gets a line here: 
 - **Hosting:** Hostinger (Node.js app or VPS) with `DATA_DIR` outside the app folder. Vercel can't store data (read-only file system). Steps in the README.
 - **`SITE_URL` must be set before `npm run build`**: pages, the sitemap and link previews are pre-rendered with it.
 - **Audience:** companies and individuals equally. Both paths stay first-class.
-- **Registrations and messages** are stored in `DATA_DIR/registrations.json` and `messages.json`. There's no email alert, by choice; adding one needs an email provider account.
+- **Registrations and messages** are stored in `DATA_DIR/registrations.json` and `messages.json`. Email alerts work once SMTP is set; without it, staff see new ones in the admin (badges and toasts, checked every 30 seconds while an admin tab is open).
+- **Admin "not found" pages answer 200, not 404.** Admin pages stream, and Next fixes the status once streaming starts; a proxy check would need the proxy to read data files, which Next advises against. No effect: the admin is login-only and `noindex`.
+- **One Node process:** the save lock (`src/lib/lock.ts`) and rate limits live in memory. Running several processes would need a file lock and a shared store.
 - **Rate limits** (login, forms) are in memory, so they reset when the server restarts.
     - **Content:** course, service and blog copy is draft; contact details and the numbers bar are placeholders. Don't present them as facts.

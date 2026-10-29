@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import type { ReactNode } from "react";
 import { AnimatedCount, AnimatedGrid } from "@/components/site/animated-grid";
 import { ClearFilters, FilterBar, FilterSearch, FilterSelect, SortSelect, useUrlFilters } from "@/components/site/filter-controls";
@@ -112,7 +112,7 @@ export function BlogFilters({ locale, lead, items, show }: { locale: Locale; lea
 
       <AnimatePresence initial={false}>
         {featured && (
-          <motion.div
+          <m.div
             key="lead"
             initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
             animate={{
@@ -126,7 +126,7 @@ export function BlogFilters({ locale, lead, items, show }: { locale: Locale; lea
             className="mb-16"
           >
             {lead}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
       <AnimatedGrid className={grid} empty={f.none} items={(featured ? shown.slice(1) : shown).map((i) => ({ id: i.id, node: i.card }))} />
