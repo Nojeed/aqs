@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, use, useState, type ComponentProps } from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { Tabs as TabsPrimitive } from "radix-ui";
 import { easeLuxe } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -47,13 +47,13 @@ export function TabsTrigger({ className, ...props }: ComponentProps<typeof TabsP
 export function TabsContent({ className, children, ...props }: ComponentProps<typeof TabsPrimitive.Content>) {
   return (
     <TabsPrimitive.Content data-slot="tabs-content" className={cn("mt-8 outline-none", className)} {...props}>
-      <motion.div
+      <m.div
         initial={use(Switched) && { opacity: 0, y: 16, filter: "blur(8px)" }}
         animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
         transition={{ duration: 0.6, ease: easeLuxe }}
       >
         {children}
-      </motion.div>
+      </m.div>
     </TabsPrimitive.Content>
   );
 }

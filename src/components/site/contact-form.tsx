@@ -1,16 +1,18 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { CircleCheck, LoaderCircle, MessageCircle, ShieldCheck } from "lucide-react";
+import { CircleCheck, LoaderCircle, Mail, MessageCircle, MessageSquareText, Phone, ShieldCheck, User } from "lucide-react";
 import { sendMessage, type MessageResult } from "@/app/[lang]/actions";
 import { Field, fieldAria } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getDictionary, type Locale } from "@/lib/i18n";
-import { motion } from "motion/react";
+import { retentionText } from "@/lib/retention";
+import { m } from "motion/react";
 import { easeLuxe } from "@/lib/motion";
 
-type Props = { locale: Locale; whatsapp: string };
+// keepMonths: the admin's keep period, stated in the privacy line.
+type Props = { locale: Locale; whatsapp: string; keepMonths?: number };
 
 // ?subject= from the "Request a consultation" buttons. Read in the browser after hydration ("" on the server),
 // so the form is never swapped out and nothing a visitor already typed is lost.
@@ -26,7 +28,7 @@ export function ContactForm(props: Props) {
 
 type Values = { name: string; email: string; phone: string; message: string | null };
 
-function Form({ locale, whatsapp, onAnother }: Props & { onAnother: () => void }) {
+function Form({ locale, whatsapp, keepMonths, onAnother }: Props & { onAnother: () => void }) {
   const d = getDictionary(locale);
   const c = d.contact;
   const subject = useSyncExternalStore(noSubscribe, subjectFromUrl, () => "");
@@ -48,7 +50,7 @@ function Form({ locale, whatsapp, onAnother }: Props & { onAnother: () => void }
 
   if (result?.ok) {
     return (
-      <motion.div
+      <m.div
         ref={successRef}
         initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
         animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
@@ -64,7 +66,7 @@ function Form({ locale, whatsapp, onAnother }: Props & { onAnother: () => void }
         <button type="button" className="btn-outline" onClick={onAnother}>
           {c.another}
         </button>
-      </motion.div>
+      </m.div>
     );
   }
 
@@ -77,11 +79,12 @@ function Form({ locale, whatsapp, onAnother }: Props & { onAnother: () => void }
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
         <Field id="msg-name" label={c.name} error={err("name")}>
-          <Input name="name" value={values.name} onChange={set("name")} required autoComplete="name" {...fieldAria("msg-name", { error: err("name") })} />
+          <Input name="name" icon={User} value={values.name} onChange={set("name")} required autoComplete="name" {...fieldAria("msg-name", { error: err("name") })} />
         </Field>
         <Field id="msg-email" label={c.yourEmail} error={err("email")}>
           <Input
             name="email"
+            icon={Mail}
             type="email"
             value={values.email}
             onChange={set("email")}
@@ -93,11 +96,12 @@ function Form({ locale, whatsapp, onAnother }: Props & { onAnother: () => void }
         </Field>
       </div>
       <Field id="msg-phone" label={c.phoneOptional}>
-        <Input id="msg-phone" name="phone" type="tel" value={values.phone} onChange={set("phone")} autoComplete="tel" inputMode="tel" dir="ltr" />
+        <Input id="msg-phone" icon={Phone} name="phone" type="tel" value={values.phone} onChange={set("phone")} autoComplete="tel" inputMode="tel" dir="ltr" />
       </Field>
       <Field id="msg-message" label={c.message} error={err("message")}>
         <Textarea
           name="message"
+          icon={MessageSquareText}
           value={message}
           onChange={set("message")}
           required
@@ -132,7 +136,7 @@ function Form({ locale, whatsapp, onAnother }: Props & { onAnother: () => void }
       </div>
       <p className="flex items-start gap-2 text-xs leading-5 text-slate-500">
         <ShieldCheck className="mt-0.5 size-4 shrink-0 text-slate-400" aria-hidden />
-        {d.register.privacy}
+        {d.register.privacy} {retentionText(locale, keepMonths)}
       </p>
     </form>
   );

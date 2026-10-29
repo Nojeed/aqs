@@ -7,7 +7,8 @@ import { redirect } from "next/navigation";
 import { audit } from "@/lib/audit";
 import { authConfigError, clearSessionCookie, getSession, requireAdmin, requireOwner, setSessionCookie } from "@/lib/auth";
 import { passwordProblem } from "@/lib/password";
-import { authenticate, ownerUsername, readUsers, setPassword, writeUsers, type Role } from "@/lib/users";
+import { USERS_FILE, authenticate, ownerUsername, readUsers, setPassword, writeUsers, type Role } from "@/lib/users";
+import { lockFile } from "@/lib/lock";
 import { CERTIFICATES_FILE, nextCertificateId, parseCertificates, readCertificates, type Certificate } from "@/lib/certificates";
 import { CONTENT_TAG, readCollection } from "@/lib/content";
 import {
@@ -26,6 +27,7 @@ import {
   slugify,
 } from "@/lib/schema";
 import { readBackup, readJson, writeJson } from "@/lib/storage";
+import { clientIp } from "@/lib/client-ip";
 
 export type ActionResult = { ok: true; id?: string; message?: string } | { ok: false; error: string };
 
@@ -38,7 +40,7 @@ export async function login(_prev: ActionResult | null, formData: FormData): Pro
   const configError = authConfigError();
   if (configError) return { ok: false, error: `Admin login is not configured: ${configError}` };
 
-  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+  const ip = clientIp((await headers()).get("x-forwarded-for"));
   const entry = attempts.get(ip);
   if (entry && entry.until > Date.now()) {
     return { ok: false, error: "Too many failed attempts. Try again in a few minutes." };
@@ -116,6 +118,7 @@ export async function resetUserPassword(username: string, password: string): Pro
 export async function deleteUser(username: string): Promise<ActionResult> {
   const session = await requireOwner();
   if (username === session.username) return { ok: false, error: "You can't remove your own account." };
+  using _lock = await lockFile(USERS_FILE);
   if (username === ownerUsername()) return { ok: false, error: "The main owner account can't be removed." };
   const users = await readUsers();
   const next = users.filter((u) => u.username !== username);
@@ -129,6 +132,7 @@ export async function deleteUser(username: string): Promise<ActionResult> {
 
 export async function saveSite(data: unknown): Promise<ActionResult> {
   await requireAdmin();
+  using _lock = await lockFile("site.json");
   await writeJson("site.json", sanitizeObject(siteFields, data));
   updateTag(CONTENT_TAG);
   await audit("Saved site content");
@@ -139,6 +143,9 @@ export async function saveItem(collection: string, id: string | null, data: unkn
   await requireAdmin();
   if (!isCollection(collection)) return { ok: false, error: "Unknown collection." };
   const config = collections[collection];
+  using _lock = await lockFile(config.file);
+  // Renaming a course can also update certificates below.
+  using _certificatesLock = await lockFile(CERTIFICATES_FILE);
   const items = (await readCollection(collection)) as unknown as Record<string, unknown>[];
   const clean = sanitizeObject(config.fields, data) as Record<string, unknown> & {
     slug: string;
@@ -186,6 +193,7 @@ export async function deleteItem(collection: string, id: string): Promise<Action
   await requireAdmin();
   if (!isCollection(collection)) return { ok: false, error: "Unknown collection." };
   const config = collections[collection];
+  using _lock = await lockFile(config.file);
   const items = (await readCollection(collection)) as unknown as { id: string }[];
   const next = items.filter((item) => item.id !== id);
   if (next.length === items.length) return { ok: false, error: "Item not found." };
@@ -199,6 +207,7 @@ export async function deleteItem(collection: string, id: string): Promise<Action
 
 export async function saveCertificate(id: string | null, data: unknown): Promise<ActionResult> {
   await requireAdmin();
+  using _lock = await lockFile(CERTIFICATES_FILE);
   let list: Certificate[];
   try {
     list = await readCertificates();
@@ -238,6 +247,7 @@ export async function saveCertificate(id: string | null, data: unknown): Promise
 
 export async function deleteCertificate(id: string): Promise<ActionResult> {
   await requireAdmin();
+  using _lock = await lockFile(CERTIFICATES_FILE);
   const list = await readCertificates();
   const next = list.filter((c) => c.id !== id);
   if (next.length === list.length) return { ok: false, error: "Certificate not found." };
@@ -248,6 +258,7 @@ export async function deleteCertificate(id: string): Promise<ActionResult> {
 
 export async function toggleCertificateRevoked(id: string): Promise<ActionResult> {
   await requireAdmin();
+  using _lock = await lockFile(CERTIFICATES_FILE);
   const list = await readCertificates();
   const cert = list.find((c) => c.id === id);
   if (!cert) return { ok: false, error: "Certificate not found." };
@@ -279,6 +290,7 @@ type InboxRecord = { id: string; status: string; history?: { at: string; text: s
 export async function setInboxStatus(inbox: InboxName, ids: string[], status: string): Promise<ActionResult> {
   await requireAdmin();
   const { file, statuses, noun } = inboxes[inbox];
+  using _lock = await lockFile(file);
   const label = statuses.find((s) => s.value === status)?.label;
   if (!label) return { ok: false, error: "Unknown status." };
   const list = await readJson<InboxRecord[]>(file);
@@ -297,6 +309,7 @@ export async function setInboxStatus(inbox: InboxName, ids: string[], status: st
 export async function deleteInboxRecords(inbox: InboxName, ids: string[]): Promise<ActionResult> {
   await requireAdmin();
   const { file, noun } = inboxes[inbox];
+  using _lock = await lockFile(file);
   const list = await readJson<InboxRecord[]>(file);
   const next = list.filter((r) => !ids.includes(r.id));
   const removed = list.length - next.length;
@@ -312,6 +325,7 @@ export async function addInboxNote(inbox: InboxName, id: string, text: string): 
   const note = String(text ?? "").trim().slice(0, 2000);
   if (!note) return { ok: false, error: "Write a note first." };
   const { file, noun } = inboxes[inbox];
+  using _lock = await lockFile(file);
   const list = await readJson<InboxRecord[]>(file);
   const entry = list.find((r) => r.id === id);
   if (!entry) return { ok: false, error: `This ${noun} no longer exists.` };
@@ -327,6 +341,7 @@ export async function restoreBackup(name: string): Promise<ActionResult> {
   await requireAdmin();
   const backup = await readBackup(name, Object.keys(DATA_FILES));
   if (!backup) return { ok: false, error: "Backup not found." };
+  using _lock = await lockFile(backup.file);
   let data: unknown;
   try {
     data = JSON.parse(backup.text);
@@ -346,6 +361,7 @@ export async function moveItem(collection: string, id: string, direction: "up" |
   await requireAdmin();
   if (collection !== "services" && collection !== "courses") return { ok: false, error: "This list has no manual order." };
   const config = collections[collection];
+  using _lock = await lockFile(config.file);
   const items = (await readCollection(collection)) as unknown as { id: string; order?: number }[];
   const sorted = [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const from = sorted.findIndex((i) => i.id === id);
@@ -364,6 +380,7 @@ export async function togglePublished(collection: string, id: string): Promise<A
   await requireAdmin();
   if (!isCollection(collection)) return { ok: false, error: "Unknown collection." };
   const config = collections[collection];
+  using _lock = await lockFile(config.file);
   const items = (await readCollection(collection)) as unknown as { id: string; published: boolean }[];
   const item = items.find((i) => i.id === id);
   if (!item) return { ok: false, error: "Item not found." };

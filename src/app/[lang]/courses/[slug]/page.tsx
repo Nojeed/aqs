@@ -6,12 +6,13 @@ import { Calendar, CircleCheck, Clock, GraduationCap, Monitor, Tag, Users, type 
 import { LevelIcon } from "@/components/level-icon";
 import { Breadcrumbs } from "@/components/site/breadcrumbs";
 import { CourseCard } from "@/components/site/cards";
+import { ContactCards, InfoCard } from "@/components/site/contact-cards";
 import { Markdown } from "@/components/site/markdown";
 import { PageHero } from "@/components/site/page-hero";
 import { ViewBeacon } from "@/components/site/view-beacon";
 import { RegistrationForm } from "@/components/site/registration-form";
 import { DetailSkeleton } from "@/components/site/skeleton";
-import { getCourse, getCourses } from "@/lib/content";
+import { getCourse, getCourses, getSite } from "@/lib/content";
 import { formatDate, getDictionary, t } from "@/lib/i18n";
 import { currentLocale } from "@/lib/locale";
 import { pageMetadata } from "@/lib/seo";
@@ -43,7 +44,7 @@ export default function CoursePage({ params }: PageProps<"/[lang]/courses/[slug]
 
 async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[slug]">, "params">) {
   const [{ slug }, locale] = await Promise.all([params, currentLocale()]);
-  const [course, all] = await Promise.all([getCourse(slug), getCourses()]);
+  const [course, all, site] = await Promise.all([getCourse(slug), getCourses(), getSite()]);
   if (!course) notFound();
   const d = getDictionary(locale);
   const related = all.filter((c) => c.id !== course.id).slice(0, 3);
@@ -157,21 +158,13 @@ async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[slug]">
       <section id="register" className="scroll-mt-28 border-t border-slate-200/70">
         <div className="container-page grid gap-10 py-16 lg:grid-cols-[1fr_1.4fr] lg:py-20">
           <div className="space-y-4">
-            <div className="card flex items-center gap-4 p-5">
-              <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand-800 text-white">
-                <GraduationCap className="size-5" aria-hidden />
-              </span>
-              <span>
-                <span className="block text-sm text-slate-500">{d.register.course}</span>
-                <span className="mt-0.5 block font-semibold text-brand-950">{t(course.title, locale)}</span>
-              </span>
-            </div>
-            <p className="px-1 leading-7 text-slate-600">{d.register.text}</p>
+            <InfoCard icon={GraduationCap} label={d.register.course} value={t(course.title, locale)} />
+            <ContactCards locale={locale} site={site} />
           </div>
           <div className="card p-6 sm:p-10">
             <h2 className="font-display text-subheading font-bold">{d.register.title}</h2>
             <div className="mt-6">
-              <RegistrationForm locale={locale} courseId={course.id} />
+              <RegistrationForm locale={locale} courseId={course.id} keepMonths={site.privacy?.retentionMonths} />
             </div>
           </div>
         </div>

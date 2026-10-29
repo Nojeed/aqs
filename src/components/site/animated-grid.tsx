@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import type { ReactNode } from "react";
 import { easeLuxe } from "@/lib/motion";
 
@@ -15,7 +15,7 @@ export function AnimatedGrid({ items, className, empty }: { items: { id: string;
       <ul className={className}>
         <AnimatePresence mode="popLayout" initial={false}>
           {items.map((item, index) => (
-            <motion.li
+            <m.li
               key={item.id}
               layout
               initial={{ opacity: 0, y: 28, filter: "blur(10px)" }}
@@ -30,13 +30,13 @@ export function AnimatedGrid({ items, className, empty }: { items: { id: string;
               transition={{ layout: { duration: 0.75, ease: easeLuxe } }}
             >
               {item.node}
-            </motion.li>
+            </m.li>
           ))}
         </AnimatePresence>
       </ul>
       <AnimatePresence>
         {items.length === 0 && (
-          <motion.p
+          <m.p
             key="none"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0, transition: { duration: 0.5, ease: easeLuxe, delay: 0.2 } }}
@@ -44,7 +44,7 @@ export function AnimatedGrid({ items, className, empty }: { items: { id: string;
             className="rounded-3xl border border-dashed border-slate-300 p-12 text-center text-slate-500"
           >
             {empty}
-          </motion.p>
+          </m.p>
         )}
       </AnimatePresence>
     </>
@@ -56,7 +56,7 @@ export function AnimatedCount({ value }: { value: number }) {
   return (
     <span className="relative inline-grid font-semibold text-brand-950 tabular-nums">
       <AnimatePresence mode="popLayout" initial={false}>
-        <motion.span
+        <m.span
           key={value}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -64,7 +64,7 @@ export function AnimatedCount({ value }: { value: number }) {
           transition={{ duration: 0.35, ease: easeLuxe }}
         >
           {value}
-        </motion.span>
+        </m.span>
       </AnimatePresence>
     </span>
   );

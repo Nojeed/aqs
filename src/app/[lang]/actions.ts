@@ -3,12 +3,15 @@
 import { randomBytes } from "node:crypto";
 import { headers } from "next/headers";
 import { after } from "next/server";
-import { getCourses } from "@/lib/content";
+import { getCourses, getSite } from "@/lib/content";
 import { isLocale } from "@/lib/i18n";
 import { sendMessageEmails, sendRegistrationEmails } from "@/lib/mail";
 import { sessionAvailability } from "@/lib/sessions";
 import { MESSAGES_FILE, REGISTRATIONS_FILE, type Message, type Registration } from "@/lib/schema";
+import { lockFile } from "@/lib/lock";
+import { withinRetention } from "@/lib/retention";
 import { readJson, writeJson } from "@/lib/storage";
+import { clientIp } from "@/lib/client-ip";
 
 type FieldError = "required" | "email" | "phone" | "session" | "full";
 export type RegisterResult =
@@ -20,7 +23,7 @@ const recent = new Map<string, number[]>();
 const WINDOW = 10 * 60_000;
 
 async function throttled() {
-  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+  const ip = clientIp((await headers()).get("x-forwarded-for"));
   const now = Date.now();
   const times = (recent.get(ip) ?? []).filter((t) => now - t < WINDOW);
   if (times.length >= 5) return true;
@@ -56,7 +59,8 @@ export async function register(_prev: RegisterResult | null, formData: FormData)
   const trainees = type === "company" ? Math.min(500, Math.max(1, Math.round(Number(formData.get("trainees")) || 1))) : 1;
 
   // Courses with dates: a date must be picked and have enough seats for everyone being registered.
-  // shortcut: two people taking the last seat at the same moment can both get in; fine at this volume, lock if it ever matters.
+  // Seats are counted while holding the file, so two people can't both take the last one.
+  using _lock = await lockFile(REGISTRATIONS_FILE);
   const sessions = course ? await sessionAvailability(course) : [];
   const session = sessions.find((s) => s.key === field("session", 200));
   if (sessions.length && !session) return { ok: false, fields: { session: "session" } };
@@ -78,7 +82,8 @@ export async function register(_prev: RegisterResult | null, formData: FormData)
     ...(notes && { notes }),
     locale,
   };
-  const list = await readJson<Registration[]>(REGISTRATIONS_FILE);
+  // Entries past the admin's keep period are dropped on the next save.
+  const list = withinRetention(await readJson<Registration[]>(REGISTRATIONS_FILE), (await getSite()).privacy?.retentionMonths);
   list.push(entry);
   await writeJson(REGISTRATIONS_FILE, list);
   after(() => sendRegistrationEmails(entry)); // after the response: email never slows the form down
@@ -107,6 +112,7 @@ export async function sendMessage(_prev: MessageResult | null, formData: FormDat
   if (!isLocale(locale)) return { ok: false, error: "generic" };
   if (await throttled()) return { ok: false, error: "rateLimit" };
 
+  using _lock = await lockFile(MESSAGES_FILE);
   const entry: Message = {
     id: `msg-${randomBytes(5).toString("hex")}`,
     createdAt: new Date().toISOString(),
@@ -117,7 +123,7 @@ export async function sendMessage(_prev: MessageResult | null, formData: FormDat
     message,
     locale,
   };
-  const list = await readJson<Message[]>(MESSAGES_FILE);
+  const list = withinRetention(await readJson<Message[]>(MESSAGES_FILE), (await getSite()).privacy?.retentionMonths);
   list.push(entry);
   await writeJson(MESSAGES_FILE, list);
   after(() => sendMessageEmails(entry));

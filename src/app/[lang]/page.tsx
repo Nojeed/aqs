@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CircleCheck, ShieldCheck, Sparkles } from "lucide-react";
-import * as motion from "motion/react-client";
+import * as m from "motion/react-m";
 import { duration, ease } from "@/lib/motion";
 import { Icon } from "@/components/icon";
 import { CourseCard, PostCard, ServiceCard } from "@/components/site/cards";
@@ -35,7 +35,7 @@ export default async function HomePage() {
     <>
       {/* ---------------------------------------------------------------- Hero */}
       <section className="relative isolate overflow-hidden bg-brand-950">
-        <motion.div
+        <m.div
           className="absolute inset-0 -z-20"
           initial={{ scale: 1.08 }}
           animate={{ scale: 1 }}
@@ -50,7 +50,7 @@ export default async function HomePage() {
             quality={80}
             className="object-cover object-[70%_center]"
           />
-        </motion.div>
+        </m.div>
         <div
           className="absolute inset-0 -z-10 bg-linear-to-r from-brand-950 via-brand-950/85 to-brand-900/30 rtl:bg-linear-to-l"
           aria-hidden
@@ -60,22 +60,22 @@ export default async function HomePage() {
 
         <div className="container-page grid min-h-[min(100svh,880px)] items-center gap-12 pt-32 pb-36 lg:grid-cols-[1.25fr_1fr] lg:pb-40">
           <div className="max-w-2xl">
-            <motion.p {...fadeUp()} className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
+            <m.p {...fadeUp()} className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
               <Sparkles className="size-4 text-accent-300" aria-hidden />
               {t(site.hero.badge, locale)}
-            </motion.p>
-            <motion.h1 {...slideUp(0.12)} className="font-display mt-6 text-display font-extrabold text-balance text-white">
+            </m.p>
+            <m.h1 {...slideUp(0.12)} className="font-display mt-6 text-display font-extrabold text-balance text-white">
               {t(site.hero.title, locale)}
               {t(site.hero.highlight, locale) && (
                 <span className="mt-2 block text-accent-300">
                   {t(site.hero.highlight, locale)}
                 </span>
               )}
-            </motion.h1>
-            <motion.p {...slideUp(0.24)} className="mt-6 max-w-xl text-lg leading-8 text-pretty text-white/75">
+            </m.h1>
+            <m.p {...slideUp(0.24)} className="mt-6 max-w-xl text-lg leading-8 text-pretty text-white/75">
               {t(site.hero.subtitle, locale)}
-            </motion.p>
-            <motion.div {...slideUp(0.36)} className="mt-10 flex flex-wrap gap-3">
+            </m.p>
+            <m.div {...slideUp(0.36)} className="mt-10 flex flex-wrap gap-3">
               {site.hero.primaryCta.href && (
                 <Link href={localHref(site.hero.primaryCta.href, locale)} className="btn-light px-7 py-3.5">
                   {t(site.hero.primaryCta.label, locale)}
@@ -87,9 +87,9 @@ export default async function HomePage() {
                   {t(site.hero.secondaryCta.label, locale)}
                 </Link>
               )}
-            </motion.div>
+            </m.div>
             {site.hero.pillars.length > 0 && (
-              <motion.ul {...slideUp(0.48)} className="mt-12 flex flex-wrap gap-x-6 gap-y-4">
+              <m.ul {...slideUp(0.48)} className="mt-12 flex flex-wrap gap-x-6 gap-y-4">
                 {site.hero.pillars.map((p, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm font-medium text-white/85">
                     <span className="inline-flex size-11 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur">
@@ -98,14 +98,14 @@ export default async function HomePage() {
                     <span className="max-w-32 leading-5">{t(p.label, locale)}</span>
                   </li>
                 ))}
-              </motion.ul>
+              </m.ul>
             )}
           </div>
 
           {/* Quick certificate check. The card fades itself in: a fading parent would switch its glass blur off
               until the fade ends (browsers only blur behind an element whose ancestors are fully opaque). */}
           <div className="hidden lg:block">
-            <motion.div
+            <m.div
               {...fadeUp(0.4)}
               className="ms-auto max-w-md rounded-[2rem] border border-white/15 bg-white/10 p-8 text-white shadow-2xl shadow-black/30 backdrop-blur-xl"
             >
@@ -123,7 +123,7 @@ export default async function HomePage() {
                   size="md"
                 />
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -164,7 +164,7 @@ export default async function HomePage() {
             </div>
             {site.about.badgeValue && (
               // Straddles the main photo's inner edge, in the open space above the second photo.
-              <div className="absolute end-[20%] top-10 translate-x-1/2 rounded-3xl bg-brand-800 px-6 py-5 text-white shadow-xl shadow-brand-900/30 rtl:-translate-x-1/2">
+              <div className="absolute end-4 top-4 rounded-3xl bg-brand-800 px-6 py-5 text-white shadow-xl shadow-brand-900/30 sm:end-[20%] sm:top-10 sm:translate-x-1/2 sm:rtl:-translate-x-1/2">
                 <p className="font-display text-4xl font-extrabold" dir="ltr">
                   {site.about.badgeValue}
                 </p>

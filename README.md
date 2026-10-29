@@ -78,6 +78,7 @@ check the link previews with a social preview tool (e.g. opengraph.xyz) for the 
 | `SESSION_SECRET`  | yes      | 32+ random characters used to sign the login cookie (`openssl rand -hex 32`) |
 | `ADMIN_USERNAME`  | no       | Defaults to `admin`                                                     |
 | `DATA_DIR`        | no       | Content folder, defaults to `./data`. **Set it outside the app folder in production.** |
+| `TRUSTED_PROXIES` | no       | Proxies in front of the app, defaults to `1` (Hostinger). Set `2` if Cloudflare sits in front too. Used to read the visitor IP for rate limits. |
 | `SITE_URL`        | no       | Public URL for link previews, the sitemap and robots.txt. **Set it before `npm run build`**: pages are pre-rendered with it. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | no | Email alerts for new registrations and messages, and a confirmation email to the visitor. Hostinger email works: `smtp.hostinger.com`, port `465`, your mailbox address and password. Off when not set. |
 | `SMTP_FROM`       | no       | Sender shown on emails, e.g. `AQS <info@your-domain.com>`. Defaults to `SMTP_USER`. |

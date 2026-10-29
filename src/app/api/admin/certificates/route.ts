@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import { adminGuard } from "@/lib/api-auth";
 import { audit } from "@/lib/audit";
+import { lockFile } from "@/lib/lock";
 import { CERTIFICATES_FILE, normalizeId, parseCertificates, readCertificates, type Certificate } from "@/lib/certificates";
 import { certificatesFromCsv, certificatesToCsv } from "@/lib/csv";
 import { dataPath, writeJson } from "@/lib/storage";
@@ -57,6 +58,7 @@ export async function POST(request: Request) {
     );
   }
 
+  using _lock = await lockFile(CERTIFICATES_FILE);
   if (mode === "merge") {
     const current = await readCertificates();
     const byId = new Map(current.map((c) => [normalizeId(c.id), c]));

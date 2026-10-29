@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import { jakarta, plexArabic } from "../fonts";
+import { fonts } from "../fonts";
 
 export const metadata: Metadata = {
   title: { default: "AQS Admin", template: "%s · AQS Admin" },
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function AdminRootLayout({ children }: LayoutProps<"/admin">) {
   return (
-    <html lang="en" dir="ltr" className={`${plexArabic.variable} ${jakarta.variable}`}>
+    <html lang="en" dir="ltr" className={fonts.className} style={fonts.style}>
       <body className="min-h-dvh bg-slate-50 text-slate-700">{children}</body>
     </html>
   );
