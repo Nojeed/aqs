@@ -76,7 +76,7 @@ async function Result({ searchParams, locale, d }: { searchParams: Search; local
             <FileQuestion className="size-6" aria-hidden />
           </span>
           <div>
-            <h2 className="font-display text-xl font-bold">{d.verify.notFound}</h2>
+            <h2 className="font-display text-subheading font-bold">{d.verify.notFound}</h2>
             <p className="mt-1 font-mono text-sm text-slate-500" dir="ltr">
               {id.toUpperCase()}
             </p>
@@ -107,7 +107,7 @@ async function Result({ searchParams, locale, d }: { searchParams: Search; local
           <style.icon className="size-6" aria-hidden />
         </span>
         <div>
-          <h2 className="font-display text-2xl font-bold">{d.verify[status]}</h2>
+          <h2 className="font-display text-subheading font-bold">{d.verify[status]}</h2>
           <p className="mt-1 text-slate-600">{d.verify[`${status}Text`]}</p>
         </div>
       </div>

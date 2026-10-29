@@ -20,7 +20,7 @@ export function SectionHeading({
     >
       <div className={centered ? "max-w-2xl" : "max-w-2xl"}>
         <h2
-          className={`font-display text-3xl font-bold text-balance sm:text-4xl ${light ? "text-white" : "text-brand-950"}`}
+          className={`font-display text-heading font-bold text-balance ${light ? "text-white" : "text-brand-950"}`}
         >
           {title}
         </h2>

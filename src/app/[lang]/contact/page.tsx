@@ -89,7 +89,7 @@ export default async function ContactPage() {
         </div>
 
         <div className="card p-6 sm:p-10">
-          <h2 className="font-display text-2xl font-bold">{d.contact.formTitle}</h2>
+          <h2 className="font-display text-subheading font-bold">{d.contact.formTitle}</h2>
           <Tabs defaultValue="message" dir={dir(locale)} className="mt-6">
             <TabsList>
               <TabsTrigger value="message">

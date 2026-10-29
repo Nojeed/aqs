@@ -48,7 +48,7 @@ export default async function BlogPage() {
                 )}
                 {lead.date && <time dateTime={lead.date}>{formatDate(lead.date, locale)}</time>}
               </div>
-              <h2 className="font-display mt-4 text-3xl font-bold text-balance transition group-hover:text-brand-700">
+              <h2 className="font-display mt-4 text-subheading font-bold text-balance transition group-hover:text-brand-700">
                 {t(lead.title, locale)}
               </h2>
               <p className="mt-4 text-lg leading-8 text-slate-600">{t(lead.excerpt, locale)}</p>
@@ -72,7 +72,7 @@ export default async function BlogPage() {
         subtitle={t(site.sections.blogSubtitle, locale)}
         image="/images/food-lab-produce.jpg"
       />
-      <section className="container-page py-20">
+      <section className="container-page py-16 lg:py-20">
         {posts.length === 0 ? (
           <EmptyState text={d.common.empty} />
         ) : (

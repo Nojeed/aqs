@@ -2,11 +2,11 @@
 
 import { useAnimate } from "motion/react";
 import { clearRise, clearRiseWhenDone, containsGlass, duration, easeLuxe, hideForRise, riseKeyframes } from "@/lib/motion";
-import { useEffect, useLayoutEffect, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 
-let hydrated = false;
 let isPop = false;
 let animatedThisFrame = false;
+const noSubscribe = () => () => {};
 if (typeof window !== "undefined") {
   addEventListener("popstate", () => (isPop = true));
   addEventListener("click", () => (isPop = false), true);
@@ -19,10 +19,13 @@ if (typeof window !== "undefined") {
  */
 export function PageTransition({ children }: { children: ReactNode }) {
   const [scope, animate] = useAnimate<HTMLDivElement>();
+  // True while hydrating server HTML. Checked per template, not once per load: streamed parts of a page
+  // hydrate later, and animating them then would edit HTML React has not taken over yet.
+  const fromServer = useRef(!useSyncExternalStore(noSubscribe, () => true, () => false));
 
   useLayoutEffect(() => {
     // First load shows the server HTML as is; nested templates shown in the same commit animate once.
-    if (!hydrated || animatedThisFrame) return;
+    if (fromServer.current || animatedThisFrame) return;
     animatedThisFrame = true;
     requestAnimationFrame(() => (animatedThisFrame = false));
     // Next scrolls to the top only after the page has streamed in, so the page would animate in
@@ -50,8 +53,11 @@ export function PageTransition({ children }: { children: ReactNode }) {
       targets.forEach(clearRise);
     };
   }, [animate, scope]);
+  // Shown again later (Next keeps visited pages mounted), the page animates like any other. A frame later,
+  // so Strict Mode's instant remount in development still counts as the first load.
   useEffect(() => {
-    hydrated = true;
+    const id = requestAnimationFrame(() => (fromServer.current = false));
+    return () => cancelAnimationFrame(id);
   }, []);
 
   return <div ref={scope}>{children}</div>;

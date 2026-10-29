@@ -40,7 +40,7 @@ export default async function CoursesPage() {
        
         image="/images/training-room.jpg"
       />
-      <section className="container-page py-20" aria-labelledby="course-list-title">
+      <section className="container-page py-16 lg:py-20" aria-labelledby="course-list-title">
         {/* Screen-reader heading so the card titles (h3) sit under an h2, not straight under the page h1. */}
         <h2 id="course-list-title" className="sr-only">
           {d.nav.courses}

@@ -75,7 +75,7 @@ async function PostDetail({ params }: Pick<PageProps<"/[lang]/blog/[slug]">, "pa
               {t(post.category, locale)}
             </p>
           )}
-          <h1 className="font-display mt-5 text-4xl font-bold text-balance text-white sm:text-5xl">{t(post.title, locale)}</h1>
+          <h1 className="font-display mt-5 text-title font-bold text-balance text-white">{t(post.title, locale)}</h1>
           <p className="mt-5 text-lg leading-8 text-white/75">{t(post.excerpt, locale)}</p>
           <p className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/60">
             {post.author && (
@@ -97,14 +97,14 @@ async function PostDetail({ params }: Pick<PageProps<"/[lang]/blog/[slug]">, "pa
         </div>
       </section>
 
-      <article className="container-page max-w-3xl py-16 sm:py-20">
+      <article className="container-page max-w-3xl py-16 lg:py-20">
         <Markdown>{body}</Markdown>
       </article>
 
       {more.length > 0 && (
         <section className="border-t border-slate-200/70 bg-brand-50/50 py-20">
           <div className="container-page">
-            <h2 className="font-display text-2xl font-bold">{d.blog.related}</h2>
+            <h2 className="font-display text-subheading font-bold">{d.blog.related}</h2>
             <ul className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
               {more.map((p) => (
                 <li key={p.id}>

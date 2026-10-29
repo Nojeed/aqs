@@ -26,6 +26,12 @@ Text on coloured surfaces uses that surface's tint (`text-white/70` on navy), no
 
 - **IBM Plex Sans Arabic** (`--font-plex-arabic`): body, UI and all Arabic text.
 - **Plus Jakarta Sans** (`--font-jakarta`): display headings (`font-display`) and Latin numbers in headings.
+- Heading sizes are fluid (`clamp()` tokens in `globals.css`), never breakpoint steps like `text-3xl sm:text-4xl`:
+  - `text-display` 36→60px: home hero only.
+  - `text-title` 36→48px: page titles (`PageHero`, blog post) and the closing call to action.
+  - `text-heading` 30→36px: section headings (`SectionHeading`) and the home stats.
+  - `text-subheading` 24→30px: card and panel headings (form cards, verify result, related lists).
+  - Smaller headings inside cards and sidebars stay fixed (`text-xl`, `text-lg`).
 - Headings use `text-balance`; Arabic headings get a little more line height (set in `globals.css`).
 - Data uses `tabular-nums` (tables, counts, dates, phone numbers).
 - No small "eyebrow" labels above headings: the heading carries the hierarchy. Breadcrumbs in page heroes are the only label above a title.
@@ -74,7 +80,7 @@ Both: visible focus outline (`accent-500`), `disabled` = 50–60% opacity + not-
 ## Layout
 
 - `container-page`: max 80rem with 16/24/32px gutters.
-- Public sections breathe (`py-20`–`py-32`); admin pages use `max-w-5xl`/`6xl` with `py-10`.
+- Inner pages open with `py-16 lg:py-20`; home sections breathe more (`py-24 sm:py-32`); admin pages use `max-w-5xl`/`6xl` with `py-10`.
 - Tap targets are at least 44px on touch screens (header language switch, footer links, admin buttons, form controls).
 
 ## Browser surfaces

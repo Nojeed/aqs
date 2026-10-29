@@ -57,6 +57,16 @@
   --color-whatsapp: #1f9d55;
   --color-whatsapp-dark: #178246;
 
+  /* Fluid heading sizes: grow smoothly from phone (360px) to desktop (1280px) instead of jumping at breakpoints. */
+  --text-display: clamp(2.25rem, 1.37rem + 3.91vw, 3.75rem); /* 36 → 60px: home hero */
+  --text-display--line-height: 1.1;
+  --text-title: clamp(2.25rem, 1.96rem + 1.3vw, 3rem); /* 36 → 48px: page titles, closing call to action */
+  --text-title--line-height: 1.15;
+  --text-heading: clamp(1.875rem, 1.73rem + 0.65vw, 2.25rem); /* 30 → 36px: section headings, stats */
+  --text-heading--line-height: 1.2;
+  --text-subheading: clamp(1.5rem, 1.35rem + 0.65vw, 1.875rem); /* 24 → 30px: card and panel headings */
+  --text-subheading--line-height: 1.25;
+
   /* Motion. Keep in sync with src/lib/motion.ts (used by Motion components). */
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 }

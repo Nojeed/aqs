@@ -29,7 +29,7 @@ export default async function ServicesPage() {
        
         image="/images/production-line.jpg"
       />
-      <section className="container-page py-20">
+      <section className="container-page py-16 lg:py-20">
         {services.length ? (
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service, i) => (
