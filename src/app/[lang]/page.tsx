@@ -64,7 +64,7 @@ export default async function HomePage() {
               <Sparkles className="size-4 text-accent-300" aria-hidden />
               {t(site.hero.badge, locale)}
             </motion.p>
-            <motion.h1 {...slideUp(0.12)} className="font-display mt-6 text-4xl leading-tight font-extrabold text-balance text-white sm:text-5xl lg:text-6xl">
+            <motion.h1 {...slideUp(0.12)} className="font-display mt-6 text-display font-extrabold text-balance text-white">
               {t(site.hero.title, locale)}
               {t(site.hero.highlight, locale) && (
                 <span className="mt-2 block text-accent-300">
@@ -112,7 +112,7 @@ export default async function HomePage() {
               <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-white text-brand-800 shadow-lg">
                 <ShieldCheck className="size-7" strokeWidth={1.6} aria-hidden />
               </span>
-              <h2 className="font-display mt-6 text-2xl font-bold text-white">{d.verify.quickTitle}</h2>
+              <h2 className="font-display mt-6 text-subheading font-bold text-white">{d.verify.quickTitle}</h2>
               <p className="mt-2 leading-7 text-white/70">{d.verify.quickText}</p>
               <div className="mt-6">
                 <VerifyForm
@@ -137,7 +137,7 @@ export default async function HomePage() {
                 // Label first in the markup (read and copied as "label, value"), shown under the number.
                 <div key={i} className="flex flex-col-reverse px-6 py-6 text-center sm:py-8">
                   <dt className="mt-2 text-sm font-medium text-slate-500">{t(stat.label, locale)}</dt>
-                  <dd className="font-display text-3xl font-extrabold text-brand-800 tabular-nums sm:text-4xl" dir="ltr">
+                  <dd className="font-display text-heading font-extrabold text-brand-800 tabular-nums" dir="ltr">
                     <span className="sr-only">{stat.value}</span>
                     <CountUp value={stat.value} />
                   </dd>
@@ -174,7 +174,7 @@ export default async function HomePage() {
           </Reveal>
 
           <Reveal delay={100}>
-            <h2 className="font-display mt-3 text-3xl font-bold text-balance sm:text-4xl">{t(site.about.title, locale)}</h2>
+            <h2 className="font-display mt-3 text-heading font-bold text-balance">{t(site.about.title, locale)}</h2>
             <p className="mt-6 text-lg leading-8 text-slate-600">{t(site.about.body, locale)}</p>
             <ul className="mt-8 grid gap-4 sm:grid-cols-2">
               {site.about.points.map((point, i) => (
@@ -298,7 +298,7 @@ export default async function HomePage() {
                   <ShieldCheck className="size-10" strokeWidth={1.5} aria-hidden />
                 </span>
                 <div>
-                  <h2 className="font-display text-2xl font-bold sm:text-3xl">{t(site.verifyCta.title, locale)}</h2>
+                  <h2 className="font-display text-subheading font-bold">{t(site.verifyCta.title, locale)}</h2>
                   <p className="mt-3 text-lg leading-8 text-slate-600">{t(site.verifyCta.text, locale)}</p>
                 </div>
                 <VerifyForm locale={locale} label={d.verify.label} placeholder={d.verify.placeholder} submit={d.verify.submit} />
@@ -363,7 +363,7 @@ function ContactCta({
       <div className="absolute inset-0 -z-10 bg-brand-950/85" aria-hidden />
       <div className="bg-lines absolute inset-0 -z-10" aria-hidden />
       <div className="container-page text-center">
-        <h2 className="font-display mx-auto max-w-3xl text-3xl font-bold text-balance text-white sm:text-5xl">{title}</h2>
+        <h2 className="font-display mx-auto max-w-3xl text-title font-bold text-balance text-white">{title}</h2>
         <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/75">{text}</p>
         <div className="mt-10 flex justify-center">{children}</div>
       </div>

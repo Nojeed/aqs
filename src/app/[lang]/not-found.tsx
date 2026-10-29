@@ -9,7 +9,7 @@ export default async function NotFound() {
   return (
     <>
       <PageHero title={d.notFound.title} subtitle={d.notFound.text} eyebrow="404" />
-      <div className="container-page py-20">
+      <div className="container-page py-16 lg:py-20">
         <Link href={`/${locale}`} className="btn-primary">
           {d.notFound.home}
         </Link>

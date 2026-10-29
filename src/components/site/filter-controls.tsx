@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { dir, type Locale } from "@/lib/i18n";
 
 const ALL = "all"; // Radix Select items can not use an empty value
-const labelClass = "text-xs font-bold tracking-wide text-slate-500 uppercase";
 
 /**
  * Filter values kept in the URL (?q=&topic=…) so a filtered list can be shared or bookmarked.
@@ -35,7 +34,7 @@ export function FilterBar({ children }: { children: ReactNode }) {
 export function FilterSearch({ id, label, value, onChange }: { id: string; label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div className="sm:flex-[1.6]">
-      <Label htmlFor={id} className={labelClass}>
+      <Label htmlFor={id}>
         {label}
       </Label>
       <div className="relative">
@@ -65,7 +64,7 @@ export function FilterSelect({
 }) {
   return (
     <div>
-      <Label htmlFor={id} className={labelClass}>
+      <Label htmlFor={id}>
         {label}
       </Label>
       <Select value={value || ALL} onValueChange={(v) => onChange(v === ALL ? "" : v)} dir={dir(locale)}>

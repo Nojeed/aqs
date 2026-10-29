@@ -36,7 +36,7 @@ export function PageHero({
       <div className="absolute -end-32 -top-32 -z-10 size-96 rounded-full bg-accent-500/20 blur-3xl" aria-hidden />
       <div className="container-page">
         {eyebrow && <div className="mb-4 text-sm text-white/70">{eyebrow}</div>}
-        <h1 className="font-display max-w-3xl text-4xl font-bold text-balance text-white sm:text-5xl">{title}</h1>
+        <h1 className="font-display max-w-3xl text-title font-bold text-balance text-white">{title}</h1>
         {subtitle && <p className="mt-5 max-w-2xl text-lg leading-8 text-pretty text-white/75">{subtitle}</p>}
         {children}
       </div>

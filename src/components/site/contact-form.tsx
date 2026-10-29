@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { CircleCheck, LoaderCircle, MessageCircle } from "lucide-react";
+import { CircleCheck, LoaderCircle, MessageCircle, ShieldCheck } from "lucide-react";
 import { sendMessage, type MessageResult } from "@/app/[lang]/actions";
 import { Field, fieldAria } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -130,7 +130,10 @@ function Form({ locale, whatsapp, onAnother }: Props & { onAnother: () => void }
           </a>
         )}
       </div>
-      <p className="text-xs text-slate-500">{d.register.privacy}</p>
+      <p className="flex items-start gap-2 text-xs leading-5 text-slate-500">
+        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-slate-400" aria-hidden />
+        {d.register.privacy}
+      </p>
     </form>
   );
 }

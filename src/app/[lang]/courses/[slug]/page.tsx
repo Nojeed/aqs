@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { Calendar, CircleCheck, Clock, Monitor, Tag, Users, type LucideProps } from "lucide-react";
+import { Calendar, CircleCheck, Clock, GraduationCap, Monitor, Tag, Users, type LucideProps } from "lucide-react";
 import { LevelIcon } from "@/components/level-icon";
 import { Breadcrumbs } from "@/components/site/breadcrumbs";
 import { CourseCard } from "@/components/site/cards";
@@ -122,7 +122,7 @@ async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[slug]">
                 <Users className="size-6" aria-hidden />
               </span>
               <div>
-                <h2 className="font-display text-lg font-bold">{d.courses.audience}</h2>
+                <h2 className="font-display text-xl font-bold">{d.courses.audience}</h2>
                 <p className="mt-2 leading-7 text-slate-600">{t(course.audience, locale)}</p>
               </div>
             </section>
@@ -153,15 +153,26 @@ async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[slug]">
         </aside>
       </div>
 
-      <section id="register" className="scroll-mt-28 border-t border-slate-200/70 py-20">
-        <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-          <div>
-            <h2 className="font-display text-3xl font-bold text-balance">{d.register.title}</h2>
-            <p className="mt-3 max-w-md text-lg leading-8 text-slate-600">{d.register.text}</p>
-            <p className="mt-6 font-semibold text-brand-800">{t(course.title, locale)}</p>
+      {/* Same layout as the contact page: info card on one side, titled form card on the other. */}
+      <section id="register" className="scroll-mt-28 border-t border-slate-200/70">
+        <div className="container-page grid gap-10 py-16 lg:grid-cols-[1fr_1.4fr] lg:py-20">
+          <div className="space-y-4">
+            <div className="card flex items-center gap-4 p-5">
+              <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand-800 text-white">
+                <GraduationCap className="size-5" aria-hidden />
+              </span>
+              <span>
+                <span className="block text-sm text-slate-500">{d.register.course}</span>
+                <span className="mt-0.5 block font-semibold text-brand-950">{t(course.title, locale)}</span>
+              </span>
+            </div>
+            <p className="px-1 leading-7 text-slate-600">{d.register.text}</p>
           </div>
-          <div className="card p-6 sm:p-8">
-            <RegistrationForm locale={locale} courseId={course.id} />
+          <div className="card p-6 sm:p-10">
+            <h2 className="font-display text-subheading font-bold">{d.register.title}</h2>
+            <div className="mt-6">
+              <RegistrationForm locale={locale} courseId={course.id} />
+            </div>
           </div>
         </div>
       </section>
@@ -169,7 +180,7 @@ async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[slug]">
       {related.length > 0 && (
         <section className="bg-brand-50/60 py-20">
           <div className="container-page">
-            <h2 className="font-display text-2xl font-bold">{d.courses.all}</h2>
+            <h2 className="font-display text-subheading font-bold">{d.courses.all}</h2>
             <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((c) => (
                 <li key={c.id}>

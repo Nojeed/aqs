@@ -65,7 +65,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
         transition={{ duration: 0.8, ease: easeLuxe }}
         tabIndex={-1}
         role="status"
-        className="flex scroll-mt-28 flex-col items-start gap-4 rounded-3xl bg-success-50 p-8 ring-1 ring-success-200">
+        className="flex scroll-mt-28 flex-col items-start gap-4 rounded-2xl bg-success-50 p-8 ring-1 ring-success-200">
         <CircleCheck className="size-10 text-success-600" strokeWidth={1.6} aria-hidden />
         <div>
           <p className="font-display text-xl font-bold text-success-900">{r.success}</p>
@@ -118,7 +118,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
       <input type="hidden" name="session" value={session} />
       {sessions.length > 0 &&
         (allFull ? (
-          <p role="status" className="rounded-xl bg-warning-50 p-4 text-sm font-medium text-warning-800 ring-1 ring-warning-200">
+          <p role="status" className="rounded-xl bg-warning-50 p-3 text-sm font-medium text-warning-800 ring-1 ring-warning-200">
             {r.allFull}
           </p>
         ) : (
@@ -153,7 +153,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
       </div>
 
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold text-slate-700">{r.as}</legend>
+        <legend className="mb-1.5 text-sm font-semibold text-slate-700">{r.as}</legend>
         <div className="grid grid-cols-2 gap-3">
           {(
             [
@@ -163,7 +163,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
           ).map(([value, label, Icon]) => (
             <label
               key={value}
-              className="flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700 shadow-xs transition hover:border-brand-300 hover:bg-brand-50/60 has-checked:border-brand-700 has-checked:bg-brand-50 has-checked:text-brand-900 has-checked:ring-4 has-checked:ring-brand-100 has-focus-visible:outline-2 has-focus-visible:outline-accent-500"
+              className="flex h-11 cursor-pointer items-center gap-2.5 rounded-xl border border-slate-300 bg-white px-3.5 text-sm font-semibold text-slate-700 shadow-xs transition hover:border-brand-300 hover:bg-brand-50/60 has-checked:border-brand-700 has-checked:bg-brand-50 has-checked:text-brand-900 has-checked:ring-4 has-checked:ring-brand-100 has-focus-visible:outline-2 has-focus-visible:outline-accent-500"
             >
               <input
                 type="radio"
@@ -173,7 +173,7 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
                 onChange={set("type")}
                 className="sr-only"
               />
-              <Icon className="size-5 text-brand-600" aria-hidden />
+              <Icon className="size-4 text-brand-600" aria-hidden />
               {label}
             </label>
           ))}
@@ -215,16 +215,14 @@ function Form({ locale, courseId, courses, onAnother }: Props & { onAnother: () 
         </p>
       )}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
-        <button type="submit" disabled={pending || allFull} className="btn-primary shrink-0">
-          {pending && <LoaderCircle className="size-4 animate-spin" aria-hidden />}
-          {pending ? r.sending : r.submit}
-        </button>
-        <p className="inline-flex items-start gap-2 text-xs leading-5 text-slate-500">
-          <ShieldCheck className="mt-0.5 size-4 shrink-0 text-slate-400" aria-hidden />
-          {r.privacy}
-        </p>
-      </div>
+      <button type="submit" disabled={pending || allFull} className="btn-primary">
+        {pending && <LoaderCircle className="size-4 animate-spin" aria-hidden />}
+        {pending ? r.sending : r.submit}
+      </button>
+      <p className="flex items-start gap-2 text-xs leading-5 text-slate-500">
+        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-slate-400" aria-hidden />
+        {r.privacy}
+      </p>
     </form>
   );
 }
