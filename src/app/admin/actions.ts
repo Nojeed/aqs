@@ -363,7 +363,7 @@ export async function moveItem(collection: string, id: string, direction: "up" |
   const config = collections[collection];
   using _lock = await lockFile(config.file);
   const items = (await readCollection(collection)) as unknown as { id: string; order?: number }[];
-  const sorted = [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const sorted = items.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const from = sorted.findIndex((i) => i.id === id);
   const to = direction === "up" ? from - 1 : from + 1;
   if (from === -1) return { ok: false, error: "Item not found." };
