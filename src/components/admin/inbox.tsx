@@ -106,7 +106,7 @@ export function History({ inbox, id, history }: { inbox: InboxName; id: string; 
     <div>
       <ol className="space-y-4 border-s-2 border-slate-200 ps-5">
         {history.length === 0 && <li className="text-sm text-slate-500">No notes yet. Status changes and notes appear here.</li>}
-        {[...history].reverse().map((h, i) => (
+        {history.toReversed().map((h, i) => (
           <li key={i} className="relative">
             <span className="absolute -start-[1.6rem] top-1.5 size-2.5 rounded-full bg-brand-500 ring-4 ring-white" aria-hidden />
             <p className="text-xs text-slate-500 tabular-nums">

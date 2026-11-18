@@ -206,7 +206,7 @@ function Form({ locale, courseId, courses, keepMonths, onAnother }: Props & { on
         {input("name", isCompany ? r.contactName : r.name, User, { autoComplete: "name" })}
         {input("phone", r.phone, Phone, { type: "tel", autoComplete: "tel", dir: "ltr", inputMode: "tel" })}
       </div>
-      {input("email", r.email, Mail, { type: "email", autoComplete: "email", dir: "ltr" })}
+      {input("email", r.email, Mail, { type: "email", autoComplete: "email", autoCorrect: "off", autoCapitalize: "none", spellCheck: false, dir: "ltr" })}
 
       <Field id="reg-notes" label={r.notes}>
         <Textarea id="reg-notes" icon={MessageSquareText} name="notes" value={values.notes} onChange={set("notes")} rows={3} maxLength={2000} />

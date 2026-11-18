@@ -11,7 +11,7 @@ export function LoginForm() {
   return (
     <form action={action} className="mt-8 space-y-4">
       <Field id="login-username" label="Username">
-        <Input id="login-username" icon={User} name="username" autoComplete="username" required autoFocus />
+        <Input id="login-username" icon={User} name="username" autoComplete="username" autoCorrect="off" autoCapitalize="none" spellCheck={false} required autoFocus />
       </Field>
       <Field id="login-password" label="Password">
         <Input id="login-password" icon={Lock} name="password" type="password" autoComplete="current-password" required />

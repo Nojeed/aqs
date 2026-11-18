@@ -109,6 +109,9 @@ export function UsersManager({ users, me }: { users: Row[]; me: string }) {
               value={form.username}
               onChange={(e) => setForm((f) => ({ ...f, username: e.target.value.toLowerCase() }))}
               autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck={false}
               className={compact}
               aria-describedby="nu-username-help"
             />

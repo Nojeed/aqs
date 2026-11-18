@@ -90,6 +90,9 @@ function Form({ locale, whatsapp, keepMonths, onAnother }: Props & { onAnother: 
             onChange={set("email")}
             required
             autoComplete="email"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
             dir="ltr"
             {...fieldAria("msg-email", { error: err("email") })}
           />
